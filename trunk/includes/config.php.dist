@@ -1,0 +1,163 @@
+<?php
+
+define('DB_SERVER', '<server>');
+define('DB_NAME', '<database>');
+define('DB_USER', '<username>');
+define('DB_PASSWORD', '<password>');
+
+define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
+define('VOTE_FILE', dirname(__FILE__) . '/../tmp/0-votes.dat');
+define('VOTE_MAILS_FILE', dirname(__FILE__) . '/../tmp/0-votemails.dat');
+define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
+
+define('LOCATION_FALLBACK', 'Margaretenplatz, 1050 Wien');
+define('LOCATION_FALLBACK_LAT', '48.1917245');
+define('LOCATION_FALLBACK_LNG', '16.358355');
+
+define('USE_MINIMZED_JS_CSS', true);
+
+define('SITE_URL', '<url>');
+define('META_KEYWORDS', '<keywords>');
+define('CONTACT_HREF', '<url>');
+define('IMPRESSUM_HREF', '<url>');
+define('PRIVACY_INFO', '<text>');
+
+setlocale(LC_ALL, array('de_AT', 'de_DE'));
+
+$overlay_info_data = '';
+$overlay_info_version = '1.0';
+
+$ip_usernames = array(
+	'192.168.0.1' => 'Alice',
+	'192.168.0.2' => 'Bob'
+);
+
+$voting_show_start = strtotime('08:00');
+$voting_show_end = strtotime('15:00');
+
+if (date('N') == 5) // friday
+	$voting_over_time = strtotime('14:00');
+else
+	$voting_over_time = strtotime('11:50');
+
+$vote_valid_identifiers = array(
+	'Margareta',
+	'Silberwirt',
+	'Taste of India',
+	'Zum Alten Fassl',
+	'Haas Beisl',
+	'Delicious Monster',
+	'aus:klang',
+	'Kunsthallencafé',
+	'Cuadro',
+	'Das Powidl',
+	'Bamboo',
+	'Verweigerung',
+	'Egal',
+	'delete',
+);
+
+$voting_alt_locations = array(
+	'Cuadro' => array(
+		'href' => 'http://www.cuadro.at/',
+		'address' => 'Margaretenstraße 77, 1050 Wien',
+	),
+	'Das Powidl' => array(
+		'href' => 'http://das-powidl.com/',
+		'address' => 'Margaretenstraße 60, 1050 Wien',
+	),
+	'Bamboo' => array(
+		'href' => 'http://www.bamboo-restaurant.at/',
+		'address' => 'Margaretenstraße 51, 1050 Wien',
+	),
+);
+
+$explodeNewLines = array(
+	"\n", '<br >', '<br>', '<br/>', '<br />', '< br>', '< br>',
+	'< br/>', '< br >', '< br />'
+);
+
+$cacheDataExplode = array_merge($explodeNewLines, array(
+	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ',
+	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', 'Gefüllte', 'gefüllte',
+	'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
+	'nicht Scharf', ' Und ', 'frischem', 'Frische', 'frische', 'u.', ' Mit ', ' In ', '"',
+	'bei Schlechtwetter', ' der ', 'würziger', 'Gebratenes', 'gebratenes',
+	'gebratenem', 'gebratener', 'Gebratene', 'gebratene',
+	'dem', 'warmen', 'warmer', 'warm', 'milder', 'nicht scharf',
+	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'Gegrilltem', 'gegrilltem', 'Gegrilltes', 'gegrillten',
+	'Gegrillte', 'gegrilltes', 'gegrillte', 'grill', 'hausgemachter',
+	'Hausgemachte', 'hausgemachte', 'Gebackener', 'gebackener', 'Gebackenes',
+	'gebackenes', 'Gebackene', 'gebackene',
+	' aus ', 'Gezogener', 'gezogener', 'Gemischtes', 'gemischtes', 'Pikantes',
+	'pikantes', 'Pikante', 'pikante', 'gerösteten', 'Geröstete', 'geröstete', 'geriebenen',
+	'Gehacktes', 'gehacktes', 'Geschmortes', 'geschmortes', 'Getrockneten', 'getrockneten',
+));
+$cacheDataIgnore = array('1.', '2.', '3.', '4.');
+
+$cacheDataDelete = array(
+	'!!!', 'feiertag', 'Feiertag', 'FEIERTAG', 'Feiertagsbrunch',
+	'Genussregion Tullnerfelder Schwein', 'la carte', 'geschlossen',
+	'Geschlossen', 'Silvester', 'Neujahr', 'FROHE', 'OSTERN', 'CHRISTI',
+	'HIMMELFAHRT', 'GESCHLOSSEN',
+);
+
+$searchReplace = array(
+	'dazu &' => 'dazu',
+	'TikkaMasala' => 'Tikka Masala',
+	'gegrilltes Hühnerfilets' => 'Gegrilltes Hühnerfilet',
+	'gegrillte Hühnerfilets' => 'Gegrilltes Hühnerfilet',
+	'gegrilltes Hühnerfilets' => 'Gegrilltes Hühnerfilet',
+	'Cashewnuss – Mandel – Obersauce' => 'Cashewnuss-Mandel-Oberssauce',
+	'milder-Currysauce' => 'milder Currysauce',
+	'in milde Currysauce' => 'in milder Currysauce',
+	'milde-Currysauce' => 'milder Currysauce',
+	'Murgh saag' => 'Murgh Saag',
+	'Murhg' => 'Murgh',
+	'Gemüse bällchan' => 'Gemüsebällchen',
+	'Würziger Currysauce' => 'würziger Currysauce',
+	' :' => ':',
+	'Curryemüse' => 'Currygemüse',
+	'Kokos-Ober-Sauce' => 'Kokos-Obers-Sauce',
+	'kokos-Obers-Sauce' => 'Kokos-Obers-Sauce',
+	'Hausgemachter' => 'hausgemachter',
+	'Gewürsen' => 'Gewürzen',
+	'mit Spinatsauce' => 'in Spinatsauce',
+	'currysauce' => 'Currysauce',
+	'Frisches Karfiol' => 'Frischer Karfiol',
+	'Pikaner Currysauce' => 'pikanter Currysauce',
+	'würziger Currysauce' => 'Currysauce',
+	'Genüse' => 'Gemüse',
+	'Lach ' => 'Lachs ',
+	'Schnitlauch' => 'Schnittlauch',
+	'Eiernockelr' => 'Eiernockerl',
+	'Rosti' => 'Rösti',
+	'Speckfi sollen' => 'Speckfisolen',
+	'Thunfi sch' => 'Thunfisch',
+	'Steinpilztaschrln' => 'Steinpilztascherln',
+	'cremsuppe' => 'cremesuppe',
+	'Gemuse' => 'Gemüse',
+	'Szedediner' => 'Szegediner',
+	'cemesuppe' => 'cremesuppe',
+	'Wurstrfleckerl' => 'Wurstfleckerl',
+	'Spare Rips' => 'Spareribs',
+	'Gegrillte Hühnerfilet' => 'Gegrilltes Hühnerfilet',
+	'Majonnaise' => 'Mayonnaise',
+	'Ingwer,Knoblauch' => 'Ingwer, Knoblauch',
+	'Paprika.Zwiebel' => 'Paprika, Zwiebel',
+	'Zwiebel,Ingwer' => 'Zwiebel, Ingwer',
+	'Giegrilltes' => 'Gegrilltes',
+	'mit &' => '&',
+	'und &' => 'und',
+	'( ' => '(',
+	' )' => ')',
+	'Gerbratene' => 'Gebratene',
+	'Obersauce' => 'Oberssauce',
+	'Kartoffeln,Knoblauch' => 'Kartoffeln, Knoblauch',
+	'Gegrilltes Hühnerfilets' => 'Gegrilltes Hühnerfleisch',
+	'-Hühnerfleisch' => 'Hühnerfleisch',
+	'masalasauce' => 'Masalasauce',
+	'Bio Spaghetti' => 'Bio-Spaghetti',
+);
+
+?>
