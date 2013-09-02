@@ -1,0 +1,510 @@
+<?php
+
+require_once('config.php');
+require_once('CacheHandler_MySql.php');
+
+mb_internal_encoding('UTF-8');
+
+/*
+ * Global variables
+ */
+$dateOffset = $timestamp = $date_GET = 0;
+// (new) cachesafe offset via date
+if (isset($_GET['date']) && is_string($_GET['date'])) {
+	$date_GET = trim($_GET['date']);
+	$date = strtotime($date_GET);
+	if ($date) {
+		$date = new DateTime($date_GET);
+		$today = new DateTime(date('Y-m-d'));
+
+		$interval = $today->diff($date);
+		$dateOffset = $interval->days;
+		if ($interval->invert)
+			$dateOffset *= -1;
+	}
+}
+else {
+	if (date('H') > 17)
+	 	$dateOffset = 1;
+}
+
+// calculate timestamp from offset
+if ($dateOffset != 0)
+	$timestamp = strtotime($dateOffset . ' days');
+else
+	$timestamp = time();
+
+/*
+ * Utils
+ */
+function cacheSafeUrl($file) {
+	return $file . "?" . filemtime($file);
+}
+function strposAfter($haystack, $needle, $offset=0) {
+	$pos = strpos($haystack, $needle, $offset);
+	if ($pos !== FALSE)
+		$pos += strlen($needle);
+	return $pos;
+}
+function striposAfter($haystack, $needle, $offset=0) {
+	$pos = stripos($haystack, $needle, $offset);
+	if ($pos !== FALSE)
+		$pos += strlen($needle);
+	return $pos;
+}
+function mb_str_replace($needle, $replacement, $haystack) {
+    $needle_len = mb_strlen($needle);
+    $replacement_len = mb_strlen($replacement);
+    $pos = mb_strpos($haystack, $needle);
+    while ($pos !== false)
+    {
+        $haystack = mb_substr($haystack, 0, $pos) . $replacement
+                . mb_substr($haystack, $pos + $needle_len);
+        $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
+    }
+    return $haystack;
+}
+function str_replace_array($search, $replace, $subject) {
+	foreach ($search as $s)
+		$subject = str_replace($s, $replace, $subject);
+	return $subject;
+}
+
+function str_replace_wrapper($searchReplace, $subject) {
+	foreach ($searchReplace as $search => $replace) {
+		$subject = str_replace($search, $replace, $subject);
+	}
+	return $subject;
+}
+function date_offsetted($params) {
+	global $timestamp;
+
+	return date($params, $timestamp);
+}
+function shuffle_assoc(&$array) {
+	$keys = array_keys($array);
+
+	shuffle($keys);
+
+	$new = array();
+	foreach($keys as $key) {
+		$new[$key] = $array[$key];
+	}
+
+	$array = $new;
+	return true;
+}
+function getGermanDayName($offset = 0) {
+	global $timestamp;
+
+	$dayNr = (date('w', $timestamp) + $offset) % 7;
+	if ($dayNr == 0)
+		return 'Sonntag';
+	else if ($dayNr == 1)
+		return 'Montag';
+	else if ($dayNr == 2)
+		return 'Dienstag';
+	else if ($dayNr == 3)
+		return 'Mittwoch';
+	else if ($dayNr == 4)
+		return 'Donnerstag';
+	else if ($dayNr == 5)
+		return 'Freitag';
+	else if ($dayNr == 6)
+		return 'Samstag';
+	else
+		return 'not valid';
+}
+function getGermanDayNameShort($offset = 0) {
+	return substr(getGermanDayName($offset), 0, 2);
+}
+function getGermanMonthName($offset = 0) {
+	global $timestamp;
+	if ($offset > 0)
+		$timestamp_offset = strtotime("+$offset days", $timestamp);
+	else if ($offset < 0)
+		$timestamp_offset = strtotime("-$offset days", $timestamp);
+	else
+		$timestamp_offset = $timestamp;
+	$monthNr = date('n', $timestamp_offset);
+	switch ($monthNr) {
+		case 1: return 'Jänner'; break;
+		case 2: return 'Februar'; break;
+		case 3: return 'März'; break;
+		case 4: return 'April'; break;
+		case 5: return 'Mai'; break;
+		case 6: return 'Juni'; break;
+		case 7: return 'Juli'; break;
+		case 8: return 'August'; break;
+		case 9: return 'September'; break;
+		case 10: return 'Oktopber'; break;
+		case 11: return 'November'; break;
+		case 12: return 'Dezember'; break;
+		default: return 'not valid'; break;
+	}
+}
+function cleanText($text) {
+	global $searchReplace;
+
+	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
+	$text = str_replace_array(array('`', '´'), '', $text);
+	$text = str_replace_wrapper($searchReplace, $text);
+	$text = trim($text);
+
+	return $text;
+}
+function explode_by_array($delim, $input) {
+	$unidelim = $delim[0];
+	$step_01 = str_replace($delim, $unidelim, $input); //Extra step to create a uniform value
+	return explode($unidelim, $step_01);
+}
+function stringsExist($haystack, $needles) {
+	$exists = false;
+	foreach ($needles as $needle) {
+		if (strpos($haystack, $needle) !== false) {
+			$exists = true;
+			break;
+		}
+	}
+	return $exists;
+}
+function array_occurence_count($needle, $haystack) {
+	$counter = 0;
+	foreach ($haystack as $n) {
+		if (strcmp($n, $needle) == 0)
+			$counter++;
+	}
+	return $counter;
+}
+function is_intern_ip() {
+	//return true; // DEBUG
+	$ip = $_SERVER['REMOTE_ADDR'];
+	if (strpos($ip, ALLOW_VOTING_IP_PREFIX) === 0)
+		return true;
+	return false;
+}
+function show_voting() {
+	//return true; // DEBUG
+	global $dateOffset;
+	global $voting_show_start;
+	global $voting_show_end;
+
+	return (
+		is_intern_ip() &&
+		$dateOffset == 0 &&
+		time() >= $voting_show_start &&
+		time() <= $voting_show_end
+	);
+}
+
+/* returns an array with all the foods, the dates
+ * and the datasetSize (amount of cache files)
+ */
+function getCacheData($keyword, $foodKeyword) {
+	global $explodeNewLines;
+	global $cacheDataExplode;
+	global $cacheDataIgnore;
+	global $cacheDataDelete;
+
+	if (empty($keyword) || empty($foodKeyword))
+		return null;
+	if (strlen($keyword) < 3 || strlen($foodKeyword) < 3)
+		return null;
+
+	$foods = array(); // ingredients
+	$dates = array(); // dates when food was served
+	$compositions = array(); // which thing the food was part of
+	$compositionsAbsolute = array(); // list of compositions without ingredience association
+	$datasetSize = 0;
+
+	$cacheHandler = new CacheHandler_MySql();
+	$result = $cacheHandler->queryCache($keyword, $foodKeyword, array('timestamp', 'dataSource', 'data'));
+
+	foreach ($result as $row) {
+		$food = $row['data'];
+
+		// stats-cleaner
+		if (stringsExist($food, $cacheDataDelete) !== false) {
+			$cacheHandler->deleteFromCache($row['timestamp'], $row['dataSource']);
+		}
+
+		// food cleaner (for old stat files)
+		$food = cleanText($food);
+
+		if (!empty($dataKeyword) && stripos($food, $dataKeyword) === false)
+			continue;
+
+		// multi food support (e.g. 1. pizza with ham, 2. pizza with bacon, ..)
+		$foodMulti = explode_by_array($cacheDataExplode, $food);
+		if (count($foodMulti) > 1) {
+			foreach ($foodMulti as $foodSingle) {
+				$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
+				$foodSingle = trim($foodSingle);
+
+				if (!empty($foodKeyword) && stripos($foodSingle, $foodKeyword) === false)
+					continue;
+
+				if (empty($foodSingle))
+					continue;
+
+				if (!isset($foods[$foodSingle]))
+					$foods[$foodSingle] = 1;
+				else
+					$foods[$foodSingle] += 1;
+
+				$foodOrig = array();
+				$foodMultiOrig = array_unique(explode_by_array($explodeNewLines, $food));
+				foreach ($foodMultiOrig as $f) {
+					$f = str_ireplace($cacheDataIgnore, '', $f);
+					$f = cleanText($f);
+					$f_ingredients = explode_by_array($cacheDataExplode, $f);
+
+					// clean ingredients
+					foreach ($f_ingredients as &$ingredient)
+						$ingredient = cleanText($ingredient);
+					unset($ingredient);
+
+					if (in_array($foodSingle, $f_ingredients) && !empty($f))
+						$foodOrig[] = $f;
+				}
+				$foodOrig = implode('<br />', array_unique($foodOrig));
+
+				if (!isset($dates[$foodSingle]) || !in_array($row['timestamp'], $dates[$foodSingle])) {
+					$compositions[$foodSingle][$foodOrig] = '';
+					$dates[$foodSingle][] = $row['timestamp'];
+				}
+
+				// composition absolute counter without ingredient association
+				if (isset($compositionsAbsolute[$foodOrig])) {
+					if (!in_array($row['timestamp'], $compositionsAbsolute[$foodOrig]['dates'])) {
+						$compositionsAbsolute[$foodOrig]['cnt'] += 1;
+						$compositionsAbsolute[$foodOrig]['dates'][] = $row['timestamp'];
+					}
+				}
+				else {
+					$compositionsAbsolute[$foodOrig]['cnt'] = 1;
+					$compositionsAbsolute[$foodOrig]['dates'][] = $row['timestamp'];
+				}
+			}
+		}
+		// normal food support (e.g. pizza with mushrooms)
+		else {
+			if (!isset($foods[$food]))
+				$foods[$food] = 1;
+			else
+				$foods[$food] += 1;
+
+			if (!isset($dates[$food]) || !in_array($row['timestamp'], $dates[$food])) {
+				$compositions[$food][] = $food;
+				$dates[$food][] = $row['timestamp'];
+			}
+
+			// composition absolute counter without ingredient association
+			if (isset($compositionsAbsolute[$food])) {
+				if (!in_array($row['timestamp'], $compositionsAbsolute[$food]['dates'])) {
+					$compositionsAbsolute[$food]['cnt'] += 1;
+					$compositionsAbsolute[$food]['dates'][] = $row['timestamp'];
+				}
+			}
+			else {
+				$compositionsAbsolute[$food]['cnt'] = 1;
+				$compositionsAbsolute[$food]['dates'][] = $row['timestamp'];
+			}
+		}
+
+		// increase datasetSize counter
+		$datasetSize++;
+	}
+
+	// sort food counting arrays
+	arsort($foods);
+	arsort($compositionsAbsolute);
+
+	return array('foods' => $foods, 'dates' => $dates, 'compositions' => $compositions, 'compositionsAbsolute' => $compositionsAbsolute, 'datasetSize' => $datasetSize);
+}
+
+function pdftohtml($file) {
+	$fileUniq = $file . uniqid();
+
+	// read data to uniqe tmp file
+	$baseName = basename($fileUniq);
+	$tmpPath = TMP_PATH . $baseName;
+	$data = file_get_contents($file);
+	file_put_contents($tmpPath, $data);
+
+	// convert to hmtl on the fly
+	$html = shell_exec("pdftohtml -stdout $tmpPath");
+
+	// clean tmp
+	$withoutExt = preg_replace("/\\.[^.\\s]{3,4}$/", "", $baseName);
+	exec("rm -rf ".TMP_PATH.$withoutExt."*");
+
+	// return html
+	return $html;
+}
+
+// api see https://developers.google.com/maps/documentation/geocoding
+function addressToLatLong($address) {
+	$address = urlencode(trim($address));
+	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&sensor=false";
+	$data = file_get_contents($api_url);
+	$data = json_decode($data);
+	if ($data->status == 'OK') {
+		return array(
+			'lat' => str_replace(',', '.', trim($data->results[0]->geometry->location->lat)),
+			'lng' => str_replace(',', '.', trim($data->results[0]->geometry->location->lng))
+		);
+	}
+	return null;
+}
+function latlngToAddress($lat, $lng) {
+	$lat = trim(str_replace(',', '.', $lat));
+	$lng = trim(str_replace(',', '.', $lng));
+	$latlng = urlencode("$lat,$lng");
+	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latlng&sensor=false";
+	$data = file_get_contents($api_url);
+	$data = json_decode($data);
+	if ($data->status == 'OK') {
+		return trim($data->results[0]->formatted_address);
+	}
+	return null;
+}
+function distance($lat1, $lng1, $lat2, $lng2, $miles = true) {
+	$lat1 = floatval($lat1);
+	$lng1 = floatval($lng1);
+	$lat2 = floatval($lat2);
+	$lng2 = floatval($lng2);
+	$pi80 = M_PI / 180;
+	$lat1 *= $pi80;
+	$lng1 *= $pi80;
+	$lat2 *= $pi80;
+	$lng2 *= $pi80;
+
+	$r = 6372.797; // mean radius of Earth in km
+	$dlat = $lat2 - $lat1;
+	$dlng = $lng2 - $lng1;
+	$a = sin($dlat / 2) * sin($dlat / 2) + cos($lat1) * cos($lat2) * sin($dlng / 2) * sin($dlng / 2);
+	$c = 2 * atan2(sqrt($a), sqrt(1 - $a));
+	$km = $r * $c;
+
+	return ($miles ? ($km * 0.621371192) : $km);
+}
+
+function format_date($data, $format) {
+	if (is_array($data)) {
+		foreach ($data as &$data_set) {
+			$data_set = format_date($data_set, $format);
+		}
+		unset($data_set);
+	}
+	else if (is_string($data))
+		$data = date($format, strtotime($data));
+	else if (is_numeric($data))
+		$data = date($format, $data);
+
+	return $data;
+}
+
+function date_from_offset($offset) {
+	if ($offset >= 0)
+		return date('Y-m-d', strtotime(date('Y-m-d') . " + $offset days"));
+	else {
+		$offset = abs($offset);
+		return date('Y-m-d', strtotime(date('Y-m-d') . " - $offset days"));
+	}
+}
+
+// get's mail of the user or from all if null
+function emails_get($user = null) {
+	if (!file_exists(VOTE_MAILS_FILE))
+		return '';
+
+	$data = file_get_contents(VOTE_MAILS_FILE);
+	if (empty($data))
+		return '';
+
+	$data = json_decode($data, true);
+	if (!$data)
+		return '';
+
+	if ($user)
+		return isset($data[$user]) ? $data[$user] : '';
+	else
+		return $data;
+}
+
+// set's the email of the given user
+function email_set($user, $email) {
+	$all_emails = emails_get();
+	$all_emails = is_array($all_emails) ? $all_emails : array();
+
+	if (empty($email))
+		unset($all_emails[$user]);
+	else
+		$all_emails[$user] = $email;
+
+	$data = json_encode($all_emails, JSON_FORCE_OBJECT);
+	return file_put_contents(VOTE_MAILS_FILE, $data);
+}
+
+function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
+	global $cacheDataExplode;
+	global $cacheDataIgnore;
+	global $dateOffset;
+
+	$date = date_from_offset($dateOffset);
+
+	// multi food support (e.g. 1. pizza with ham, 2. pizza with bacon, ..)
+	// mark each ingredient by an href linking to search
+	$foodMulti = explode_by_array($cacheDataExplode, $string);
+	foreach ($foodMulti as &$food) {
+		$food = str_ireplace($cacheDataIgnore, '', $food);
+		$food = cleanText($food);
+	}
+	unset($food);
+	$foodMulti = array_unique($foodMulti);
+
+	// sort after array length, begin with shortest first
+	usort($foodMulti, function($a, $b) {
+		return strlen($a) - strlen($b);
+	});
+
+	$replaced = false;
+	if (count($foodMulti) > 1) {
+		foreach ($foodMulti as $foodSingle) {
+			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
+			$foodSingle = cleanText($foodSingle);
+			$string = str_replace($foodSingle, "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle) . "'>$foodSingle</a>", $string);
+			$replaced = true;
+		}
+	}
+	if (!$replaced)
+		$string = "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string) . "'>$string</a>";
+
+	return $string;
+}
+
+// gets an anonymized name of an ip
+function ip_anonymize($ip) {
+	global $ip_usernames;
+
+	// do ip <=> name stuff
+	// anonymyze ip
+	$ipLast = explode('.', $ip);
+	$ipLast = $ipLast[3];
+	$ipPrint = explode('.', $ip);
+	for ($i=0; $i<count($ipPrint)-1; $i++)
+		$ipPrint[$i] = 'x';
+	$ipPrint = implode('.', $ipPrint);
+	// set username
+	if (isset($ip_usernames[$ip]))
+		$ipPrint = $ip_usernames[$ip];
+	else if (is_intern_ip())
+		$ipPrint = 'Developer_PC_' . $ipLast;
+	else
+		$ipPrint = 'Unknown/extern IP, check config';
+
+	return $ipPrint;
+}
+
+?>
