@@ -17,6 +17,7 @@ define('LOCATION_FALLBACK_LNG', '16.358355');
 define('USE_MINIMZED_JS_CSS', true);
 
 define('SITE_URL', '<url>');
+define('SITE_FROM_MAIL', 'Your Name <<email>>');
 define('META_KEYWORDS', '<keywords>');
 define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
@@ -82,14 +83,14 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', 'Gefüllte', 'gefüllte',
 	'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
 	'nicht Scharf', ' Und ', 'frischem', 'Frische', 'frische', 'u.', ' Mit ', ' In ', '"',
-	'bei Schlechtwetter', ' der ', 'würziger', 'Gebratenes', 'gebratenes',
+	'bei Schlechtwetter', ' der ', 'süß-würziger', 'würziger', 'Gebratenes', 'gebratenes',
 	'gebratenem', 'gebratener', 'Gebratene', 'gebratene',
 	'dem', 'warmen', 'warmer', 'warm', 'milder', 'nicht scharf',
-	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'Gegrilltem', 'gegrilltem', 'Gegrilltes', 'gegrillten',
+	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'Gegrillter', 'gegrillter', 'Gegrilltem', 'gegrilltem', 'Gegrilltes', 'gegrillten',
 	'Gegrillte', 'gegrilltes', 'gegrillte', 'grill', 'hausgemachter',
-	'Hausgemachte', 'hausgemachte', 'Gebackener', 'gebackener', 'Gebackenes',
-	'gebackenes', 'Gebackene', 'gebackene',
-	' aus ', 'Gezogener', 'gezogener', 'Gemischtes', 'gemischtes', 'Pikantes',
+	'Hausgemachte', 'hausgemachte', 'Gebackenen', 'gebackenen',
+	'Gebackener', 'gebackener', 'Gebackenes', 'gebackenes', 'Gebackene', 'gebackene',
+	' aus ', 'Gezogener', 'gezogener', 'Gemischtes', 'gemischtes', 'Pikanter', 'pikanter', 'Pikantes',
 	'pikantes', 'Pikante', 'pikante', 'gerösteten', 'Geröstete', 'geröstete', 'geriebenen',
 	'Gehacktes', 'gehacktes', 'Geschmortes', 'geschmortes', 'Getrockneten', 'getrockneten',
 ));
@@ -158,6 +159,7 @@ $searchReplace = array(
 	'-Hühnerfleisch' => 'Hühnerfleisch',
 	'masalasauce' => 'Masalasauce',
 	'Bio Spaghetti' => 'Bio-Spaghetti',
+	'Geröstetet' => 'Geröstete',
 );
 
 ?>
