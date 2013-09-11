@@ -327,17 +327,12 @@ function pdftohtml($file) {
 	$fileUniq = $file . uniqid();
 
 	// read data to uniqe tmp file
-	$baseName = basename($fileUniq);
-	$tmpPath = TMP_PATH . $baseName;
+	$tmpPath = tempnam('/tmp', 'food_pdf_');
 	$data = file_get_contents($file);
 	file_put_contents($tmpPath, $data);
 
 	// convert to hmtl on the fly
 	$html = shell_exec("pdftohtml -stdout $tmpPath");
-
-	// clean tmp
-	$withoutExt = preg_replace("/\\.[^.\\s]{3,4}$/", "", $baseName);
-	exec("rm -rf ".TMP_PATH.$withoutExt."*");
 
 	// return html
 	return $html;
@@ -464,21 +459,29 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	unset($food);
 	$foodMulti = array_unique($foodMulti);
 
-	// sort after array length, begin with shortest first
+	// sort after array length, begin with longest first
 	usort($foodMulti, function($a, $b) {
-		return strlen($a) - strlen($b);
+		return strlen($b) - strlen($a);
 	});
 
-	$replaced = false;
+	$replace_pairs = array();
 	if (count($foodMulti) > 1) {
+		// build replace pairs
 		foreach ($foodMulti as $foodSingle) {
 			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
 			$foodSingle = cleanText($foodSingle);
-			$string = str_replace($foodSingle, "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle) . "'>$foodSingle</a>", $string);
-			$replaced = true;
+
+			if (empty($foodSingle))
+				continue;
+
+			$replace_pairs[$foodSingle] = "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle) . "'>$foodSingle</a>";
 		}
+		// replace via strtr and built replace_pairs to avoid
+		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
+		$string = strtr($string, $replace_pairs);
 	}
-	if (!$replaced)
+	// if nothing found, replace whole string with link to stats
+	if (empty($replace_pairs))
 		$string = "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string) . "'>$string</a>";
 
 	return $string;
