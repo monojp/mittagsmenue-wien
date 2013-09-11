@@ -19,7 +19,7 @@
 		</div>';
 
 		$headers = array();
-		$headers[] = "From: Mittagsmenü Wien <admin@herndl.org>";
+		$headers[] = "From: " . SITE_FROM_MAIL;
 		$headers[] = "MIME-Version: 1.0";
 		$headers[] = "Content-type: text/html; charset=utf-8";
 		$headers[] = "Subject: Voting-Ergebnis";
