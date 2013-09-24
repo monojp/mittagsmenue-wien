@@ -26,24 +26,17 @@ class HaasBeisl extends FoodGetterVenue {
 		$dataTmp = htmlentities($dataTmp);
 		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
-		//var_export($dataTmp);
-		//return;
+		$dataTmp = html_entity_decode($dataTmp);
 
 		$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
-		//echo "today: $today";
 		$posStart = strposAfter($dataTmp, $today);
 		if ($posStart === FALSE)
-		{
-			/*$today = date('j.n', $this->timestamp);
-			$posStart = striposAfter($dataTmp, $today);
-			if ($posStart === FALSE)
-				return;*/
 			return;
-		}
-		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
-		// last day of the week
-		if (!$posEnd)
-			$posEnd = mb_strpos($dataTmp, 'Menüsalat', $posStart);
+		$friday = (date('w', $this->timestamp) == 5);
+		if (!$friday)
+			$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
+		else
+			$posEnd = strpos($dataTmp, 'Menüsalat', $posStart);
 		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = html_entity_decode($data);
 		$data = strip_tags($data, '<br>');
