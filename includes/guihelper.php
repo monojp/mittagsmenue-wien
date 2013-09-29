@@ -1,6 +1,7 @@
 <?
 
 require_once('../includes/includes.php');
+require_once('../includes/vote.inc.php');
 
 // default location for JS
 $city = LOCATION_FALLBACK;
@@ -8,6 +9,16 @@ $lat = LOCATION_FALLBACK_LAT;
 $lng = LOCATION_FALLBACK_LNG;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
+
+/*function get_default_location_values_html() {
+	global $city, $lat, $lng;
+
+	return "
+		<div id='default_city' style='display: none'>$city</div>
+		<div id='default_lat' style='display: none'>$lat</div>
+		<div id='default_lng' style='display: none'>$lng</div>
+	";
+}*/
 
 function get_overlay_info_html() {
 	global $overlay_info_data;
@@ -17,20 +28,14 @@ function get_overlay_info_html() {
 		return;
 
 	return "
-		<div id='overlay_info_version' style='display: none'>
-			$overlay_info_version
-		</div>
-		<div id='overlay_info' style='display: none'>
-			$overlay_info_data
-		</div>
+		<div id='overlay_info_version' style='display: none'>$overlay_info_version</div>
+		<div id='overlay_info' style='display: none'>$overlay_info_data</div>
 	";
 }
 
 function get_temperature_info_html() {
 	return "
-		<div id='weatherContainer' class='subheader_div'>
-			Aktuelles Wetter: <img src='imagesCommon/loader.gif' width='160' height='24' alt='ladebalken' style='vertical-align: middle' />
-		</div>
+		<div id='weatherContainer' class='dialog_opener_float' style='margin-top: -7px'></div>
 		<script type='text/javascript'>
 			head.ready('scripts', function() {
 				$.ajax({
@@ -82,6 +87,8 @@ function get_location_dialog_html() {
 					<label for="location">Adresse</label>
 					<br />
 					<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%"></input>
+					<br />
+					<a href="javascript:void(0)" onclick="setLocation(\'' . $city . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a> | <a href="javascript:void(0)" onclick="setLocation(null, true);$(\'#setLocationDialog\').dialog(\'close\')">Standort bestimmen</a>
 				</fieldset>
 				<br />
 				<fieldset>
@@ -116,72 +123,55 @@ function get_note_dialog_html() {
 	';
 }
 
-function get_vote_setting_opener_html() {
-	return '
-		<div class="subheader_div">
-			Anzeigen der <a href="javascript:void(0)" onclick="setVoteSettingsDialog()">Spezial-Votes & Einstellungen</a>
-		</div>
-	';
+function get_special_vote_actions_html() {
+	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Verweigerung\')">Verweigerung</a>';
+	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Egal\')">Egal</a>';
+	$actions[] = '<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz setzen</a>';
+	$actions[] = '<a href="javascript:void(0)" onclick="vote_delete()">Vote Löschen</a>';
+	return implode(' | ', $actions);
 }
 
-function get_vote_setting_dialog() {
+function get_alt_venue_and_vote_setting_opener_html() {
+	$data[] = '<a href="javascript:void(0)" onclick="setAlternativeVenuesDialog()">Weitere Lokale in der Nähe</a>';
+	if (is_intern_ip())
+		$data[] = '<a href="javascript:void(0)" onclick="setVoteSettingsDialog()">Spezial-Votes & Einstellungen</a>';
+
+	$data = implode(' | ', $data);
+	return "<div class='subheader_div'>$data</div>";
+}
+
+function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
-	global $voting_alt_locations;
+
 	$voting_over_time_print = date('H:i', $voting_over_time);
 	$email = emails_get($_SERVER['REMOTE_ADDR']);
 
-	$voting_alt_table = '<table>';
-	foreach ($voting_alt_locations as $title => $data) {
-		$href = $data['href'];
-		$address = urlencode($data['address']);
-
-		$voting_alt_table .= "<tr>
-			<td style='font-weight: bold'>
-				<a href='$href' target='_blank'>$title</a>
-			</td>
-			<td>
-				<a href='https://maps.google.com/maps?q=$address' target='_blank'>
-					<span class='icon sprite sprite-icon_pin_map' title='Google Maps'></span>
-				</a>
-			</td>
-			<td>
-				<a href='javascript:void(0)' onclick='vote_up(\"$title\")'>
-					<span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span>
-				</a>
-			</td>
-			<td>
-				<a href='javascript:void(0)' onclick='vote_down(\"$title\")'>
-					<span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span>
-				</a>
-			</td>
-		</tr>";
-	}
-	$voting_alt_table .= '</table>';
-
 	return '
-		<div id="setVoteSettingsDialog" class="hidden">
+		<div id="setAlternativeVenuesDialog" class="hidden">
 			<fieldset>
-				<label>Alternativ-Votes</label>
-				<br />
-				' . $voting_alt_table . '
+				<p id="div_voting_alt_loader">
+					Lade Restaurants in der Umgebung <br /><img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
+				</p>
+				<p>
+					<table id="table_voting_alt" style="width: 100% ! important"></table>
+				</p>
 			</fieldset>
-			<br />
+		</div>
+		<div id="setVoteSettingsDialog" class="hidden">
 			<fieldset>
 				<label>Spezial-Votes</label>
 				<p>
-					<a href="javascript:void(0)" onclick="vote_special(\'Verweigerung\')">Verweigerung</a> |
-					<a href="javascript:void(0)" onclick="vote_special(\'Egal\')">Egal</a> |
-					<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz setzen</a> |
-					<a href="javascript:void(0)" onclick="vote_delete()">Vote Löschen</a>
+				' . get_special_vote_actions_html() . '
 				</p>
 			</fieldset>
 			<br />
 			<fieldset>
 				<label for="email">Email-Benachrichtigung an</label>
-				<br />
-				<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%"
-					title="wird versendet um ' . $voting_over_time_print . '">
-				</input>
+				<p>
+					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%"
+						title="wird versendet um ' . $voting_over_time_print . '">
+					</input>
+				</p>
 			</fieldset>
 		</div>
 	';
@@ -203,8 +193,7 @@ function get_vote_div_html() {
 			<div id="dialog_ajax_data"></div>
 			<div style="margin: 0px 10px">
 				<b>Quick-Vote:</b><br /><br />
-				<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz setzen</a> |
-				<a href="javascript:void(0)" onclick="vote_delete()">Vote Löschen</a>
+				' . get_special_vote_actions_html() . '
 			</div>
 			<br />
 			<div style="margin: 0px 10px">
@@ -222,10 +211,8 @@ function get_vote_div_html() {
 function get_noscript_html() {
 	return '
 		<noscript>
-			<span class="error">
-				Diese Seite benötigt JavaScript!<br />
-				Aktivieren Sie JavaScript oder verwenden Sie die Minimalversion unter '. $_SERVER['SERVER_NAME'] . '?minimal
-			</span>
+			Diese Seite benötigt JavaScript!
+			Bitte aktivieren Sie JavaScript oder verwenden Sie die Minimal-Version.
 		</noscript>
 	';
 }
@@ -237,9 +224,13 @@ function get_loading_container_html() {
 }
 
 function get_minimal_site_notice_html() {
+	global $dateOffset;
+
+	$url = '?date=' . date_from_offset($dateOffset);
+
 	return '
 		<span class="error">
-			Hinweis: Aktuell sehen Sie eine vereinfachte Version dieser Seite. Bitte aktivieren Sie JavaScript und besuchen Sie die Vollversion <a href="/">hier</a>.
+			Hinweis: Aktuell sehen Sie eine vereinfachte Version dieser Seite. Bitte aktivieren Sie JavaScript und besuchen Sie die Vollversion <a href="' . $url . '">hier</a>.
 		</span>
 	';
 }

@@ -16,6 +16,10 @@
 
 	echo '</head><body>';
 
+	// tracking code
+	if (isset($tracking_code) && !empty($tracking_code))
+		echo $tracking_code;
+
 	// overlay info box on the top
 	echo get_overlay_info_html();
 

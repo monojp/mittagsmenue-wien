@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 body {
-	font-family: tahoma,verdana,sans-serif;
+	font-family: verdana, sans, sans-serif;
 	/*line-height: 1.28;*/
 	font-size: 0.9em;
 }
@@ -70,7 +70,7 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	color: darkorange;
 	text-decoration: line-through;
 }
-.desktop .venueDiv {
+.venueDiv {
 	float: left;
 	margin: 10px 10px 10px 0px;
 	width: 600px;
@@ -85,6 +85,7 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	border: 3px solid black;
 	border-radius: 10px;
 	box-shadow: 1px 1px 10px gray;
+	min-width: 380px;
 	margin: 10px;
 	float: left;
 	background-image: url('../imagesCommon/intern.png');
@@ -92,9 +93,12 @@ a:visited:not(.ui-state-default):not(.menuData) {
 .tagCloudElement {
 	margin-right: 10px;
 }
-.dataTables_wrapper {
+#table_ingredients_wrapper, #table_compositions_wrapper {
 	float: left;
 	padding: 10px;
+}
+.stats {
+	width: auto ! important;
 }
 table.stats td, table.stats th {
 	padding: 5px;
@@ -120,6 +124,10 @@ input {
 }
 .center {
 	text-align: center;
+}
+.dialog_opener_float {
+	float: left;
+	margin-right: 10px;
 }
 .paginate_disabled_previous, .paginate_enabled_previous {
 	margin-right: 10px;

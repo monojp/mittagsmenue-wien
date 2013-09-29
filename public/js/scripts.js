@@ -2,6 +2,8 @@ var intervalVotes = false;
 var venueDivDisplay = null;
 var usedGeolocation = false;
 var oldVoteData = null;
+var voting_over_interval_multiplier = 1;
+var venues_ajax_query = Array();
 
 function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
@@ -24,6 +26,16 @@ function vote_helper(action, identifier, note) {
 		data: { "action": action, "identifier": identifier, "note": note},
 		dataType: "json",
 		success: function(result) {
+
+			// increase interval multiplier to reduce server load
+			if (intervalVotes)
+				clearInterval(intervalVotes);
+			if (typeof result.voting_over != 'undefined' && result.voting_over || !result || typeof result.alert != 'undefined')
+				voting_over_interval_multiplier += 0.1;
+			else
+				voting_over_interval_multiplier = 1;
+			intervalVotes = setInterval(function(){vote_get()}, Math.floor(5000 * voting_over_interval_multiplier));
+
 			// exit, if we got the same as before
 			if (typeof JSON != 'undefined' && JSON.stringify(oldVoteData) == JSON.stringify(result))
 				return;
@@ -37,18 +49,11 @@ function vote_helper(action, identifier, note) {
 				$("#dialog_ajax_data").html(result.html);
 				$("#dialog").show();
 				$("#dialog").effect('highlight');
-
-				// interval for getting other votes
-				if (!intervalVotes)
-					intervalVotes = setInterval(function(){vote_get()}, 5000);
 			}
-			// no | empty result => stop interval hide voting dialog
+			// no | empty result => hide voting dialog
 			else {
-				if (intervalVotes) {
+				if (intervalVotes)
 					$("#dialog").hide();
-					clearInterval(intervalVotes);
-					intervalVotes = null;
-				}
 			}
 			oldVoteData = result;
 		},
@@ -97,6 +102,7 @@ function positionHandler(position) {
 			if (result && typeof result.address != 'undefined' && result.address) {
 				usedGeolocation = true;
 				$('#location').html(result.address);
+				$('#locationInput').val(result.address);
 				sortVenuesAfterPosition(lat, lng);
 			}
 		},
@@ -174,12 +180,12 @@ function sortVenuesAfterPosition(lat, lng) {
 	// locationReady event
 	$(document).trigger('locationReady');
 }
-// TODO description
-function setLocation(location) {
+
+function setLocation(location, force_geolocation) {
 	// location via geolocation
-	if (!location) {
+	if (!location || force_geolocation) {
 		// use geolocation via client only on mobile devices
-		if (isMobileDevice() && navigator.geolocation) {
+		if ((isMobileDevice() || force_geolocation) && navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(positionHandler, positionErrorHandler, {timeout: 5000});
 		}
 		else {
@@ -233,14 +239,15 @@ function setLocationDialog(el) {
 		buttons: {
 			"Ok": function() {
 				var location = $('#locationInput').val();
-				setLocation(location);
+				setLocation(location, false);
 				$('#setLocationDialog').dialog("close");
 				$(this).dialog("close");
 			},
 			"Abbrechen": function() {
 				$(this).dialog("close");
 			}
-		}
+		},
+		width: "380"
 	});
 	// close shown tooltip
 	$(el).tooltip("close");
@@ -309,7 +316,7 @@ function get_venues_distance() {
 		// get distance on clientside via JS
 		var distanceString = "";
 		var distanceValue = distanceLatLng(lat, lng, latVenue, lngVenue);
-		var distanceMetersRound = Number((distanceValue).toFixed(2)) * 1000;
+		var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
 
 		if (distanceValue >= 1)
 			distanceString = "~ " + distanceValue.toFixed(1) + " km";
@@ -352,6 +359,152 @@ function setNoteDialog() {
 	});
 }
 
+function handle_href_reference_details(id, reference, name) {
+	$.ajax({
+		type: 'POST',
+		url:  'nearplaces.php',
+		data: {
+			'action'    : 'details',
+			'id'        : id,
+			'reference' : reference,
+			'sensor'    : isMobileDevice()
+		},
+		dataType: 'json',
+		async: false,
+		success: function(result) {
+			if (typeof result.alert != 'undefined')
+				alert(result.alert);
+
+			// got website via details api
+			if (typeof result.result.website != 'undefined')
+				window.open(result.result.website, '_blank');
+			// now website open google search
+			else
+				window.open('https://www.google.com/#q=' + name, '_blank');
+		},
+		error: function() {
+			alert('Fehler beim Abholen der Restaurants in der Nähe.');
+		}
+	});
+}
+
+function get_alt_venues(lat, lng, radius, results_old, success_function) {
+	// if >= 10 venues found in step before in call succes_function immediately with empty new result
+	if (results_old.length >= 10)
+		return success_function(new Array());
+	// < 10 found in step before, do current query
+	$.ajax({
+		type: 'POST',
+		url:  'nearplaces.php',
+		data: {
+			'action' : 'nearbysearch_full',
+			'lat'    : lat,
+			'lng'    : lng,
+			'radius' : radius,
+			'sensor' : isMobileDevice()
+		},
+		dataType: "json",
+		success: function(result) {
+			if (typeof result.alert != 'undefined')
+				alert(result.alert);
+			else
+				return success_function(result);
+		},
+		error: function() {
+			alert('Fehler beim Abholen der Restaurants in der Nähe.');
+		}
+	});
+}
+
+function init_venues_alt() {
+	var lat = $('#lat').html();
+	var lng = $('#lng').html();
+
+	$('#table_voting_alt').hide();
+	$('#div_voting_alt_loader').show();
+
+	// first step: get venues in 645 m radius
+	var results = new Array();
+	get_alt_venues(lat, lng, 645, results, function (results_near) {
+		results = results.concat(results_near);
+		// second step: get venues in set user radius (default 5000 m)
+		get_alt_venues(lat, lng, $('#distance').val(), results_near, function (results_far) {
+			results = results.concat(results_far);
+
+			// prepare data for table
+			data = new Array();
+			$(results).each(function(index, element) {
+				var distanceValue = distanceLatLng(lat, lng, element.lat, element.lng);
+				var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
+				var rating = '-';
+				if (element.rating)
+					rating = element.rating;
+
+				var action_data = "<a href='" + element.maps_href + "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+				if ($('#show_voting').length) {
+					action_data += "<a href='javascript:void(0)' onclick='vote_up(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>\
+						<a href='javascript:void(0)' onclick='vote_down(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+				}
+
+				data[index] = new Array(
+					element.href,
+					distanceMetersRound,
+					rating,
+					action_data
+				);
+			});
+
+			var dataTable = $('#table_voting_alt').dataTable({
+				'aaData' : data,
+				'bSort': true,
+				/* make table replacable */
+				"bDestroy": true,
+				/* sort after distance, then after rating */
+				"aaSorting": [ [ 1, 'asc' ], [2, 'desc'] ],
+				'bLengthChange': false,
+				/* number of rows on one page */
+				'iDisplayLength': 8,
+				/* no page x from y info and so on */
+				'bInfo' : false,
+				'aoColumns': [
+					{"sTitle": "Name"},
+					{"sTitle": "Distanz [m]", "sClass":" center"},
+					{"sTitle": "Rating", "sClass":" center"},
+					{"sTitle": "Aktionen", "sClass":" center"}
+				],
+				"oLanguage": {
+					"sZeroRecords": "Leider nichts gefunden :(",
+					"sSearch": "Filter:",
+					"oPaginate": {
+						"sPrevious": "Vorherige Seite",
+						"sNext": "Nächste Seite"
+					}
+				}
+			});
+			$('#div_voting_alt_loader').hide();
+			$('#table_voting_alt').show();
+			if (dataTable.length > 0)
+				dataTable.fnAdjustColumnSizing();
+			$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
+		});
+	});
+}
+
+function setAlternativeVenuesDialog() {
+	init_venues_alt();
+
+	// show dialog
+	$('#setAlternativeVenuesDialog').dialog({
+		modal: true,
+		title: "Lokale in der Nähe",
+		buttons: {
+			"Schließen": function() {
+				$(this).dialog("close");
+			}
+		},
+		width: '650'
+	});
+}
 function setVoteSettingsDialog() {
 	// show dialog
 	$('#setVoteSettingsDialog').dialog({
@@ -365,7 +518,6 @@ function setVoteSettingsDialog() {
 					data: { "action": 'email_set', "email": $('#email').val()},
 					dataType: "json",
 					success: function(result) {
-						// alert from server (e.g. error)
 						if (typeof result.alert != 'undefined')
 							alert(result.alert);
 					},
@@ -376,7 +528,7 @@ function setVoteSettingsDialog() {
 				$(this).dialog("close");
 			}
 		},
-		width: "425"
+		width: '440'
 	});
 }
 
@@ -423,6 +575,13 @@ $(document).ready(function() {
 			setDistance(distance);
 		});
 
+		// replace @@lat_lng@@ placeholder in google maps hrefs
+		$('[name="lat_lng_link"]').each(function(index, value) {
+			var href = $(this).prop('href');
+			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
+			$(this).prop('href', href);
+		});
+
 		// enable nice tooltips for some tags
 		$('a').tooltip();
 		$('span').tooltip();
@@ -435,11 +594,11 @@ $(document).ready(function() {
 		var location = $.cookie('location');
 		// custom location from cookie
 		if (typeof location != 'undefined' && location && location.length) {
-			setLocation(location);
+			setLocation(location, false);
 		}
 		// location via geolocation
 		else {
-			setLocation(null);
+			setLocation(null, false);
 		}
 
 		// show overlay info if not already shown
@@ -462,7 +621,7 @@ $(document).ready(function() {
 	setTimeout(function() {
 		if (!locationReadyFired)
 			$(document).trigger('locationReady');
-	}, 5000);
+	}, 10000);
 
 	// show voting
 	if ($('#show_voting').length)
@@ -498,7 +657,7 @@ $(document).ready(function() {
 	// set submit handler for location input form
 	$('#locationForm').submit(function(event) {
 		var location = $('#locationInput').val();
-		setLocation(location);
+		setLocation(location, false);
 		$('#setLocationDialog').dialog("close");
 		event.preventDefault();
 	});
@@ -510,11 +669,6 @@ $(document).ready(function() {
 		$('#setNoteDialog').dialog("close");
 		event.preventDefault();
 	});
-
-	// set handlers for vote settings dialog
-	//$('#setVoteSettingsDialog a').click(function() {
-	//	$('#setVoteSettingsDialog').dialog("close");
-	//});
 });
 
 // alert override

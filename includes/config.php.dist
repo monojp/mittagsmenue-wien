@@ -6,19 +6,22 @@ define('DB_USER', '<username>');
 define('DB_PASSWORD', '<password>');
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
-define('VOTE_FILE', dirname(__FILE__) . '/../tmp/0-votes.dat');
-define('VOTE_MAILS_FILE', dirname(__FILE__) . '/../tmp/0-votemails.dat');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 
 define('LOCATION_FALLBACK', 'Margaretenplatz, 1050 Wien');
 define('LOCATION_FALLBACK_LAT', '48.1917245');
 define('LOCATION_FALLBACK_LNG', '16.358355');
 
+$GOOGLE_API_KEYS = array(
+	/* put a list of api keys here (1 is also enough) */
+);
+
 define('USE_MINIMZED_JS_CSS', true);
 
 define('SITE_URL', '<url>');
 define('SITE_FROM_MAIL', 'Your Name <<email>>');
 define('META_KEYWORDS', '<keywords>');
+define('META_DESCRIPTION', META_KEYWORDS);
 define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
 define('PRIVACY_INFO', '<text>');
@@ -41,60 +44,23 @@ if (date('N') == 5) // friday
 else
 	$voting_over_time = strtotime('11:50');
 
-$vote_valid_identifiers = array(
-	'Margareta',
-	'Silberwirt',
-	'Taste of India',
-	'Zum Alten Fassl',
-	'Haas Beisl',
-	'Delicious Monster',
-	'aus:klang',
-	'Kunsthallencafé',
-	'Cuadro',
-	'Das Powidl',
-	'Bamboo',
-	'Verweigerung',
-	'Egal',
-	'delete',
-);
-
-$voting_alt_locations = array(
-	'Cuadro' => array(
-		'href' => 'http://www.cuadro.at/',
-		'address' => 'Margaretenstraße 77, 1050 Wien',
-	),
-	'Das Powidl' => array(
-		'href' => 'http://das-powidl.com/',
-		'address' => 'Margaretenstraße 60, 1050 Wien',
-	),
-	'Bamboo' => array(
-		'href' => 'http://www.bamboo-restaurant.at/',
-		'address' => 'Margaretenstraße 51, 1050 Wien',
-	),
-);
-
 $explodeNewLines = array(
 	"\n", '<br >', '<br>', '<br/>', '<br />', '< br>', '< br>',
 	'< br/>', '< br >', '< br />'
 );
 
 $cacheDataExplode = array_merge($explodeNewLines, array(
-	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ',
-	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', 'Gefüllte', 'gefüllte',
-	'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
-	'nicht Scharf', ' Und ', 'frischem', 'Frische', 'frische', 'u.', ' Mit ', ' In ', '"',
-	'bei Schlechtwetter', ' der ', 'süß-würziger', 'würziger', 'Gebratenes', 'gebratenes',
-	'gebratenem', 'gebratener', 'Gebratene', 'gebratene',
-	'dem', 'warmen', 'warmer', 'warm', 'milder', 'nicht scharf',
-	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'Gegrillter', 'gegrillter', 'Gegrilltem', 'gegrilltem', 'Gegrilltes', 'gegrillten',
-	'Gegrillte', 'gegrilltes', 'gegrillte', 'grill', 'hausgemachter',
-	'Hausgemachte', 'hausgemachte', 'Gebackenen', 'gebackenen',
-	'Gebackener', 'gebackener', 'Gebackenes', 'gebackenes', 'Gebackene', 'gebackene',
-	' aus ', 'Gezogener', 'gezogener', 'Gemischtes', 'gemischtes', 'Pikanter', 'pikanter', 'Pikantes',
-	'pikantes', 'Pikante', 'pikante', 'gerösteten', 'Geröstete', 'geröstete', 'geriebenen',
-	'Gehacktes', 'gehacktes', 'Geschmortes', 'geschmortes', 'Getrockneten', 'getrockneten',
+	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ', '“', '"', '„', '\'',
+	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ',
+	'gefüllte', 'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
+	'nicht scharf', 'frischen', 'frischem', 'frische', 'u.', 'bei schlechtwetter', ' der ', 'süß-würziger', 'würziger',
+	'gebratenen', 'gebratenes', 'gebratenem', 'gebratener', 'gebratene', 'dem', 'warmen', 'warmer', 'warm', 'milder',
+	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'gegrillter', 'gegrilltem', 'gegrillten',
+	'gegrilltes', 'gegrillte', 'grill', 'hausgemachter', 'hausgemachte', 'gebackenen', 'saftiges',
+	'gebackener', 'gebackenes', 'gebackene', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante',
+	'gerösteten', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten',
 ));
-$cacheDataIgnore = array('1.', '2.', '3.', '4.');
+$cacheDataIgnore = array('1.', '2.', '3.', '4.', '1', '2', '3', '4');
 
 $cacheDataDelete = array(
 	'!!!', 'feiertag', 'Feiertag', 'FEIERTAG', 'Feiertagsbrunch',
@@ -160,6 +126,14 @@ $searchReplace = array(
 	'masalasauce' => 'Masalasauce',
 	'Bio Spaghetti' => 'Bio-Spaghetti',
 	'Geröstetet' => 'Geröstete',
+	'Seafood Pie -' => 'Seafood Pie',
+	'1 ' => '1. ',
+	'2 ' => '2. ',
+	'3 ' => '3. ',
+	'4 ' => '4. ',
+	'Artischokensalat' => 'Artischockensalat',
 );
+
+$tracking_code = "<js tracking code>";
 
 ?>

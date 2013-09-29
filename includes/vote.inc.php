@@ -1,6 +1,44 @@
 <?php
 
+define('VOTE_FILE', TMP_PATH . 'votes.json');
+define('VOTE_MAILS_FILE', TMP_PATH . 'votemails.json');
+
+// get's mail of the user or from all if null
+function emails_get($user = null) {
+	if (!file_exists(VOTE_MAILS_FILE))
+		return '';
+
+	$data = file_get_contents(VOTE_MAILS_FILE);
+	if (empty($data))
+		return '';
+
+	$data = json_decode($data, true);
+	if (!$data)
+		return '';
+
+	if ($user)
+		return isset($data[$user]) ? $data[$user] : '';
+	else
+		return $data;
+}
+
+// set's the email of the given user
+function email_set($user, $email) {
+	$all_emails = emails_get();
+	$all_emails = is_array($all_emails) ? $all_emails : array();
+
+	if (empty($email))
+		unset($all_emails[$user]);
+	else
+		$all_emails[$user] = $email;
+
+	$data = json_encode($all_emails, JSON_FORCE_OBJECT);
+	return file_put_contents(VOTE_MAILS_FILE, $data);
+}
+
 function saveReturnVotes($votes) {
+	global $voting_over_time;
+
 	// save timestamp to delete old votings
 	$votes['time'] = time();
 
@@ -11,9 +49,14 @@ function saveReturnVotes($votes) {
 	// sort and return votes
 	else {
 		if (isset($votes['venue']) && !empty($votes['venue'])) {
+
 			if (is_array($votes['venue']))
 				ksort($votes['venue']);
-			echo json_encode(array('html' => vote_summary_html($votes, false)));
+
+			echo json_encode(array(
+				'voting_over' => (time() >= $voting_over_time),
+				'html'        => vote_summary_html($votes, false),
+			));
 		}
 		else
 			echo json_encode('');

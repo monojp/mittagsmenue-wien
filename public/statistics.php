@@ -2,12 +2,16 @@
 	require_once('../includes/guihelper.php');
 	require_once('header.php');
 
-	define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜ -]*$/');
+	define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßêèéû<> -]*$/');
 ?>
 </head>
 <body>
 
 <?php
+
+// tracking code
+if (isset($tracking_code) && !empty($tracking_code))
+	echo $tracking_code;
 
 // get keyword
 $keyword = '';
@@ -32,7 +36,7 @@ else if (isset($_GET['food']))
 $errors = array();
 // input checks
 if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $keyword))
-	$errors[] = 'Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich und Leerzeichen';
+	$errors[] = 'Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen und ausgewählte Sonderzeichen (ß, ê, è, é, û, <, >)';
 
 // get data from cache
 if (empty($errors)) {
@@ -196,7 +200,7 @@ else {
 				"sInfo": "Zeige _START_ bis _END_ von _TOTAL_ Einträgen an",
 				"sInfoEmpty": "Zeige 0 bis 0 von 0 Einträgen",
 				"sInfoFiltered": "(gefiltert von insgesamt _MAX_ Einträgen)",
-				"sSearch": "Filtere Einträge:",
+				"sSearch": "Filter:",
 				"oPaginate": {
 					"sPrevious": "Vorherige Seite",
 					"sNext": "Nächste Seite"

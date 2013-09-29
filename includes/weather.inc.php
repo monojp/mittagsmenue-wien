@@ -2,7 +2,7 @@
 
 require_once(dirname(__FILE__) . '/../includes/includes.php');
 
-define('WEATHER_TMP_PATH', TMP_PATH . 'weather.dat');
+define('WEATHER_TMP_PATH', TMP_PATH . 'weather_cache.json');
 define('WEATHER_IMG_PATH_NAME', 'imagesWeather/');
 define('WEATHER_IMG_PATH', '../public/' . WEATHER_IMG_PATH_NAME);
 
@@ -55,7 +55,7 @@ function queryTemperature() {
 
 function getTemperatureString($show_image = true, $use_cache = true) {
 
-	if (!$use_cache)
+	if (!$use_cache || !is_file(WEATHER_TMP_PATH))
 		$data = null;
 	else
 		$data = json_decode(file_get_contents(WEATHER_TMP_PATH), true);
@@ -106,7 +106,6 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		$icon_url = 'data:image/png;base64,' . base64_encode(file_get_contents(dirname(__FILE__) . '/' . WEATHER_IMG_PATH . basename($icon_url)));
 
 		return "
-			Aktuelles Wetter:
 			<div title='Wien Innere Stadt: $desc  ($time) <br /> $desc_detail' style='text-align: center; display: inline-table'>
 				<img src='$icon_url' width='$image_width' height='$image_height' />
 				<div style='font-size: 0.8em; padding: 2px; border: 1px solid black; border-radius: 2px; box-shadow: 1px 1px 5px lightgray'>$temp °C</div>
