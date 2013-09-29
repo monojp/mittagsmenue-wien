@@ -6,6 +6,8 @@
 	header("Vary: Accept-Encoding");
 	header("Content-Type: text/html; charset=UTF-8");
 
+	global $voting_over_time;
+
 	if (!is_intern_ip()) {
 		echo json_encode(array('alert' => 'Zugriff verweigert!'));
 		exit;
@@ -16,10 +18,11 @@
 	if ($identifier) {
 		$identifier = trim($_POST['identifier']);
 		// check if valid vote
-		if (!in_array($identifier, $vote_valid_identifiers)) {
+		/*if (!in_array($identifier, $vote_valid_identifiers)) {
 			echo json_encode(array('alert' => 'Der angegebene Identifier ist unbekannt!'));
 			exit;
-		}
+		}*/
+		// TODO new checks
 	}
 	$ipPrint = ip_anonymize($_SERVER['REMOTE_ADDR']);
 	$action = null;
@@ -154,7 +157,10 @@
 				// sort and return votes
 				if (is_array($votes['venue']))
 					ksort($votes['venue']);
-				echo json_encode(array('html' => vote_summary_html($votes, false)));
+				echo json_encode(array(
+					'voting_over' => (time() >= $voting_over_time),
+					'html'        => vote_summary_html($votes, false),
+				));
 			}
 			else
 				echo json_encode('');

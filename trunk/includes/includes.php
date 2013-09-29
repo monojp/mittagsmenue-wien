@@ -5,6 +5,10 @@ require_once('CacheHandler_MySql.php');
 
 mb_internal_encoding('UTF-8');
 
+// valid session for 3 hours
+session_set_cookie_params(3 * 60, '/', $_SERVER['SERVER_NAME'], false, true);
+session_start();
+
 /*
  * Global variables
  */
@@ -153,10 +157,16 @@ function cleanText($text) {
 
 	return $text;
 }
-function explode_by_array($delim, $input) {
-	$unidelim = $delim[0];
-	$step_01 = str_replace($delim, $unidelim, $input); //Extra step to create a uniform value
-	return explode($unidelim, $step_01);
+function explode_by_array($delimiter_array, $string, $case_insensitive=true) {
+	$delimiter = $delimiter_array[0];
+
+	// extra step to create a uniform value
+	if ($case_insensitive)
+		$string_uniform = str_ireplace($delimiter_array, $delimiter, $string);
+	else
+		$string_uniform = str_replace($delimiter_array, $delimiter, $string);
+
+	return explode($delimiter, $string_uniform);
 }
 function stringsExist($haystack, $needles) {
 	$exists = false;
@@ -210,6 +220,11 @@ function getCacheData($keyword, $foodKeyword) {
 		return null;
 	if (strlen($keyword) < 3 || strlen($foodKeyword) < 3)
 		return null;
+
+	// sort cacheDataExplode (longer stuff first)
+	usort($cacheDataExplode, function($a,$b) {
+		return strlen($b) - strlen($a);
+	});
 
 	$foods = array(); // ingredients
 	$dates = array(); // dates when food was served
@@ -358,9 +373,28 @@ function latlngToAddress($lat, $lng) {
 	$latlng = urlencode("$lat,$lng");
 	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latlng&sensor=false";
 	$data = file_get_contents($api_url);
-	$data = json_decode($data);
-	if ($data->status == 'OK') {
-		return trim($data->results[0]->formatted_address);
+	$data = json_decode($data, true);
+	if ($data['status'] == 'OK') {
+		if (empty($data['results']))
+			return null;
+		return trim($data['results'][0]['formatted_address']);
+	}
+	return null;
+}
+function latlngToPostalCode($lat, $lng) {
+	$lat = trim(str_replace(',', '.', $lat));
+	$lng = trim(str_replace(',', '.', $lng));
+	$latlng = urlencode("$lat,$lng");
+	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latlng&sensor=false";
+	$data = file_get_contents($api_url);
+	$data = json_decode($data, true);
+	if ($data['status'] == 'OK') {
+		if (empty($data['results']))
+			return null;
+		foreach ($data['results'][0]['address_components'] as $result) {
+			if (count($result['types']) == 1 && reset($result['types']) == 'postal_code')
+				return trim($result['short_name']);
+		}
 	}
 	return null;
 }
@@ -409,43 +443,15 @@ function date_from_offset($offset) {
 	}
 }
 
-// get's mail of the user or from all if null
-function emails_get($user = null) {
-	if (!file_exists(VOTE_MAILS_FILE))
-		return '';
-
-	$data = file_get_contents(VOTE_MAILS_FILE);
-	if (empty($data))
-		return '';
-
-	$data = json_decode($data, true);
-	if (!$data)
-		return '';
-
-	if ($user)
-		return isset($data[$user]) ? $data[$user] : '';
-	else
-		return $data;
-}
-
-// set's the email of the given user
-function email_set($user, $email) {
-	$all_emails = emails_get();
-	$all_emails = is_array($all_emails) ? $all_emails : array();
-
-	if (empty($email))
-		unset($all_emails[$user]);
-	else
-		$all_emails[$user] = $email;
-
-	$data = json_encode($all_emails, JSON_FORCE_OBJECT);
-	return file_put_contents(VOTE_MAILS_FILE, $data);
-}
-
 function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 	global $dateOffset;
+
+	// sort cacheDataExplode (longer stuff first)
+	usort($cacheDataExplode, function($a,$b) {
+		return strlen($b) - strlen($a);
+	});
 
 	$date = date_from_offset($dateOffset);
 
@@ -508,6 +514,34 @@ function ip_anonymize($ip) {
 		$ipPrint = 'Unknown/extern IP, check config';
 
 	return $ipPrint;
+}
+
+/*
+ * check if a get or post variable is set
+ */
+function is_var($name) {
+	if (isset($_POST[$name]))
+		return true;
+	else if (isset($_GET[$name]))
+		return true;
+	return false;
+}
+/*
+ * get a variable via post or get
+ */
+function get_var($name) {
+	if (isset($_POST[$name]))
+		return trim($_POST[$name]);
+	else if (isset($_GET[$name]))
+		return trim($_GET[$name]);
+	return null;
+}
+
+/*
+ * tests if a value is between a given range
+ */
+function in_range($val, $min, $max) {
+  return ($val >= $min && $val <= $max);
 }
 
 ?>

@@ -3,6 +3,8 @@
 	require_once('../includes/includes.php');
 	require_once('../includes/venues.php');
 
+	session_write_close();
+
 	header("Vary: Accept-Encoding");
 	header("Content-Type: text/html; charset=UTF-8");
 

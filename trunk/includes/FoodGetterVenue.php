@@ -9,7 +9,6 @@ require_once('CacheHandler_MySql.php');
  */
 abstract class FoodGetterVenue {
 	protected $title = null;
-	protected $address = null;
 	protected $addressLat = null;
 	protected $addressLng = null;
 	protected $url = null;
@@ -18,8 +17,8 @@ abstract class FoodGetterVenue {
 	protected $date = null;
 	protected $price = null;
 	protected $statisticsKeyword = null;
-	protected $weekendMenu = 0;	// 0: none, 1: saturday, 2: saturday + sunday
-	protected $lookaheadSafe = false;	// future lookups possible? otherwise only current week (e.g. because dayname check)
+	protected $weekendMenu = 0; // 0: none, 1: saturday, 2: saturday + sunday
+	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
 
 	// constructor
@@ -30,6 +29,9 @@ abstract class FoodGetterVenue {
 		$this->dateOffset = $dateOffset;
 		$this->timestamp = $timestamp;
 
+		// fix wrong lat/lng values
+		$this->addressLat = str_replace(',', '.', $this->addressLat);
+		$this->addressLng = str_replace(',', '.', $this->addressLng);
 	}
 
 	// overwrite in inherited class
@@ -161,13 +163,17 @@ abstract class FoodGetterVenue {
 	public function __toString() {
 		global $date_GET;
 
+		$string = '';
+
 		$CSSid = 'id_' . md5($this->dataSource);
+
 		// if minimal (JS free) site requested => show venues immediately
 		if (!isset($_GET['minimal']))
 			$attributeStyle = 'display: none';
 		else
 			$attributeStyle = '';
-		$string = "<div id='$CSSid' class='venueDiv' style='$attributeStyle'>";
+
+		$string .= "<div id='$CSSid' class='venueDiv' style='$attributeStyle'>";
 		// hidden lat/lng spans
 		if (!isset($_GET['minimal'])) {
 			$string .= '<span class="hidden lat">' . $this->addressLat . '</span>';
@@ -181,10 +187,9 @@ abstract class FoodGetterVenue {
 			$url = 'statistics.php?keyword=' . $this->statisticsKeyword . '&date=' . urlencode($date_GET);
 			$string .= '<a href="' . htmlspecialchars($url) . '"><span class="icon sprite sprite-icon_chart_line" title="Statistik"></span></a>';
 		}
-		// address icon
-		if ($this->address) {
-			$address = urlencode($this->address);
-			$string .= "<a href='https://maps.google.com/maps?q=$address' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps'></span></a>";
+		// address icon with route planner
+		if ($this->addressLat && $this->addressLng) {
+			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&saddr=@@lat_lng@@&daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		}
 
 		// no food on weekends
@@ -211,28 +216,31 @@ abstract class FoodGetterVenue {
 					</span>
 					<script type="text/javascript">
 						head.ready("scripts", function() {
-							$.ajax({
-								type: "POST",
-								url:  "venue.php",
-								data: {
-									"classname": "' . get_class($this) . '",
-									"timestamp": "' . $this->timestamp . '",
-									"dateOffset": "' . $this->dateOffset . '",
-									"date": "'. $date_GET . '"
-								},
-								dataType: "json",
-								success: function(result) {
-									$("#' . $CSSid . '_data").html(result);
-								},
-								error: function() {
-									var errMsg = $(document.createElement("span"));
-									errMsg.attr("class", "error");
-									errMsg.html("Fehler beim Abfragen der Daten :(");
-									errMsg.prepend($(document.createElement("br")));
-									$("#' . $CSSid . '_data").empty();
-									$("#' . $CSSid . '_data").append(errMsg);
-								}
-							});
+							if (jQuery.inArray("' . get_class($this) . '", venues_ajax_query) == -1) {
+								venues_ajax_query.push("' . get_class($this) . '");
+								$.ajax({
+									type: "POST",
+									url:  "venue.php",
+									data: {
+										"classname": "' . get_class($this) . '",
+										"timestamp": "' . $this->timestamp . '",
+										"dateOffset": "' . $this->dateOffset . '",
+										"date": "'. $date_GET . '"
+									},
+									dataType: "json",
+									success: function(result) {
+										$("#' . $CSSid . '_data").html(result);
+									},
+									error: function() {
+										var errMsg = $(document.createElement("span"));
+										errMsg.attr("class", "error");
+										errMsg.html("Fehler beim Abfragen der Daten :(");
+										errMsg.prepend($(document.createElement("br")));
+										$("#' . $CSSid . '_data").empty();
+										$("#' . $CSSid . '_data").append(errMsg);
+									}
+								});
+							}
 						});
 					</script>
 				';
