@@ -6,7 +6,8 @@ require_once('CacheHandler_MySql.php');
 mb_internal_encoding('UTF-8');
 
 // valid session for 3 hours
-session_set_cookie_params(3 * 60, '/', $_SERVER['SERVER_NAME'], false, true);
+$server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+session_set_cookie_params(3 * 60, '/', $server_name, false, true);
 session_start();
 
 /*
