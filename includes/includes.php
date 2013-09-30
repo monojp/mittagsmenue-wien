@@ -142,7 +142,7 @@ function getGermanMonthName($offset = 0) {
 		case 7: return 'Juli'; break;
 		case 8: return 'August'; break;
 		case 9: return 'September'; break;
-		case 10: return 'Oktopber'; break;
+		case 10: return 'Oktober'; break;
 		case 11: return 'November'; break;
 		case 12: return 'Dezember'; break;
 		default: return 'not valid'; break;
