@@ -478,7 +478,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
 			$foodSingle = cleanText($foodSingle);
 
-			if (empty($foodSingle))
+			if (empty($foodSingle) || strlen($foodSingle) < 3)
 				continue;
 
 			$replace_pairs[$foodSingle] = "<a class='$a_class' title='Statistik' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle) . "'>$foodSingle</a>";
