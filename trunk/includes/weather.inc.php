@@ -4,7 +4,7 @@ require_once(dirname(__FILE__) . '/../includes/includes.php');
 
 define('WEATHER_TMP_PATH', TMP_PATH . 'weather_cache.json');
 define('WEATHER_IMG_PATH_NAME', 'imagesWeather/');
-define('WEATHER_IMG_PATH', '../public/' . WEATHER_IMG_PATH_NAME);
+define('WEATHER_IMG_PATH', dirname(__FILE__) . '/../public/' . WEATHER_IMG_PATH_NAME);
 
 function queryTemperature() {
 	$temp = $desc = $desc_detail = null;
@@ -35,7 +35,7 @@ function queryTemperature() {
 	file_put_contents(WEATHER_IMG_PATH . $iconFilename, $iconData);
 	$iconLocalUrl = WEATHER_IMG_PATH_NAME . $iconFilename;
 	// trim icon with imagemagick to minimize not used space
-	shell_exec("convert $iconLocalUrl -trim $iconLocalUrl");
+	shell_exec("convert $iconLocalUrl -trim $iconLocalUrl 2> /dev/null");
 
 	$html = file_get_contents('http://www.zamg.ac.at/cms/de/wetter/wetter-oesterreich/wien/?' . uniqid());
 
@@ -98,12 +98,12 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 	}
 
 	if ($show_image) {
-		$image_size = getimagesize(dirname(__FILE__) . '/' . WEATHER_IMG_PATH . basename($icon_url));
+		$image_size = getimagesize(WEATHER_IMG_PATH . basename($icon_url));
 		$image_width = $image_size[0];
 		$image_height = $image_size[1];
 
 		// embed image data
-		$icon_url = 'data:image/png;base64,' . base64_encode(file_get_contents(dirname(__FILE__) . '/' . WEATHER_IMG_PATH . basename($icon_url)));
+		$icon_url = 'data:image/png;base64,' . base64_encode(file_get_contents(WEATHER_IMG_PATH . basename($icon_url)));
 
 		return "
 			<div title='Wien Innere Stadt: $desc  ($time) <br /> $desc_detail' style='text-align: center; display: inline-table'>
