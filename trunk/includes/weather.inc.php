@@ -70,7 +70,8 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		!isset($data['desc_detail']) ||
 		!isset($data['timestamp']) ||
 		!isset($data['icon_url']) ||
-		abs(time() - $data['timestamp']) / 60 > 30
+		abs(time() - $data['timestamp']) / 60 > 30 || // cache entry older than 30 minutes
+		(intval(date('i', $data['timestamp'])) >= 30 && in_range(intval(date('i')), 1, 30)) // cache was made at an minute >= 30 and the current minute range is 1-30 (new hour = new weather data)
 	) {
 		$weather = queryTemperature();
 		$temp = $weather['temp'];
