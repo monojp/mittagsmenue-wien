@@ -111,13 +111,6 @@ abstract class FoodGetterVenue {
 			return '';
 
 		if ($data && $this->isDataUpToDate()) {
-			// vote icon
-			if (!isset($_GET['minimal']) && show_voting()) {
-				$voteString = addslashes($this->title);
-				$return .= '<a href="javascript:void(0)" onclick="vote_up(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_pro" title="Vote Up"></span></a>';
-				$return .= '<a href="javascript:void(0)" onclick="vote_down(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_contra" title="Vote Down"></span></a>';
-			}
-
 			// not from cache? => write back
 			if (!$this->dataFromCache)
 				$this->cacheWrite();
@@ -190,6 +183,12 @@ abstract class FoodGetterVenue {
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
 			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&saddr=@@lat_lng@@&daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+		}
+		// vote icon
+		if (!isset($_GET['minimal']) && show_voting()) {
+			$voteString = addslashes($this->title);
+			$string .= '<a href="javascript:void(0)" onclick="vote_up(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_pro" title="Vote Up"></span></a>';
+			$string .= '<a href="javascript:void(0)" onclick="vote_down(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_contra" title="Vote Down"></span></a>';
 		}
 
 		// no food on weekends
