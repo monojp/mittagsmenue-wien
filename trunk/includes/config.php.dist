@@ -51,14 +51,14 @@ $explodeNewLines = array(
 
 $cacheDataExplode = array_merge($explodeNewLines, array(
 	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ', '“', '"', '„', '\'',
-	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ',
+	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ', ' von ',
 	'gefüllte', 'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
-	'nicht scharf', 'frischen', 'frischem', 'frische', 'u.', 'bei schlechtwetter', ' der ', 'süß-würziger', 'würziger',
+	'nicht scharf', 'frischen', 'frischem', 'frischer', 'frische', 'u.', 'bei schlechtwetter', ' der ', 'süß-würziger', 'würziger', 'würzige',
 	'gebratenen', 'gebratenes', 'gebratenem', 'gebratener', 'gebratene', 'dem', 'warmen', 'warmer', 'warm', 'milder',
 	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'gegrillter', 'gegrilltem', 'gegrillten',
-	'gegrilltes', 'gegrillte', 'grill', 'hausgemachter', 'hausgemachte', 'gebackenen', 'saftiges',
-	'gebackener', 'gebackenes', 'gebackene', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante',
-	'gerösteten', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten',
+	'gegrilltes', 'gegrillte', 'grill', 'hausgemachter', 'hausgemachte', 'saftiges', 'buntes',
+	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante',
+	'gerösteten', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtes', 'gekochter', 'gekocht',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.', '1', '2', '3', '4');
 

@@ -6,29 +6,26 @@
 	header("Vary: Accept-Encoding");
 	header("Content-Type: text/html; charset=UTF-8");
 
-	$action = null;
-	if (isset($_POST['action']))
-		$action = trim($_POST['action']);
-	else if (isset($_GET['action']))
-		$action = trim($_GET['action']);
+	$action = get_var('action');
 
 	// handle actions
 	if ($action) {
 
-		// return weather as nice formatted string with timestamp
-		if ($action == 'email_get') {
+		// return email config
+		/*if ($action == 'email_config_get') {
 			$user = ip_anonymize($_SERVER['REMOTE_ADDR']);
-			echo json_encode(emails_get($user));
+			echo json_encode(email_config_get($user));
 		}
-		else if ($action == 'email_set') {
+		else */if ($action == 'email_config_set') {
 			$user = $_SERVER['REMOTE_ADDR'];
-			$email = isset($_GET['email']) ? trim($_GET['email']) : null;
-			$email = isset($_POST['email']) ? trim($_POST['email']) : null;
+			$email = get_var('email');
+			$vote_reminder = get_var('vote_reminder');
+			$voted_mail_only = get_var('voted_mail_only');
 
 			if ($email != filter_var($email, FILTER_VALIDATE_EMAIL))
 				echo json_encode(array('alert' => 'Die Email-Adresse ist ungültig!'));
 			else {
-				if (email_set($user, $email) == false)
+				if (email_config_set($user, $email, $vote_reminder, $voted_mail_only) == false)
 					echo json_encode(array('alert' => 'Fehler beim Speichern der Email-Adresse!'));
 				else
 					echo json_encode(true);

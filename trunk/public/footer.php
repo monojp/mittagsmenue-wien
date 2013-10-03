@@ -2,7 +2,7 @@
 
 require_once('../includes/config.php');
 
-echo '<br /><br />';
+echo '<br />';
 
 $outputs = array();
 if (CONTACT_HREF)

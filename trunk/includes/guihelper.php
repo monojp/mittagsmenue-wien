@@ -144,7 +144,12 @@ function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email = emails_get($_SERVER['REMOTE_ADDR']);
+	$email_config = email_config_get($_SERVER['REMOTE_ADDR']);
+	$email = isset($email_config['email']) ? $email_config['email'] : '';
+	$vote_reminder = isset($email_config['vote_reminder']) ? $email_config['vote_reminder'] : false;
+	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
+	$voted_mail_only = isset($email_config['voted_mail_only']) ? $email_config['voted_mail_only'] : false;
+	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
 	return '
 		<div id="setAlternativeVenuesDialog" class="hidden">
@@ -172,6 +177,15 @@ function get_alt_venue_and_vote_setting_dialog() {
 						title="wird versendet um ' . $voting_over_time_print . '">
 					</input>
 				</p>
+				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
+					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' />
+					Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
+				</label>
+				<br />
+				<label title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
+					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' />
+					Email(s) nur versenden, wenn selbst gevoted
+				</label>
 			</fieldset>
 		</div>
 	';

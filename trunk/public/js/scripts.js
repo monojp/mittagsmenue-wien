@@ -505,6 +505,11 @@ function setAlternativeVenuesDialog() {
 		width: '650'
 	});
 }
+// updates the gui on user changes
+function updateVoteSettingsDialog() {
+	// disable reminder checkbox if "send mail only if already voted" checkbox is checked
+	$('#vote_reminder').attr('disabled', $('#voted_mail_only').is(':checked'));
+}
 function setVoteSettingsDialog() {
 	// show dialog
 	$('#setVoteSettingsDialog').dialog({
@@ -513,9 +518,14 @@ function setVoteSettingsDialog() {
 		buttons: {
 			"Speichern / Schließen": function() {
 				$.ajax({
-					type: "POST",
-					url:  "emails.php",
-					data: { "action": 'email_set', "email": $('#email').val()},
+					type: 'POST',
+					url: 'emails.php',
+					data: {
+						'action': 'email_config_set',
+						'email': $('#email').val(),
+						'vote_reminder': $('#vote_reminder').is(':checked'),
+						'voted_mail_only': $('#voted_mail_only').is(':checked')
+					},
 					dataType: "json",
 					success: function(result) {
 						if (typeof result.alert != 'undefined')
@@ -669,6 +679,12 @@ $(document).ready(function() {
 		$('#setNoteDialog').dialog("close");
 		event.preventDefault();
 	});
+
+	// set change handler for setVoteSettingsDialog
+	$('#setVoteSettingsDialog').change(function() {
+		updateVoteSettingsDialog();
+	});
+	updateVoteSettingsDialog();
 });
 
 // alert override

@@ -3,18 +3,18 @@
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_MAILS_FILE', TMP_PATH . 'votemails.json');
 
-// get's mail of the user or from all if null
-function emails_get($user = null) {
+// get's mail config of the user or from all if null
+function email_config_get($user = null) {
 	if (!file_exists(VOTE_MAILS_FILE))
-		return '';
+		return null;
 
 	$data = file_get_contents(VOTE_MAILS_FILE);
 	if (empty($data))
-		return '';
+		return null;
 
 	$data = json_decode($data, true);
 	if (!$data)
-		return '';
+		return null;
 
 	if ($user)
 		return isset($data[$user]) ? $data[$user] : '';
@@ -23,14 +23,18 @@ function emails_get($user = null) {
 }
 
 // set's the email of the given user
-function email_set($user, $email) {
-	$all_emails = emails_get();
+function email_config_set($user, $email, $vote_reminder, $voted_mail_only) {
+	$all_emails = email_config_get();
 	$all_emails = is_array($all_emails) ? $all_emails : array();
 
+	// no mail set => remove entry in config
 	if (empty($email))
 		unset($all_emails[$user]);
-	else
-		$all_emails[$user] = $email;
+	else {
+		$all_emails[$user]['email'] = $email;
+		$all_emails[$user]['vote_reminder'] = $vote_reminder;
+		$all_emails[$user]['voted_mail_only'] = $voted_mail_only;
+	}
 
 	$data = json_encode($all_emails, JSON_FORCE_OBJECT);
 	return file_put_contents(VOTE_MAILS_FILE, $data);
