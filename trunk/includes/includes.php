@@ -344,7 +344,12 @@ function pdftohtml($file) {
 
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_pdf_');
-	$data = file_get_contents($file);
+	$data = @file_get_contents($file);
+
+	// abort if pdf data empty / invalid
+	if (empty($data))
+		return null;
+
 	file_put_contents($tmpPath, $data);
 
 	// convert to hmtl on the fly
