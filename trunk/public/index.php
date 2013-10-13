@@ -47,7 +47,8 @@
 		// location and alt_venue_and_vote_setting opener
 		echo '<div class="dialog_opener_float">' . get_location_opener_html() . get_alt_venue_and_vote_setting_opener_html() . '</div>';
 		// weather info
-		echo get_temperature_info_html();
+		if (show_weather())
+			echo get_temperature_info_html();
 	}
 
 	echo '<div style="clear: both"></div>';
