@@ -207,6 +207,12 @@ function show_voting() {
 		time() <= $voting_show_end
 	);
 }
+function show_weather() {
+	//return true; // DEBUG
+	global $dateOffset;
+
+	return ($dateOffset == 0);
+}
 
 /* returns an array with all the foods, the dates
  * and the datasetSize (amount of cache files)
