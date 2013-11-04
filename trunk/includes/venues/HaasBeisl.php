@@ -28,17 +28,32 @@ class HaasBeisl extends FoodGetterVenue {
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
 		$dataTmp = html_entity_decode($dataTmp);
 
-		$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
+		// date without trailing 0
+		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
 		$posStart = strposAfter($dataTmp, $today);
-		if ($posStart === FALSE)
-			return;
+		// date with trailing 0
+		if ($posStart === false) {
+			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart === false) {
+				$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
+				$posStart = strposAfter($dataTmp, $today);
+				// without trailing 0, but without . in date
+				if ($posStart === false) {
+					$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
+					$posStart = strposAfter($dataTmp, $today);
+					if ($posStart === false)
+						return;
+				}
+			}
+		}
 		$friday = (date('w', $this->timestamp) == 5);
 		if (!$friday)
 			$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
 		else
 			$posEnd = strpos($dataTmp, 'Menüsalat', $posStart);
 		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
-		$data = html_entity_decode($data);
+		//$data = html_entity_decode($data);
 		$data = strip_tags($data, '<br>');
 		// remove unwanted stuff
 		$data = str_replace(array('&nbsp;'), '', $data);
@@ -99,9 +114,12 @@ class HaasBeisl extends FoodGetterVenue {
 
 	public function isDataUpToDate() {
 		//return false;
-		$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
+		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
 
-		if ($this->date == $today)
+		// remove 0 and . from date to match with all 4 types from above
+		$date_compare = str_replace(array('.', '0', 0), '', $this->date);
+
+		if ($date_compare == $today)
 			return true;
 		else
 			return false;
