@@ -10,10 +10,10 @@
 
 	// --------------
 	// handle actions
-	if (isset($_POST['classname'])) {
-		$classname = trim($_POST['classname']);
-		$dateOffset = trim($_POST['dateOffset']);
-		$timestamp = trim($_POST['timestamp']);
+	$classname = get_var('classname');
+	if ($classname !== null) {
+		$dateOffset = get_var('dateOffset');
+		$timestamp = get_var('timestamp');
 
 		$venue = new $classname;
 		echo json_encode($venue->getMenuData());
