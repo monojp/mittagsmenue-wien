@@ -36,7 +36,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 			return;
 		$range_date_min = intval($range_date[0]);
 		$range_date_max = intval($range_date[1]);
-		$today = intval(date('j'));
+		$today = intval(date('j', $this->timestamp));
 		if (
 			($today >= $range_date_min && $today <= $range_date_max) ||
 			($today <= $range_date_min && $today <= $range_date_max)
