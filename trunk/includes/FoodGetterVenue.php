@@ -9,6 +9,7 @@ require_once('CacheHandler_MySql.php');
  */
 abstract class FoodGetterVenue {
 	protected $title = null;
+	protected $title_notifier = null; // presented small highlighted next to the title
 	protected $addressLat = null;
 	protected $addressLng = null;
 	protected $url = null;
@@ -175,6 +176,8 @@ abstract class FoodGetterVenue {
 
 		// title
 		$string .= "<span class='title' title='Homepage'><a href='$this->url' target='_blank'>$this->title</a></span>";
+		if ($this->title_notifier)
+			$string .= "<span class='title_notifier'>$this->title_notifier</span>";
 		// statistics icon
 		if ($this->statisticsKeyword) {
 			$url = 'statistics.php?keyword=' . $this->statisticsKeyword . '&date=' . urlencode($date_GET);
