@@ -151,11 +151,11 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		// clean name from unwanted stuff
 		$name = trim(str_ireplace(array(
 			'silberwirt', 'margareta', 'altes fassl', 'aus:klang', 'delicious monster', 'haas beisl', 'kunsthallencafé', 'taste of india',
-			'zum schwarzer adler', 'schlossquadrat', 'Schloss Schönbrunn Konzerte',
-			'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
+			'zum schwarzer adler', 'schlossquadrat', 'Nam Nam', 'Waldviertlerhof',
+			'Schloss Schönbrunn Konzerte', 'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
 			'gasthaus', 'brauerei', 'Betriebs . Nfg. KEG', 'Co KG', 'betriebs', 'Billa AG', 'Billa Aktien', 'Brabenetz & Dirnwöber',
 			'm. islam kg', 'andreas gruber', 'Schnaps- Club Hofstöckl', 'Wien - Margit Köffler', 'Göd Manfred', 'keg', 'hans rudolf siegl',
-			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale',
+			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Hofer', 'Penny Markt',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
