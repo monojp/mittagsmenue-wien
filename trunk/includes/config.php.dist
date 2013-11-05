@@ -52,13 +52,13 @@ $explodeNewLines = array(
 $cacheDataExplode = array_merge($explodeNewLines, array(
 	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ', '“', '"', '„', '\'',
 	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ', ' von ',
-	'gefüllte', 'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
+	'gefüllter', 'gefüllte', 'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
 	'nicht scharf', 'frischen', 'frischem', 'frischer', 'frische', 'u.', 'bei schlechtwetter', ' der ', 'süß-würziger', 'würziger', 'würzige',
 	'gebratenen', 'gebratenes', 'gebratenem', 'gebratener', 'gebratene', 'dem', 'warmen', 'warmer', 'warm', 'milder',
-	'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'gegrillter', 'gegrilltem', 'gegrillten',
-	'gegrilltes', 'gegrillte', 'grill', 'hausgemachter', 'hausgemachte', 'saftiges', 'buntes',
-	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante',
-	'gerösteten', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtes', 'gekochter', 'gekocht',
+	'gemischter', 'gemischten', 'gemischtem', 'gemischte', 'gemischt', 'gegrillter', 'gegrilltem', 'gegrillten',
+	'gegrilltes', 'gegrillte', 'grill', 'hausgemachter', 'hausgemachten', 'hausgemachte', 'saftiges', 'buntes',
+	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gebacken', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante', 'geröstetem', 'geröstetes',
+	'gerösteten', 'gerösteter', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtem', 'gekochtes', 'gekochter', 'gekocht',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.', '1', '2', '3', '4');
 
@@ -132,6 +132,7 @@ $searchReplace = array(
 	'3 ' => '3. ',
 	'4 ' => '4. ',
 	'Artischokensalat' => 'Artischockensalat',
+	'Gegrille' => 'Gegrillte',
 );
 
 $tracking_code = "<js tracking code>";
