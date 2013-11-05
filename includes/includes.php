@@ -28,10 +28,10 @@ if (isset($_GET['date']) && is_string($_GET['date'])) {
 			$dateOffset *= -1;
 	}
 }
-else {
+/*else {
 	if (date('H') > 17)
 	 	$dateOffset = 1;
-}
+}*/
 
 // calculate timestamp from offset
 if ($dateOffset != 0)
@@ -358,11 +358,32 @@ function pdftohtml($file) {
 
 	file_put_contents($tmpPath, $data);
 
-	// convert to hmtl on the fly
-	$html = shell_exec("pdftohtml -stdout $tmpPath");
+	// convert to hmtl
+	// single HTML with all pages, ignore images, no paragraph merge, no frames, force hidden text extract
+	shell_exec("pdftohtml -s -i -nomerge -noframes -hidden $tmpPath $tmpPath");
 
 	// return html
-	return $html;
+	return file_get_contents($tmpPath . '.html');
+}
+
+function doctotxt($file) {
+	$fileUniq = $file . uniqid();
+
+	// read data to uniqe tmp file
+	$tmpPath = tempnam('/tmp', 'food_txt_');
+	$data = @file_get_contents($file);
+
+	// abort if pdf data empty / invalid
+	if (empty($data))
+		return null;
+
+	file_put_contents($tmpPath, $data);
+
+	// convert to txt
+	$txt = shell_exec("antiword -w 99999 -s $tmpPath 2>&1");
+
+	// return utf-8 txt
+	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
 }
 
 // api see https://developers.google.com/maps/documentation/geocoding
