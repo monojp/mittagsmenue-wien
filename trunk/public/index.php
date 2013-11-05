@@ -64,7 +64,9 @@
 		//new Salzberg(),
 		new DeliciousMonster(),
 		new Ausklang(),
-		new Kunsthallencafe()
+		new Kunsthallencafe(),
+		new NamNamDeli(),
+		new Waldviertlerhof()
 	);
 	foreach ($venues as $venue) {
 		echo $venue;
