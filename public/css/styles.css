@@ -45,6 +45,11 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	margin-right: 5px;
 	vertical-align: middle;
 }
+.title_notifier {
+	color: red;
+	font-weight: bold;
+	font-size: 0.8em;
+}
 .icon {
 	margin: 5px;
 	vertical-align: middle;

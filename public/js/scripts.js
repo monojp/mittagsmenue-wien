@@ -423,9 +423,9 @@ function init_venues_alt() {
 	$('#table_voting_alt').hide();
 	$('#div_voting_alt_loader').show();
 
-	// first step: get venues in 645 m radius
+	// first step: get venues in 650 m radius
 	var results = new Array();
-	get_alt_venues(lat, lng, 645, results, function (results_near) {
+	get_alt_venues(lat, lng, 650, results, function (results_near) {
 		results = results.concat(results_near);
 		// second step: get venues in set user radius (default 5000 m)
 		get_alt_venues(lat, lng, $('#distance').val(), results_near, function (results_far) {
