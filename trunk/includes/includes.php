@@ -51,6 +51,21 @@ function strposAfter($haystack, $needle, $offset=0) {
 		$pos += strlen($needle);
 	return $pos;
 }
+/*
+ * finds the n'th occurence of a string
+ */
+function strnpos($haystack, $needle, $offset, $n) {
+	$pos = $offset;
+	for ($i=0; $i<$n; $i++)
+		$pos = strpos($haystack, $needle, $pos + strlen($needle));
+	return $pos;
+}
+function strnposAfter($haystack, $needle, $offset, $n) {
+	$pos = strnpos($haystack, $needle, $offset, $n);
+	if ($pos !== FALSE)
+		$pos += strlen($needle);
+	return $pos;
+}
 function striposAfter($haystack, $needle, $offset=0) {
 	$pos = stripos($haystack, $needle, $offset);
 	if ($pos !== FALSE)
