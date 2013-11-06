@@ -60,7 +60,7 @@ class CacheHandler_MySql extends CacheHandler {
 			// because of better read- & editability
 			// try json_decode first and if failed try unserialize
 			// to be backwards compatible
-			$price = json_decode($row->price);
+			$price = json_decode($row->price, true);
 			if ($price === NULL)
 				$price = unserialize($row->price);
 			$data = cleanText($row->data);
