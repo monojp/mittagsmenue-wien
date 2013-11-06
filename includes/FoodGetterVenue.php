@@ -21,6 +21,7 @@ abstract class FoodGetterVenue {
 	protected $weekendMenu = 0; // 0: none, 1: saturday, 2: saturday + sunday
 	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
+	protected $price_nested_info = null;
 
 	// constructor
 	// set date offset via get parameter
@@ -136,7 +137,10 @@ abstract class FoodGetterVenue {
 							$p = str_replace(',', '.', $p);
 							$p = money_format('%.2n', $p);
 						}
-						$price = '<span title="Vorspeise oder Dessert / Vorspeise und Dessert">(' . implode(' / ', $price) . ')</span>';
+						if (count($price) > 1)
+							$price = '<span title="' . $this->price_nested_info . '">(' . implode(' / ', $price) . ')</span>';
+						else
+							$price = '<span>' . reset($price) . '</span>';
 					}
 				}
 				$price = implode(' / ', $this->price);

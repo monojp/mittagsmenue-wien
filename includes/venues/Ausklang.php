@@ -12,6 +12,7 @@ class Ausklang extends FoodGetterVenue {
 		$this->statisticsKeyword = 'ausklang';
 		$this->weekendMenu = 0;
 		$this->lookaheadSafe = true;
+		$this->price_nested_info = 'Vorspeise oder Dessert / Vorspeise und Dessert';
 
 		parent::__construct();
 	}
