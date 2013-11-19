@@ -67,7 +67,8 @@
 		new Kunsthallencafe(),
 		new NamNamDeli(),
 		new Waldviertlerhof(),
-		new MensaFreihaus()
+		new MensaFreihaus(),
+		new MensaSchroedinger(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;

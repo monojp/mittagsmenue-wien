@@ -1,19 +1,19 @@
 <?php
 
-class MensaFreihaus extends FoodGetterVenue {
+class MensaSchroedinger extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title = 'Mensa Freihaus';
+		$this->title = 'Mensa Café Schrödinger';
 		$this->title_notifier = 'NEU';
 		$this->address = 'Wiedner Hauptstraße 8-10, 1040 Wien';
 		$this->addressLat = '48.198710';
 		$this->addressLng = '16.367576';
-		$this->url = 'http://menu.mensen.at/index/index/locid/9';
-		$this->dataSource = 'http://menu.mensen.at/index/index/locid/9';
+		$this->url = 'http://menu.mensen.at/index/index/locid/52';
+		$this->dataSource = 'http://menu.mensen.at/index/index/locid/52';
 		$this->statisticsKeyword = 'mensen';
 		$this->weekendMenu = 0;
 		$this->lookaheadSafe = true;
-		$this->price_nested_info = 'kleine / große Portion';
+		$this->price_nested_info = 'mit Dessert / ohne Dessert';
 
 		parent::__construct();
 	}
@@ -42,7 +42,10 @@ class MensaFreihaus extends FoodGetterVenue {
 			if (!empty($food)) {
 				if ($cnt == 1)
 					$data .= $food;
-				else if ($cnt == 2 && stripos($data, 'suppe') !== false)
+				else if (
+					($cnt == 2 && stripos($data, 'suppe') !== false) || // suppe, xx
+					$cnt == count($foods) // xx, dessert
+				)
 					$data .= ", $food";
 				else if (strpos($food, '€') !== false)
 					$price_return = $food;
@@ -75,7 +78,6 @@ class MensaFreihaus extends FoodGetterVenue {
 		$price_return = null;
 		$data[] = '1. ' . $this->mensa_menu_get($dataTmp, '<h2>Menü Classic 1</h2>', $price_return);
 		$data[] = '2. ' . $this->mensa_menu_get($dataTmp, '<h2>Menü Classic 2</h2>', $price_return);
-		$data[] = '3. ' . $this->mensa_menu_get($dataTmp, '<h2>Brainfood</h2>', $price_return);
 		$data = implode('<br />', $data);
 		//var_export($price);
 		//return;
@@ -87,28 +89,34 @@ class MensaFreihaus extends FoodGetterVenue {
 		// get prices
 		$price = array();
 		// menu classic 1
-		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 1</h2>', 0, 2);
+		$posStart = strposAfter($dataTmp, '<h2>Menü Classic 1</h2>');
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
 		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
-		$price[] = cleanText($data);
-		// menu classic 2
-		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 2</h2>', 0, 2);
-		$posStart = strposAfter($dataTmp, '€', $posStart);
-		$posEnd = strpos($dataTmp, '<div', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
-		$data = strip_tags($data);
-		$price[] = cleanText($data);
-		// brainfood
-		$price_return = str_replace_array(array('klein', 'groß'), '', $price_return);
-		$price_return = explode('€', $price_return);
-		foreach ($price_return as &$price_return_element) {
-			$price_return_element = cleanText($price_return_element);
+		$data = str_replace('€', '', $data);
+		$data = explode('/', $data);
+		foreach ($data as &$data_element) {
+			$data_element = cleanText($data_element);
 		}
-		unset($price_return_element);
-		$price_return = array_filter($price_return, function($var) { return !empty($var); });
-		$price[] = $price_return;
+		unset($data_element);
+		$data = array_filter($data, function($var) { return !empty($var); });
+		$price[] = $data;
+		// menu classic 2, not needed, because the price is the same
+		/*$posStart = strposAfter($dataTmp, '<h2>Menü Classic 2</h2>');
+		$posStart = strposAfter($dataTmp, '€', $posStart);
+		$posEnd = strpos($dataTmp, '<div', $posStart);
+		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = strip_tags($data);
+		$data = str_replace('€', '', $data);
+		$data = explode('/', $data);
+		foreach ($data as &$data_element) {
+			$data_element = cleanText($data_element);
+		}
+		unset($data_element);
+		$data = array_filter($data, function($var) { return !empty($var); });
+		$price[] = $data;*/
+
 		//var_export($price);
 		//return;
 		$this->price = $price;
