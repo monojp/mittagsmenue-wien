@@ -28,17 +28,18 @@ class HaasBeisl extends FoodGetterVenue {
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
 		$dataTmp = html_entity_decode($dataTmp);
 
-		// date without trailing 0
+		// date without trailing 0 and without .
 		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
 		$posStart = strposAfter($dataTmp, $today);
-		// date with trailing 0
+		// date with trailing 0 and without .
 		if ($posStart === false) {
 			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
 			$posStart = strposAfter($dataTmp, $today);
+			// date with trailing 0 and with .
 			if ($posStart === false) {
 				$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
 				$posStart = strposAfter($dataTmp, $today);
-				// without trailing 0, but without . in date
+				// date with trailing 0 and with .
 				if ($posStart === false) {
 					$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
 					$posStart = strposAfter($dataTmp, $today);
