@@ -36,11 +36,11 @@ class HaasBeisl extends FoodGetterVenue {
 			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
 			$posStart = strposAfter($dataTmp, $today);
 			if ($posStart === false) {
-				$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
+				$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
 				$posStart = strposAfter($dataTmp, $today);
 				// without trailing 0, but without . in date
 				if ($posStart === false) {
-					$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
+					$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
 					$posStart = strposAfter($dataTmp, $today);
 					if ($posStart === false)
 						return;
