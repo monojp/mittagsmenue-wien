@@ -64,7 +64,7 @@
 		//new Salzberg(),
 		new DeliciousMonster(),
 		new Ausklang(),
-		new Kunsthallencafe(),
+		//new Kunsthallencafe(),
 		new NamNamDeli(),
 		new Waldviertlerhof(),
 		new MensaFreihaus(),

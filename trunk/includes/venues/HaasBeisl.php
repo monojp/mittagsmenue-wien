@@ -118,6 +118,7 @@ class HaasBeisl extends FoodGetterVenue {
 		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
 
 		// remove 0 and . from date to match with all 4 types from above
+		$today = str_replace(array('.', '0', 0), '', $today);
 		$date_compare = str_replace(array('.', '0', 0), '', $this->date);
 
 		if ($date_compare == $today)
