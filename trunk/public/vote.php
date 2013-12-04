@@ -137,8 +137,8 @@
 			}
 
 			// check vote via regex
-			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\.:_#\*\?\!-]*$/', $note)) {
-				echo json_encode(array('alert' => 'Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-" und Umlaute'));
+			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\.:_#\*\?\!()-]*$/', $note)) {
+				echo json_encode(array('alert' => 'Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")" und Umlaute'));
 				exit;
 			}
 
