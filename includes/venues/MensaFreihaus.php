@@ -87,14 +87,14 @@ class MensaFreihaus extends FoodGetterVenue {
 		// get prices
 		$price = array();
 		// menu classic 1
-		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 1</h2>', 0, 2);
+		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 1</h2>', 0, 1);
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
 		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
 		$price[] = cleanText($data);
 		// menu classic 2
-		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 2</h2>', 0, 2);
+		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 2</h2>', 0, 1);
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
 		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
