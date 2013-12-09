@@ -1,6 +1,7 @@
 <?php
 
 require_once('config.php');
+require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
 
 mb_internal_encoding('UTF-8');
