@@ -36,12 +36,12 @@ class CacheHandler_MySql extends CacheHandler {
 			//$priceDB = serialize($price);
 			$priceDB = json_encode($price);
 			// log timestamp year bug
-			if (date('Y', $this->timestamp) !== date('Y')) {
+			/*if (date('Y', $this->timestamp) !== date('Y')) {
 				$host = $_SERVER['REMOTE_HOST'];
 				$request = $_SERVER['REQUEST_URI'];
 				error_log("[host $host] [request $request] [INSERT] POSSIBLE WRONG TIMESTAMP: $timestamp ON $dataSource, $data, $date, $price; DB NOT TOUCHED");
 			}
-			else
+			else*/
 				$result = $this->db->query("INSERT INTO foodCache VALUES ('$timestamp', '$dataSource', '$date', '$priceDB', '$data')");
 		}
 	}
@@ -99,12 +99,12 @@ class CacheHandler_MySql extends CacheHandler {
 		}
 
 		// log timestamp year bug
-		if (date('Y', $this->timestamp) !== date('Y')) {
+		/*if (date('Y', $this->timestamp) !== date('Y')) {
 			$host = $_SERVER['REMOTE_HOST'];
 			$request = $_SERVER['REQUEST_URI'];
 			error_log("[host $host] [request $request] [UPDATE] POSSIBLE WRONG TIMESTAMP: $timestamp ON $dataSource, $data, $date, $price; DB NOT TOUCHED");
 		}
-		else
+		else*/
 			$result = $this->db->query("UPDATE foodCache SET date='$date', price='$priceDB', data='$data' WHERE timestamp='$timestamp' AND dataSource='$dataSource'");
 	}
 
