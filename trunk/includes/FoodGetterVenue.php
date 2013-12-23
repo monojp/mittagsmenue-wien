@@ -119,7 +119,7 @@ abstract class FoodGetterVenue {
 		$currentWeek = date('W');
 		$wantedWeek = date('W', $this->timestamp);
 		if ($currentWeek > $wantedWeek && !$data)
-			return '';
+			$data = null;
 
 		if ($data && $this->isDataUpToDate()) {
 			// not from cache? => write back
