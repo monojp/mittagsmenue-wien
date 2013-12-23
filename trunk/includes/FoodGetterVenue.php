@@ -70,6 +70,7 @@ abstract class FoodGetterVenue {
 	public function getMenuData() {
 		global $cacheDataExplode;
 		global $cacheDataIgnore;
+		global $cacheDataDelete;
 		global $explodeNewLines;
 
 		// query cache
@@ -102,6 +103,10 @@ abstract class FoodGetterVenue {
 			$foodClean = explode_by_array($cacheDataExplode, $foodClean);
 		}
 		$data = implode('<br />', $data);
+
+		// reset if data suggests that venue is closed because of holidays, ..
+		if (stringsExist($data, $cacheDataDelete))
+			$data = null;
 
 		// prepare return
 		$return = '';
