@@ -65,7 +65,7 @@
 		new DeliciousMonster(),
 		new Ausklang(),
 		//new Kunsthallencafe(),
-		new NamNamDeli(),
+		//new NamNamDeli(),
 		new Waldviertlerhof(),
 		new MensaFreihaus(),
 		new MensaSchroedinger(),

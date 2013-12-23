@@ -77,14 +77,16 @@ abstract class FoodGetterVenue {
 		$this->cacheRead();
 
 		// not valid or old data
-		if (!$this->isDataUpToDate() || !$this->data) {
+		if (!$this->data || !$this->isDataUpToDate()) {
 			// avoid querying other week than current
 			// fixes cache problems
 			$currentWeek = date('W');
 			$wantedWeek = date('W', $this->timestamp);
+			//error_log(date('W', $this->timestamp));
 			if (
 				($currentWeek == $wantedWeek) ||	// current week only
-				($this->lookaheadSafe && $currentWeek < $wantedWeek)	// lookaheadsafe menus work with future weeks also
+				($this->lookaheadSafe && $currentWeek < $wantedWeek) || // lookaheadsafe menus work with future weeks also
+				($this->lookaheadSafe && $wantedWeek == 1) // because of ISO 8601 last week of year is sometimes returned as 1
 			)
 				if (!$this->parseDataSource()) {
 					$this->parseDataSource_fallback();
@@ -95,16 +97,18 @@ abstract class FoodGetterVenue {
 		$data = create_ingredient_hrefs($this->data, $this->statisticsKeyword, 'menuData');
 
 		// run filter
-		$data = explode_by_array($explodeNewLines, $data);
-		foreach ($data as &$dElement) {
-			// remove 1., 2., stuff
-			$foodClean = str_replace($cacheDataIgnore, '', $dElement);
-			$foodClean = trim($foodClean);
-			$foodClean = explode_by_array($cacheDataExplode, $foodClean);
+		if ($data) {
+			$data = explode_by_array($explodeNewLines, $data);
+			foreach ($data as &$dElement) {
+				// remove 1., 2., stuff
+				$foodClean = str_replace($cacheDataIgnore, '', $dElement);
+				$foodClean = trim($foodClean);
+				$foodClean = explode_by_array($cacheDataExplode, $foodClean);
+			}
+			$data = implode('<br />', $data);
 		}
-		$data = implode('<br />', $data);
 
-		// reset if data suggests that venue is closed because of holidays, ..
+		// check if data suggests that venue is closed
 		if (stringsExist($data, $cacheDataDelete))
 			$data = null;
 
