@@ -138,11 +138,13 @@ abstract class FoodGetterVenue {
 				}
 				foreach ($this->price as &$price) {
 					if (!is_array($price)) {
+						$price = trim($price, ' ,.');
 						$price = str_replace(',', '.', $price);
 						$price = money_format('%.2n', $price);
 					}
 					else {
 						foreach ($price as &$p) {
+							$p = trim($p, ' ,.');
 							$p = str_replace(',', '.', $p);
 							$p = money_format('%.2n', $p);
 						}
