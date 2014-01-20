@@ -62,6 +62,8 @@ class HaasBeisl extends FoodGetterVenue {
 		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
+		// remove "1.\n" dirty data
+		$data = preg_replace("/([1-9].)(\n)+/", "$1", $data);
 		$data = trim($data);
 		//var_export($data);
 		// split per new line
