@@ -94,8 +94,6 @@ class HaasBeisl extends FoodGetterVenue {
 					}
 				}
 			}
-			else
-				break;
 		}
 		//var_export($data);
 		//return;
