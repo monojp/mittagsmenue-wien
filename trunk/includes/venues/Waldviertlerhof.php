@@ -4,7 +4,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Waldviertlerhof';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Schönbrunnerstrasse 20, 1050 Wien';
 		$this->addressLat = '48.193692';
 		$this->addressLng = '16.358687';
