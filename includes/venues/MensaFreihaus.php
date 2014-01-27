@@ -4,7 +4,7 @@ class MensaFreihaus extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Mensa Freihaus';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Wiedner Hauptstraße 8-10, 1040 Wien';
 		$this->addressLat = '48.198710';
 		$this->addressLng = '16.367576';
