@@ -71,6 +71,7 @@
 		new MensaSchroedinger(),
 		new Stoeger(),
 		new tewa(),
+		new Tschani(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;

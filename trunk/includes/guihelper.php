@@ -7,6 +7,7 @@ require_once('../includes/vote.inc.php');
 $city = LOCATION_FALLBACK;
 $lat = LOCATION_FALLBACK_LAT;
 $lng = LOCATION_FALLBACK_LNG;
+$distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
 
@@ -75,11 +76,12 @@ function get_location_opener_html() {
 }
 
 function get_location_dialog_html() {
-	global $lat, $lng, $city;
+	global $lat, $lng, $city, $distance;
 
 	return '
 		<div style="display: none" id="lat">' . $lat . '</div>
 		<div style="display: none" id="lng">' . $lng . '</div>
+		<div style="display: none" id="distance_default">' . $distance . '</div>
 
 		<div id="setLocationDialog" class="hidden">
 			<form id="locationForm" action="index.php">
@@ -100,6 +102,11 @@ function get_location_dialog_html() {
 							</td>
 							<td>
 								<input type="text" id="distance" style="width: 50px; margin-left: 10px"></input>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\')">Auf Standard setzen</a>
 							</td>
 						</tr>
 					</table>
