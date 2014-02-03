@@ -69,6 +69,8 @@
 		new Waldviertlerhof(),
 		new MensaFreihaus(),
 		new MensaSchroedinger(),
+		new Stoeger(),
+		new tewa(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;

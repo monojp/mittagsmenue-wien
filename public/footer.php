@@ -12,7 +12,7 @@ if (IMPRESSUM_HREF)
 if (PRIVACY_INFO)
 	$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '">Datenschutz-Hinweis</a>';
 if (!isset($_GET['minimal'])) {
-	$url = '?minimal&date=' . date_from_offset($dateOffset);
+	$url = '?minimal&amp;date=' . date_from_offset($dateOffset);
 	$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an'>Minimal-Version</a>";
 }
 
