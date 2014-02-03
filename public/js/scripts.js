@@ -578,7 +578,7 @@ $(document).ready(function() {
 
 			// default distance
 			if (typeof distance == 'undefined')
-				distance = 5000;
+				distance = $('#distance_default').html();
 
 			// init distance slider
 			$("#sliderDistance").slider({

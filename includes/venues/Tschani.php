@@ -1,18 +1,18 @@
 <?php
 
-class tewa extends FoodGetterVenue {
+class Tschani extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title = 'tewa Naschmarkt';
+		$this->title = 'Gasthaus T\'schani';
 		$this->title_notifier = 'NEU';
-		$this->address = 'Naschmarkt 672, 1040 Wien';
-		$this->addressLat = '48.199469';
-		$this->addressLng = '16.364790';
-		$this->url = 'http://tewa-naschmarkt.at/';
-		$this->dataSource = 'http://tewa-naschmarkt.at/tagesteller/';
-		$this->statisticsKeyword = 'tewa-naschmarkt';
+		$this->address = 'Marchettigasse 1, 1060 Wien';
+		$this->addressLat = '48.191212';
+		$this->addressLng = '16.351033';
+		$this->url = 'http://www.gasthaus-tschani.at/';
+		$this->dataSource = 'http://www.gasthaus-tschani.at/cms/pages/wochenmenueplan.php';
+		$this->statisticsKeyword = 'gasthaus-tschani';
 		$this->weekendMenu = 0;
-		$this->lookaheadSafe = false;
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -29,13 +29,38 @@ class tewa extends FoodGetterVenue {
 		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);
 		$dataTmp = html_entity_decode($dataTmp);
 
+		// check if current day is in menu range
+		$rangeStart = strposAfter($dataTmp, 'vom');
+		$rangeStop = strpos($dataTmp, '-', $rangeStart);
+		if (!$rangeStart || !$rangeStop)
+			return;
+		$range_date_start = substr($dataTmp, $rangeStart, $rangeStop - $rangeStart);
+		$range_date_start = trim($range_date_start, '. ');
+		$range_date_start = strtotime($range_date_start);
+		$rangeStart2 = strposAfter($dataTmp, '-', $rangeStop);
+		$rangeStop2 = strpos($dataTmp, '<', $rangeStart2);
+		if (!$rangeStart2 || !$rangeStop2)
+			return;
+		$range_date_end = substr($dataTmp, $rangeStart2, $rangeStop2 - $rangeStart2);
+		$range_date_end = trim($range_date_end, '. ');
+		$range_date_end = strtotime($range_date_end);
+		$range_date_end = strtotime('+1 days', $range_date_end);
+		if (
+			($this->timestamp >= $range_date_start && $this->timestamp <= $range_date_end) ||
+			($this->timestamp <= $range_date_start && $this->timestamp <= $range_date_end)
+		) {
+			// all fine
+		}
+		else
+			return;
+
 		$posStart = striposAfter($dataTmp, getGermanDayName());
 		if ($posStart === FALSE)
 			return;
 		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
 		// friday
 		if (!$posEnd) {
-			$posEnd = stripos($dataTmp, '</tr>', $posStart);
+			$posEnd = stripos($dataTmp, '</div>', $posStart);
 			if (!$posEnd)
 				return;
 		}
@@ -49,6 +74,8 @@ class tewa extends FoodGetterVenue {
 		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
+		// remove price (e.g "...6,60 EUR") if set
+		$data = preg_replace('/[.]*[0-9]{1,2}[,][0-9]{1,2}.(EUR)*/', '', $data);
 		$data = trim($data);
 		//error_log(print_r($data, true));
 		//return;
@@ -60,31 +87,22 @@ class tewa extends FoodGetterVenue {
 		foreach ($foods as $food) {
 			$food = cleanText($food);
 			if (!empty($food)) {
-				// new found (everything uppercase)
-				if (mb_strtoupper($food) == $food) {
+				// starter
+				if (!$data)
+					$data = $food;
+				else {
 					$cnt++;
 					$data .= "\n$cnt. $food";
 				}
-				else
-					$data .= ", $food";
 			}
 		}
 		$data = cleanText($data);
-		//error_log($data);
-		//return;
-
-		// get prices out of data
-		$data_price = str_replace(',', '.', $data);
-		$price = null;
-		preg_match_all('/[0-9]{1,2}[.][0-9]{1,2}/', $data_price, $price);
-		$this->price = $price[0];
-		//error_log(print_r($price[0], true));
-		//return;
-
-		// clean data from prices
-		$data = preg_replace('/[0-9]{1,2}[,][0-9]{1,2}/', '', $data);
 		$this->data = $data;
 		//error_log($data);
+		//return;
+
+		// set price
+		$this->price = array('6.00');
 		//return;
 
 		// set date
