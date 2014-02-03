@@ -8,9 +8,9 @@ define('DB_PASSWORD', '<password>');
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 
-define('LOCATION_FALLBACK', 'Margaretenplatz, 1050 Wien');
-define('LOCATION_FALLBACK_LAT', '48.1917245');
-define('LOCATION_FALLBACK_LNG', '16.358355');
+define('LOCATION_FALLBACK', 'Grohgasse, 1050 Wien');
+define('LOCATION_FALLBACK_LAT', '48.190369');
+define('LOCATION_FALLBACK_LNG', '16.356714');
 
 $GOOGLE_API_KEYS = array(
 	/* put a list of api keys here (1 is also enough) */
