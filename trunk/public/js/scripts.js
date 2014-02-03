@@ -502,7 +502,7 @@ function setAlternativeVenuesDialog() {
 				$(this).dialog("close");
 			}
 		},
-		width: '650'
+		width: '750'
 	});
 }
 // updates the gui on user changes
