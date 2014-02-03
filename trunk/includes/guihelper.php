@@ -157,9 +157,8 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<p id="div_voting_alt_loader">
 					Lade Restaurants in der Umgebung <br /><img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
 				</p>
-				<p>
-					<table id="table_voting_alt" style="width: 100% ! important"></table>
-				</p>
+				<br />
+				<table id="table_voting_alt" style="width: 100% ! important"><tr><td></td></tr></table>
 			</fieldset>
 		</div>
 		<div id="setVoteSettingsDialog" class="hidden">
@@ -174,8 +173,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<label for="email">Email-Benachrichtigung an</label>
 				<p>
 					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%"
-						title="wird versendet um ' . $voting_over_time_print . '">
-					</input>
+						title="wird versendet um ' . $voting_over_time_print . '"></input>
 				</p>
 				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' />

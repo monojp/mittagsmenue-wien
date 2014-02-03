@@ -130,7 +130,8 @@ abstract class FoodGetterVenue {
 			// can't use htmlspecialchars here, because we need those ">" and "<"
 			$data = str_replace("&", "&amp;", $data);
 
-			$return .= "<div class='menu'>Angebot: <span class='menuData'>" . $data . "</span></div>";
+			$angebot_link = '<a class="menuData dataSource" href="' . $this->dataSource . '" target="_blank" title="Datenquelle">Angebot:</a>';
+			$return .= "<div class='menu'>$angebot_link <span class='menuData'>" . $data . "</span></div>";
 
 			if ($this->price && strpos($data, '€') === FALSE) {
 				if (!is_array($this->price)) {
@@ -200,7 +201,7 @@ abstract class FoodGetterVenue {
 		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&saddr=@@lat_lng@@&daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {
