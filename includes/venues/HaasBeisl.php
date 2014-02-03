@@ -28,20 +28,24 @@ class HaasBeisl extends FoodGetterVenue {
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
 		$dataTmp = html_entity_decode($dataTmp);
 
+		$month = getGermanMonthName();
+		if ($month == 'Februar')
+			$month = 'Feber';
+
 		// date without trailing 0 and without .
-		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
+		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . $month;
 		$posStart = strposAfter($dataTmp, $today);
 		// date with trailing 0 and without .
 		if ($posStart === false) {
-			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . getGermanMonthName();
+			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . $month;
 			$posStart = strposAfter($dataTmp, $today);
 			// date with trailing 0 and with .
 			if ($posStart === false) {
-				$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
+				$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . $month;
 				$posStart = strposAfter($dataTmp, $today);
 				// date with trailing 0 and with .
 				if ($posStart === false) {
-					$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
+					$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . $month;
 					$posStart = strposAfter($dataTmp, $today);
 					if ($posStart === false)
 						return;
@@ -115,7 +119,10 @@ class HaasBeisl extends FoodGetterVenue {
 
 	public function isDataUpToDate() {
 		//return false;
-		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . getGermanMonthName();
+		$month = getGermanMonthName();
+		if ($month == 'Februar')
+			$month = 'Feber';
+		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . $month;
 
 		// remove 0 and . from date to match with all 4 types from above
 		$today = str_replace(array('.', '0', 0), '', $today);
