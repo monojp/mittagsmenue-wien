@@ -134,8 +134,27 @@ input {
 	float: left;
 	margin-right: 10px;
 }
+.bold {
+	font-weight: bold;
+}
+/* datatables fixes */
 .paginate_disabled_previous, .paginate_enabled_previous {
+	margin-right: 5px;
+	cursor: pointer;
+}
+.paginate_disabled_next, .paginate_enabled_next {
+	margin-left: 5px;
+	cursor: pointer;
+}
+.paginate_button, .paginate_active {
 	margin-right: 10px;
+	cursor: pointer;
+}
+.paginate_active {
+	font-weight: bold;
+}
+.dataTables_length {
+	margin: 5px 0px;
 }
 /* override jqueryui font-size in dialogs */
 .ui-dialog, .ui-widget {

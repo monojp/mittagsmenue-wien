@@ -155,7 +155,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Schloss Schönbrunn Konzerte', 'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
 			'gasthaus', 'brauerei', 'Betriebs . Nfg. KEG', 'Co KG', 'betriebs', 'Billa AG', 'Billa Aktien', 'Brabenetz & Dirnwöber',
 			'm. islam kg', 'andreas gruber', 'Schnaps- Club Hofstöckl', 'Wien - Margit Köffler', 'Göd Manfred', 'keg', 'hans rudolf siegl',
-			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Hofer', 'Penny Markt',
+			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Hofer', 'Penny Markt', 'Osteria Vinoteca Panarea', 'Little Stage',
+			'Zum Stöger', 'Lidl Austria', 'Inh. Kaya Aydin', 'SPAR Österreichische Warenhandels-AG',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -209,7 +210,7 @@ function remove_doubles($response) {
 	return $response_new;
 }
 
-function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby='prominence') {
+function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null) {
 	global $GOOGLE_API_KEYS;
 
 	// get next_page_token from search before
@@ -235,7 +236,7 @@ function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby='
 	return handle_api_response($api_response);
 }
 
-function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby='prominence') {
+function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null) {
 	global $GOOGLE_API_KEYS;
 
 	// query api

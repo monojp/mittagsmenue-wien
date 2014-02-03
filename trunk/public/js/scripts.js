@@ -462,8 +462,12 @@ function init_venues_alt() {
 				/* sort after distance, then after rating */
 				"aaSorting": [ [ 1, 'asc' ], [2, 'desc'] ],
 				'bLengthChange': false,
+				/* resize table to fit */
+				"bAutoWidth": true,
 				/* number of rows on one page */
 				'iDisplayLength': 8,
+				/* show all pages instead of just the next and before links */
+				"sPaginationType": "full_numbers",
 				/* no page x from y info and so on */
 				'bInfo' : false,
 				'aoColumns': [
@@ -473,11 +477,20 @@ function init_venues_alt() {
 					{"sTitle": "Aktionen", "sClass":" center"}
 				],
 				"oLanguage": {
-					"sZeroRecords": "Leider nichts gefunden :(",
-					"sSearch": "Filter:",
+					"sProcessing":   "Bitte warten...",
+					"sLengthMenu":   "_MENU_ Einträge anzeigen",
+					"sZeroRecords":  "<p class='bold'>Leider nichts gefunden :(</p>",
+					"sInfo":         "_START_ bis _END_ von _TOTAL_ Einträgen",
+					"sInfoEmpty":    "0 bis 0 von 0 Einträgen",
+					"sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
+					"sInfoPostFix":  "",
+					"sSearch":       "Filter:",
+					"sUrl":          "",
 					"oPaginate": {
-						"sPrevious": "Vorherige Seite",
-						"sNext": "Nächste Seite"
+						"sFirst":    "Anfang",
+						"sPrevious": "Zurück",
+						"sNext":     "Weiter",
+						"sLast":     "Ende"
 					}
 				}
 			});
