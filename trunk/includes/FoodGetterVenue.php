@@ -160,8 +160,6 @@ abstract class FoodGetterVenue {
 			}
 		}
 		else {
-			if (isset($_GET['minimal']))
-				$return .= '<br />';
 			$return .= '<br /><span class="error">Leider nichts gefunden :(</span><br />';
 			$return .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
 		}
