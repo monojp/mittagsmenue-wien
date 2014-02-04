@@ -4,6 +4,7 @@ body {
 	font-family: verdana, sans, sans-serif;
 	/*line-height: 1.28;*/
 	font-size: 0.9em;
+	margin: 5px;
 }
 #overlay_info {
 	position: fixed;
@@ -93,10 +94,14 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	border: 3px solid black;
 	border-radius: 10px;
 	box-shadow: 1px 1px 10px gray;
-	min-width: 380px;
+	/*min-width: 380px;*/
 	margin: 10px;
 	float: left;
 	background-image: url('../imagesCommon/intern.png');
+}
+.table_vote_summary {
+	border-spacing: 5px;
+	text-align: left
 }
 .tagCloudElement {
 	margin-right: 10px;
