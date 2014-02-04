@@ -80,13 +80,13 @@ abstract class FoodGetterVenue {
 		if (!$this->data || !$this->isDataUpToDate()) {
 			// avoid querying other week than current
 			// fixes cache problems
-			$currentWeek = date('W');
-			$wantedWeek = date('W', $this->timestamp);
+			$currentWeekYear = date('W/Y');
+			$wantedWeekYear = date('W/Y', $this->timestamp);
 			//error_log(date('W', $this->timestamp));
 			if (
-				($currentWeek == $wantedWeek) ||	// current week only
-				($this->lookaheadSafe && $currentWeek < $wantedWeek) || // lookaheadsafe menus work with future weeks also
-				($this->lookaheadSafe && $wantedWeek == 1) // because of ISO 8601 last week of year is sometimes returned as 1
+				($currentWeekYear == $wantedWeekYear) ||	// current week only
+				($this->lookaheadSafe && $currentWeekYear < $wantedWeekYear) || // lookaheadsafe menus work with future weeks also
+				($this->lookaheadSafe && $wantedWeekYear == 1) // because of ISO 8601 last week of year is sometimes returned as 1
 			)
 				if (!$this->parseDataSource()) {
 					$this->parseDataSource_fallback();
