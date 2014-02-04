@@ -37,12 +37,12 @@
 	echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />';
 	// jquery-ui css when not minimal
 	if (!isset($_GET['minimal']))
-		echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/jquery-ui-1.10.3.custom.min.css') . '" />';
+		echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.min.css') . '" />';
 
 	// javascript
 	$headLoadJS = 'js/head.min.js';
-	$jqueryJS = 'js/jquery-1.10.2.min.js';
-	$jqueryUiJS = 'js/jquery-ui-1.10.3.custom.min.js';
+	$jqueryJS = 'js/jquery-1.11.0.min.js';
+	$jqueryUiJS = 'js/jquery-ui-1.10.4.custom.min.js';
 	if (USE_MINIMZED_JS_CSS) {
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de-min.js';
 		$scriptsJS = 'js/scripts-min.js';
