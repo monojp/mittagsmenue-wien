@@ -19,29 +19,37 @@ body {
 	text-decoration: none ! important;
 }
 a {
-	text-decoration: underline;
+	text-decoration: none;
 	cursor: pointer;
 	color: inherit;
 	background-color: inherit;
 }
 a:not(.ui-state-default):not(.menuData) {
-	text-decoration: underline;
+	text-decoration: none;
 	cursor: pointer;
 	color: #36c ! important;
 	background-color: inherit;
 }
 a:hover:not(.ui-state-default):not(.menuData), a:focus:not(.ui-state-default):not(.menuData) {
-	text-decoration: underline;
+	text-decoration: none;
 	cursor: pointer;
 	color: #36c ! important;
 	text-shadow: 0px 0px 10px lightgray;
 	background-color: inherit;
 }
 a:visited:not(.ui-state-default):not(.menuData) {
-	text-decoration: underline;
+	text-decoration: none;
 	cursor: pointer;
 	color: #36c ! important;
 	background-color: inherit;
+}
+#venueContainer {
+	margin-top: 10px;
+}
+.venueDiv {
+	float: left;
+	margin: 5px;
+	width: 420px;
 }
 .title {
 	font-weight: bold;
@@ -79,16 +87,6 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	color: darkorange;
 	text-decoration: line-through;
 }
-.venueDiv {
-	float: left;
-	margin: 10px 10px 10px 0px;
-	width: 600px;
-}
-.mobile .venueDiv {
-	float: left;
-	margin: 10px 10px 10px 0px;
-	width: auto;
-}
 .dialog_vote_summary {
 	display: none;
 	border: 3px solid black;
@@ -98,10 +96,6 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	margin: 10px;
 	float: left;
 	background-image: url('../imagesCommon/intern.png');
-}
-.table_vote_summary {
-	border-spacing: 5px;
-	text-align: left
 }
 .tagCloudElement {
 	margin-right: 10px;

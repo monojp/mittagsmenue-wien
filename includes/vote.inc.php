@@ -141,6 +141,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 
 		// table with details
 		ksort($votes['venue']);
+		// note: use inline style here for email
 		$html .= '<table style="border-spacing: 10px; text-align: left"><tr>
 			<th style="text-align: center"><b>Benutzer</b></th>
 			<th style="text-align: center"><b>Vote Ups</b></th>

@@ -31,7 +31,7 @@
 	if (show_voting())
 		echo '<div style="display: none" id="show_voting"></div>';
 
-	echo '<table><tr><td style="vertical-align: top">';
+	echo '<table style="border-spacing: 0px; border-collapse: collapse"><tr><td style="vertical-align: top">';
 
 	// header text
 	$dayName = getGermanDayName();
@@ -72,6 +72,7 @@
 		new Stoeger(),
 		new tewa(),
 		new Tschani(),
+		//new Martin(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;

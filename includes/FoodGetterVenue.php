@@ -193,10 +193,10 @@ abstract class FoodGetterVenue {
 		if ($this->title_notifier)
 			$string .= "<span class='title_notifier'>$this->title_notifier</span>";
 		// statistics icon
-		if ($this->statisticsKeyword) {
+		/*if ($this->statisticsKeyword) {
 			$url = 'statistics.php?keyword=' . $this->statisticsKeyword . '&date=' . urlencode($date_GET);
 			$string .= '<a href="' . htmlspecialchars($url) . '"><span class="icon sprite sprite-icon_chart_line" title="Statistik"></span></a>';
-		}
+		}*/
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
 			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
