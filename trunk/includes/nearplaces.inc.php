@@ -150,7 +150,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 
 		// clean name from unwanted stuff
 		$name = trim(str_ireplace(array(
-			'silberwirt', 'margareta', 'altes fassl', 'aus:klang', 'delicious monster', 'haas beisl', 'kunsthallencafé', 'taste of india',
+			'silberwirt', 'margareta', 'altes fassl', 'aus:klang', 'delicious monster', 'haas beisl', 'Haasbeisl', 'kunsthallencafé', 'taste of india',
 			'zum schwarzer adler', 'schlossquadrat', 'Nam Nam', 'Restaurant Waldviertlerhof Josef Krenn Ges.m.b.H.',
 			'Schloss Schönbrunn Konzerte', 'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
 			'gasthaus', 'brauerei', 'Betriebs . Nfg. KEG', 'Co KG', 'betriebs', 'Billa AG', 'Billa Aktien', 'Brabenetz & Dirnwöber',

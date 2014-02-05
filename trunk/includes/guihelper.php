@@ -106,7 +106,7 @@ function get_location_dialog_html() {
 						</tr>
 						<tr>
 							<td colspan="2">
-								<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\')">Auf Standard setzen</a>
+								<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a>
 							</td>
 						</tr>
 					</table>
@@ -200,26 +200,31 @@ function get_vote_div_html() {
 	global $voting_over_time;
 	$voting_over_time_print = date('H:i', $voting_over_time);
 
+	$vote_loader = '';
+
 	if (time() >= $voting_over_time)
 		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
-	else
+	else {
+		$vote_loader = '
+		<div style="margin: 0px 10px">
+			<b>Quick-Vote:</b><br /><br />
+			' . get_special_vote_actions_html() . '
+		</div>
+		<div style="margin: 0px 10px">
+			Warte auf weitere Stimmen
+			<br />
+			<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
+		</div>
+		';
 		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time_print!";
+	}
 
 	return '
 		<div id="voting_over_time" class="hidden">' . $voting_over_time . '</div>
 		<div id="voting_over_time_print" class="hidden">' . $voting_over_time_print . '</div>
-		<div id="dialog" title="Voting" class="dialog_vote_summary">
+		<div id="dialog" class="dialog_vote_summary">
 			<div id="dialog_ajax_data"></div>
-			<div style="margin: 0px 10px">
-				<b>Quick-Vote:</b><br /><br />
-				' . get_special_vote_actions_html() . '
-			</div>
-			<br />
-			<div style="margin: 0px 10px">
-				Warte auf weitere Stimmen
-				<br />
-				<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
-			</div>
+			' . $vote_loader . '
 			<div class="error" style="margin: 10px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
 				' . $voting_info_text . '
 			</div>

@@ -7,7 +7,7 @@ $explodeNewLines = array(
 
 $cacheDataExplode = array_merge($explodeNewLines, array(
 	'(', ')', ' und ', ' oder ', ' mit ', ' auf ', ' & ', ' in ', ' - ', ' im ', '“', '"', '„', '\'',
-	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ', ' von ',
+	':', ',', ' dazu ', ' trifft ', 'geriebenem', ' vom ', ' aus ', ' von ', ' nach ',
 	'gefüllten', 'gefüllter', 'gefüllte', 'gefüllt', 'überbackener', 'Überbackene', 'überbackene', 'überbacken', 'gehobeltem',
 	'nicht scharf', 'frischen', 'frischem', 'frischer', 'frische', 'u.', 'bei schlechtwetter', ' der ', 'süß-würziger', 'würziger', 'würzige',
 	'gebratenen', 'gebratenes', 'gebratenem', 'gebratener', 'gebratene', 'dem', 'warmen', 'warmer', 'warm', 'milder',
