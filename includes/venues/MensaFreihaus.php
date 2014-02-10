@@ -51,7 +51,7 @@ class MensaFreihaus extends FoodGetterVenue {
 				$cnt++;
 			}
 		}
-		return $data;
+		return empty($data) ? '-' : $data;
 	}
 
 	protected function parseDataSource() {
