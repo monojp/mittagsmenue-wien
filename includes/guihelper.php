@@ -206,6 +206,9 @@ function get_vote_div_html() {
 		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
 	else {
 		$vote_loader = '
+		<audio id="audio_notification" class="hidden">
+			<source src="sounds/receive.wav" type="audio/ogg">
+		</audio>
 		<div style="margin: 0px 10px">
 			<b>Quick-Vote:</b><br /><br />
 			' . get_special_vote_actions_html() . '
