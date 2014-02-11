@@ -4,6 +4,17 @@ require_once('config.php');
 require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
 
+// redirect bots to minimal site without ajax content
+// should be done even before starting a session and with a 301 http code
+if (
+	!isset($_GET['minimal']) &&
+	stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
+) {
+	error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
+	header('HTTP/1.1 301 Moved Permanently');
+	header('Location: ?minimal&' . $_SERVER['QUERY_STRING']);
+}
+
 mb_internal_encoding('UTF-8');
 
 // valid session for 3 hours
