@@ -19,6 +19,7 @@ $.extend({
 });
 
 // sends vote action (vote_up, vote_down, vote_get) and identifier (delete, restaurant name, ..) to server
+var notify_on = false; // used to deactivate vote update notifies for self actions and on first load
 function vote_helper(action, identifier, note) {
 	$.ajax({
 		type: "POST",
@@ -48,7 +49,13 @@ function vote_helper(action, identifier, note) {
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
 				$("#dialog").show();
-				$("#dialog").effect('highlight');
+				// highlight dialog, play notification sound
+				if (notify_on) {
+					$("#dialog").effect('highlight');
+					$('#audio_notification').get(0).play();
+				}
+				else
+					notify_on = true;
 			}
 			// no | empty result => hide voting dialog
 			else {
@@ -64,18 +71,22 @@ function vote_helper(action, identifier, note) {
 }
 // vote up
 function vote_up(identifier) {
+	notify_on = false;
 	vote_helper('vote_up', identifier, null);
 }
 // vote down
 function vote_down(identifier) {
+	notify_on = false;
 	vote_helper('vote_down', identifier, null);
 }
 // vote special
 function vote_special(identifier) {
+	notify_on = false;
 	vote_helper('vote_special', identifier, null);
 }
 // set note
 function vote_set_note(note) {
+	notify_on = false;
 	vote_helper('vote_set_note', null, note);
 }
 // get votes
@@ -84,6 +95,7 @@ function vote_get() {
 }
 // delete vote
 function vote_delete() {
+	notify_on = false;
 	vote_helper('vote_delete', null);
 }
 // got (lat / long) location => get address from it
