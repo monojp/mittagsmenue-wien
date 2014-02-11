@@ -254,6 +254,10 @@ function get_minimal_site_notice_html() {
 	global $dateOffset;
 
 	$url = '?date=' . date_from_offset($dateOffset);
+	if (isset($_GET['keyword']))
+		$url .= '&amp;keyword=' . $_GET['keyword'];
+	if (isset($_GET['food']))
+		$url .= '&amp;food=' . $_GET['food'];
 
 	return '
 		<span class="error">

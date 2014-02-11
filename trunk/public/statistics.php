@@ -61,6 +61,13 @@ if (empty($errors)) {
 }
 
 echo "<h1>Statistik für <span style='color: red'>$keyword</span>:</h1>";
+
+// show minimal (no JS) site notice
+if (isset($_GET['minimal'])) {
+	echo get_minimal_site_notice_html();
+	echo '<br /><br />';
+}
+
 $date = date_from_offset($dateOffset);
 echo "<a href='/?date=$date'>Zurück zur Übersicht</a>";
 echo '<br /><br />';
@@ -71,14 +78,18 @@ echo "Stichwort-Suche: <form action='$action' method='post'>
 </form>";
 
 if (!empty($datasetSize)) {
-	echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />';
+	if (!isset($_GET['minimal']))
+		echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />';
 	// tagcloud with ingredients
 	// usage see https://github.com/addywaddy/jquery.tagcloud.js
 	if (empty($foodKeyword))
 		echo '<h2>Tag Cloud</h2>';
 	else
 		echo '<h2>Tag Cloud bezogen auf "' . $foodKeyword . '"</h2>';
-	echo '<div id="tagCloudFoods" style="display: none">';
+	if (!isset($_GET['minimal']))
+		echo '<div id="tagCloudFoods" style="display: none">';
+	else
+		echo '<div id="tagCloudFoods">';
 	$cnt = 1;
 	foreach ($foods as $food => $amount) {
 		$url = htmlspecialchars('statistics.php?date=' . $date . '&keyword=' . urlencode($keyword) . '&food=' . urlencode($food));
@@ -95,7 +106,10 @@ if (!empty($datasetSize)) {
 	else
 		echo '<h2>Häufigkeiten bezogen auf "' . $foodKeyword . '"</h2>';
 	arsort($foods);
-	echo '<table id="table_ingredients" border="1" class="stats" style="display: none">';
+	if (!isset($_GET['minimal']))
+		echo '<table id="table_ingredients" border="1" class="stats" style="display: none">';
+	else
+		echo '<table id="table_ingredients" border="1" class="stats">';
 	echo '<thead><tr style="text-align: left">
 		<th>Bestandteil</th>
 		<th>Daten</th>
@@ -122,7 +136,10 @@ if (!empty($datasetSize)) {
 	echo '</tbody></table>';
 
 	arsort($compositionsAbsolute);
-	echo '<table id="table_compositions" border="1" class="stats" style="display: none">';
+	if (!isset($_GET['minimal']))
+		echo '<table id="table_compositions" border="1" class="stats" style="display: none">';
+	else
+		echo '<br /><table id="table_compositions" border="1" class="stats">';
 	echo '<thead><tr style="text-align: left">
 		<th>Kombination</th>
 		<th>Daten</th>
