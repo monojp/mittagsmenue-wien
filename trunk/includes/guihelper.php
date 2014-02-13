@@ -36,7 +36,7 @@ function get_overlay_info_html() {
 
 function get_temperature_info_html() {
 	return "
-		<div id='weatherContainer' class='dialog_opener_float' style='margin-top: -7px'></div>
+		<div id='weatherContainer' class='dialog_opener_float'></div>
 		<script type='text/javascript'>
 			head.ready('scripts', function() {
 				$.ajax({
@@ -86,9 +86,9 @@ function get_location_dialog_html() {
 		<div id="setLocationDialog" class="hidden">
 			<form id="locationForm" action="index.php">
 				<fieldset>
-					<label for="location">Adresse</label>
+					<label>Adresse</label>
 					<br />
-					<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%"></input>
+					<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%" />
 					<br />
 					<a href="javascript:void(0)" onclick="setLocation(\'' . $city . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a> | <a href="javascript:void(0)" onclick="setLocation(null, true);$(\'#setLocationDialog\').dialog(\'close\')">Standort bestimmen</a>
 				</fieldset>
@@ -101,7 +101,7 @@ function get_location_dialog_html() {
 								<div id="sliderDistance" style="width: 100px"></div>
 							</td>
 							<td>
-								<input type="text" id="distance" style="width: 50px; margin-left: 10px"></input>
+								<input type="text" id="distance" style="width: 50px; margin-left: 10px" />
 							</td>
 						</tr>
 						<tr>
@@ -123,7 +123,7 @@ function get_note_dialog_html() {
 				<fieldset>
 					<label for="noteInput">Notiz</label>
 					<br />
-					<input type="text" name="note" id="noteInput" value="" maxlength="64" style="width: 100%"></input>
+					<input type="text" name="note" id="noteInput" value="" maxlength="64" style="width: 100%" />
 				</fieldset>
 			</form>
 		</div>
@@ -141,7 +141,7 @@ function get_special_vote_actions_html() {
 function get_alt_venue_and_vote_setting_opener_html() {
 	$data[] = '<a href="javascript:void(0)" onclick="setAlternativeVenuesDialog()">Weitere Lokale in der Nähe</a>';
 	if (is_intern_ip())
-		$data[] = '<a href="javascript:void(0)" onclick="setVoteSettingsDialog()">Spezial-Votes & Einstellungen</a>';
+		$data[] = '<a href="javascript:void(0)" onclick="setVoteSettingsDialog()">Spezial-Votes &amp; Einstellungen</a>';
 
 	$data = implode(' | ', $data);
 	return "<div class='subheader_div'>$data</div>";
@@ -180,7 +180,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<label for="email">Email-Benachrichtigung an</label>
 				<p>
 					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%"
-						title="wird versendet um ' . $voting_over_time_print . '"></input>
+						title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
 				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' />
@@ -209,13 +209,8 @@ function get_vote_div_html() {
 		<audio id="audio_notification" class="hidden">
 			<source src="sounds/receive.wav" type="audio/ogg">
 		</audio>
-		<div style="margin: 0px 10px">
-			<b>Quick-Vote:</b><br /><br />
-			' . get_special_vote_actions_html() . '
-		</div>
-		<div style="margin: 0px 10px">
+		<div style="margin: 0px 5px">
 			Warte auf weitere Stimmen
-			<br />
 			<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
 		</div>
 		';
@@ -225,10 +220,11 @@ function get_vote_div_html() {
 	return '
 		<div id="voting_over_time" class="hidden">' . $voting_over_time . '</div>
 		<div id="voting_over_time_print" class="hidden">' . $voting_over_time_print . '</div>
-		<div id="dialog" class="dialog_vote_summary">
+		<div style="clear: both"></div>
+		<div id="dialog_vote_summary">
 			<div id="dialog_ajax_data"></div>
 			' . $vote_loader . '
-			<div class="error" style="margin: 10px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
+			<div class="error" style="margin: 5px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
 				' . $voting_info_text . '
 			</div>
 		</div>

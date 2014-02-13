@@ -217,7 +217,8 @@ function array_occurence_count($needle, $haystack) {
 function is_intern_ip() {
 	//return true; // DEBUG
 	$ip = $_SERVER['REMOTE_ADDR'];
-	if (strpos($ip, ALLOW_VOTING_IP_PREFIX) === 0)
+	$allow_voting_ip_prefix = ALLOW_VOTING_IP_PREFIX;
+	if (empty($allow_voting_ip_prefix) || strpos($ip, $allow_voting_ip_prefix) === 0)
 		return true;
 	return false;
 }
@@ -541,7 +542,10 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 				continue;
 
 			$foodSingle_slashes = "\"$foodSingle\"";
-			$replace_pairs[$foodSingle] = "<a class='$a_class' title='Statistik zu $foodSingle_slashes' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle) . "'>$foodSingle</a>";
+			$url = "statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
+			if (isset($_GET['minimal']))
+				$url .= '&minimal';
+			$replace_pairs[$foodSingle] = "<a class='$a_class' title='Statistik zu $foodSingle_slashes' href='$url'>$foodSingle</a>";
 		}
 		// replace via strtr and built replace_pairs to avoid
 		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
@@ -550,7 +554,10 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	// if nothing found, replace whole string with link to stats
 	if (empty($replace_pairs)) {
 		$string_slashes = "\"$string\"";
-		$string = "<a class='$a_class' title='Statistik zu $string_slashes' href='statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string) . "'>$string</a>";
+		$url = "statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
+		if (isset($_GET['minimal']))
+			$url .= '&minimal';
+		$string = "<a class='$a_class' title='Statistik zu $string_slashes' href='$url'>$string</a>";
 	}
 
 	return $string;
@@ -572,7 +579,7 @@ function ip_anonymize($ip) {
 	if (isset($ip_usernames[$ip]))
 		$ipPrint = $ip_usernames[$ip];
 	else if (is_intern_ip())
-		$ipPrint = 'Developer_PC_' . $ipLast;
+		$ipPrint = 'Guest_' . $ipLast;
 	else
 		$ipPrint = 'Unknown/extern IP, check config';
 

@@ -12,9 +12,9 @@
 		echo get_overlay_info_html();
 
 	// date picker element
-	echo '<input type="hidden" id="datePicker"></input>';
+	echo '<input type="hidden" id="datePicker" />';
 	// current date via get
-	echo "<input type='hidden' id='date_GET' value='$date_GET'></input>";
+	echo "<input type='hidden' id='date_GET' value='$date_GET' />";
 
 	if (!isset($_GET['minimal'])) {
 		// default values for reset actions
@@ -31,30 +31,28 @@
 	if (show_voting())
 		echo '<div style="display: none" id="show_voting"></div>';
 
-	echo '<table style="border-spacing: 0px; border-collapse: collapse"><tr><td style="vertical-align: top">';
-
 	// header text
 	$dayName = getGermanDayName();
 	$date = date_offsetted('d.m.Y');
 	$dayText = "<a id='dateHeader' href='javascript:void(0)' title='Klicken, zum Kalender öffnen'>$dayName $date</a>";
-	echo "<h1>Mittagsmenü Wien, $dayText</h1>";
+	echo "<span style='font-weight: bold; font-size: 2em'>Mittagsmenü Wien, $dayText</span><br />";
 
 	// show minimal (no JS) site notice
 	if (isset($_GET['minimal']))
 		echo get_minimal_site_notice_html();
-
-	if (!isset($_GET['minimal'])) {
+	else {
 		// location and alt_venue_and_vote_setting opener
 		echo '<div class="dialog_opener_float">' . get_location_opener_html() . get_alt_venue_and_vote_setting_opener_html() . '</div>';
 		// weather info
 		if (show_weather())
 			echo get_temperature_info_html();
+		if (show_voting())
+			echo get_vote_div_html();
 	}
 
 	echo '<div style="clear: both"></div>';
 
 	echo '<div id="venueContainer">';
-
 	$venues = array(
 		new SchlossquadratMargareta(),
 		new SchlossquadratSilberwirt(),
@@ -77,14 +75,8 @@
 	foreach ($venues as $venue) {
 		echo $venue;
 	}
-
 	echo '</div>';
-	echo '</td>';
 
-	if (show_voting())
-		echo '<td style="vertical-align: top">' . get_vote_div_html() . '</td>';
-
-	echo '</tr></table>';
 	echo '<div style="clear: both"></div>';
 
 	// no javascript => notice + redirect to minimal site

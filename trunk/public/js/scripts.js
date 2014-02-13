@@ -48,10 +48,11 @@ function vote_helper(action, identifier, note) {
 			// got valid vote result
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				$("#dialog").show();
+				//$("#dialog_vote_summary").show();
+				$("#dialog_vote_summary").css('display', 'table');
 				// highlight dialog, play notification sound
 				if (notify_on) {
-					$("#dialog").effect('highlight');
+					$("#dialog_vote_summary").effect('highlight');
 					$('#audio_notification').get(0).play();
 				}
 				else
@@ -60,7 +61,7 @@ function vote_helper(action, identifier, note) {
 			// no | empty result => hide voting dialog
 			else {
 				if (intervalVotes)
-					$("#dialog").hide();
+					$("#dialog_vote_summary").hide();
 			}
 			oldVoteData = result;
 		},
@@ -342,9 +343,9 @@ function get_venues_distance() {
 			$(this).show();
 
 		// remove old distance object if existing
-		obj.children('[name="distance"]').remove();
+		obj.children('.distance').remove();
 		// create new distance object
-		obj.append("<div name='distance'>Distanz: " + distanceString + "</div>");
+		obj.append("<div class='distance'>Distanz: " + distanceString + "</div>");
 
 	});
 	// notifier if no venues found
@@ -571,13 +572,14 @@ function setVoteSettingsDialog() {
 $(document).ready(function() {
 	// overwrite tooltip methode to use
 	// html tooltips
-	$.widget("ui.tooltip", $.ui.tooltip, {
+	// update 2014-02-13: not used anymore?
+	/*$.widget("ui.tooltip", $.ui.tooltip, {
 		options: {
 			content: function () {
 				return $(this).prop('title');
 			}
 		}
-	});
+	});*/
 
 	// location ready event
 	var locationReadyFired = false;
@@ -611,7 +613,7 @@ $(document).ready(function() {
 		});
 
 		// replace @@lat_lng@@ placeholder in google maps hrefs
-		$('[name="lat_lng_link"]').each(function(index, value) {
+		$('.lat_lng_link').each(function(index, value) {
 			var href = $(this).prop('href');
 			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
 			$(this).prop('href', href);
