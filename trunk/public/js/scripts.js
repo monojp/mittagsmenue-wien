@@ -4,6 +4,8 @@ var usedGeolocation = false;
 var oldVoteData = null;
 var voting_over_interval_multiplier = 1;
 var venues_ajax_query = Array();
+var ajax_retry_time_max = 500;
+var ajax_retry_count_max = 5;
 
 function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
@@ -20,7 +22,7 @@ $.extend({
 
 // sends vote action (vote_up, vote_down, vote_get) and identifier (delete, restaurant name, ..) to server
 var notify_on = false; // used to deactivate vote update notifies for self actions and on first load
-function vote_helper(action, identifier, note) {
+function vote_helper(action, identifier, note, try_count) {
 	$.ajax({
 		type: "POST",
 		url:  "vote.php",
@@ -66,38 +68,42 @@ function vote_helper(action, identifier, note) {
 			oldVoteData = result;
 		},
 		error: function() {
-			alert('Fehler beim Setzen des Votes.');
+			// retry on error
+			if (try_count < ajax_retry_count_max)
+				window.setTimeout(function() { vote_helper(action, identifier, note, try_count+1) }, (Math.random()*ajax_retry_time_max)+1);
+			else
+				alert('Fehler beim Setzen des Votes.');
 		}
 	});
 }
 // vote up
 function vote_up(identifier) {
 	notify_on = false;
-	vote_helper('vote_up', identifier, null);
+	vote_helper('vote_up', identifier, null, 0);
 }
 // vote down
 function vote_down(identifier) {
 	notify_on = false;
-	vote_helper('vote_down', identifier, null);
+	vote_helper('vote_down', identifier, null, 0);
 }
 // vote special
 function vote_special(identifier) {
 	notify_on = false;
-	vote_helper('vote_special', identifier, null);
+	vote_helper('vote_special', identifier, null, 0);
 }
 // set note
 function vote_set_note(note) {
 	notify_on = false;
-	vote_helper('vote_set_note', null, note);
+	vote_helper('vote_set_note', null, note, 0);
 }
 // get votes
 function vote_get() {
-	vote_helper('vote_get', null);
+	vote_helper('vote_get', null, null, 0);
 }
 // delete vote
 function vote_delete() {
 	notify_on = false;
-	vote_helper('vote_delete', null);
+	vote_helper('vote_delete', null, null, 0);
 }
 // got (lat / long) location => get address from it
 function positionHandler(position) {
@@ -194,7 +200,7 @@ function sortVenuesAfterPosition(lat, lng) {
 	$(document).trigger('locationReady');
 }
 
-function setLocation(location, force_geolocation) {
+function setLocation(location, force_geolocation, try_count) {
 	// location via geolocation
 	if (!location || force_geolocation) {
 		// use geolocation via client only on mobile devices
@@ -239,7 +245,11 @@ function setLocation(location, force_geolocation) {
 			}
 		},
 		error: function() {
-			alert('Fehler beim Abrufen der Geo-Position. Bitte Internetverbindung überprüfen.');
+			// retry
+			if (try_count < ajax_retry_count_max)
+				window.setTimeout(function() { setLocation(location, force_geolocation, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
+			else
+				alert('Fehler beim Abrufen der Geo-Position. Bitte Internetverbindung überprüfen.');
 		}
 	});
 }
@@ -252,7 +262,7 @@ function setLocationDialog(el) {
 		buttons: {
 			"Ok": function() {
 				var location = $('#locationInput').val();
-				setLocation(location, false);
+				setLocation(location, false, 0);
 				$('#setLocationDialog').dialog("close");
 				$(this).dialog("close");
 			},
@@ -372,7 +382,7 @@ function setNoteDialog() {
 	});
 }
 
-function handle_href_reference_details(id, reference, name) {
+function handle_href_reference_details(id, reference, name, try_count) {
 	$.ajax({
 		type: 'POST',
 		url:  'nearplaces.php',
@@ -396,12 +406,16 @@ function handle_href_reference_details(id, reference, name) {
 				window.open('https://www.google.com/#q=' + name, '_blank');
 		},
 		error: function() {
-			alert('Fehler beim Abholen der Restaurants in der Nähe.');
+			// retry
+			if (try_count < ajax_retry_count_max)
+				window.setTimeout(function() { handle_href_reference_details(id, reference, name, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
+			else
+				alert('Fehler beim Abholen der Restaurants in der Nähe.');
 		}
 	});
 }
 
-function get_alt_venues(lat, lng, radius, results_old, success_function) {
+function get_alt_venues(lat, lng, radius, results_old, success_function, try_count) {
 	// if >= 10 venues found in step before in call succes_function immediately with empty new result
 	if (results_old.length >= 10)
 		return success_function(new Array());
@@ -424,7 +438,10 @@ function get_alt_venues(lat, lng, radius, results_old, success_function) {
 				return success_function(result);
 		},
 		error: function() {
-			alert('Fehler beim Abholen der Restaurants in der Nähe.');
+			if (try_count < ajax_retry_count_max)
+				window.setTimeout(function() { get_alt_venues(lat, lng, radius, results_old, success_function, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
+			else
+				alert('Fehler beim Abholen der Restaurants in der Nähe.');
 		}
 	});
 }
@@ -512,8 +529,8 @@ function init_venues_alt() {
 			if (dataTable.length > 0)
 				dataTable.fnAdjustColumnSizing();
 			$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
-		});
-	});
+		}, 0);
+	}, 0);
 }
 
 function setAlternativeVenuesDialog() {
@@ -631,11 +648,11 @@ $(document).ready(function() {
 		var location = $.cookie('location');
 		// custom location from cookie
 		if (typeof location != 'undefined' && location && location.length) {
-			setLocation(location, false);
+			setLocation(location, false, 0);
 		}
 		// location via geolocation
 		else {
-			setLocation(null, false);
+			setLocation(null, false, 0);
 		}
 
 		// show overlay info if not already shown
@@ -694,7 +711,7 @@ $(document).ready(function() {
 	// set submit handler for location input form
 	$('#locationForm').submit(function(event) {
 		var location = $('#locationInput').val();
-		setLocation(location, false);
+		setLocation(location, false, 0);
 		$('#setLocationDialog').dialog("close");
 		event.preventDefault();
 	});
