@@ -53,10 +53,9 @@ function vote_helper(action, identifier, note, try_count) {
 				//$("#dialog_vote_summary").show();
 				$("#dialog_vote_summary").css('display', 'table');
 				// highlight dialog, play notification sound
-				if (notify_on) {
-					$("#dialog_vote_summary").effect('highlight');
+				$("#dialog_vote_summary").effect('highlight');
+				if (notify_on)
 					$('#audio_notification').get(0).play();
-				}
 				else
 					notify_on = true;
 			}
