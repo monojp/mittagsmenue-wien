@@ -194,7 +194,7 @@ abstract class FoodGetterVenue {
 			$string .= "<span class='title_notifier'>$this->title_notifier</span>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a name='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+			$string .= "<a class='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {

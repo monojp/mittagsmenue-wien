@@ -12,16 +12,15 @@
 	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
 ?>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title><?php echo META_KEYWORDS ?></title>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8"></meta>
-<meta name="title" content="Mittagsmenüs in Wien"></meta>
-<meta name="robots" content="INDEX,FOLLOW"></meta>
-<meta name="keywords" content="<?php echo META_KEYWORDS ?>"></meta>
-<meta name="description" content="<?php echo META_DESCRIPTION ?>"></meta>
-<meta name="viewport" content="width=device-width"></meta>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+<meta name="robots" content="INDEX,FOLLOW" />
+<meta name="keywords" content="<?php echo META_KEYWORDS ?>" />
+<meta name="description" content="<?php echo META_DESCRIPTION ?>" />
+<meta name="viewport" content="width=device-width" />
 
 <?php
 	require_once('../includes/venues.php');

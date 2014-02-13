@@ -142,7 +142,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 		// table with details
 		ksort($votes['venue']);
 		// note: use inline style here for email
-		$html .= '<table style="border-spacing: 10px; text-align: left"><tr>
+		$html .= '<table style="border-spacing: 5px"><tr>
 			<th style="text-align: center"><b>Benutzer</b></th>
 			<th style="text-align: center"><b>Vote Ups</b></th>
 			<th style="text-align: center"><b>Vote Downs</b></th>
@@ -172,18 +172,19 @@ function vote_summary_html($votes, $include_head_body_tags) {
 				<td style='$specialVote_style'>" . htmlspecialchars($specialVote) . "</td>
 			</tr>";
 		}
+		$html .= '</table>';
+
 		// top 3 rating
-		$html .= '<tr><td colspan="4"><b>Ranking:</b></td></tr>';
+		$html .= '<table style="border-spacing: 5px">';
+		$html .= '<tr><td><b>Ranking:</b></td></tr>';
 		$cnt = 1;
 		foreach ($venue_rating_final as $rating => $venues) {
 			sort($venues);
-			$html .= "<tr><td colspan='4'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+			$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
 			$cnt++;
 		}
 		if (empty($venue_rating_final))
-			$html .= '<tr><td colspan="4">Kein Ergebnis</td></tr>';
-		// attending people
-		$html .= "<tr><td colspan='4'>Anz. Essensgefährten: $anti_verweigerer</td></tr>";
+			$html .= '<tr><td>Kein Ergebnis</td></tr>';
 		$html .= '</table>';
 	}
 

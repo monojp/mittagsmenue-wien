@@ -44,7 +44,7 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	background-color: inherit;
 }
 #venueContainer {
-	margin-top: 10px;
+	margin-top: 5px;
 }
 .venueDiv {
 	float: left;
@@ -87,14 +87,17 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	color: darkorange;
 	text-decoration: line-through;
 }
-.dialog_vote_summary {
+#weatherContainer {
+	margin-top: -8px
+}
+#dialog_vote_summary {
 	display: none;
-	border: 3px solid black;
-	border-radius: 10px;
-	box-shadow: 1px 1px 10px gray;
-	/*min-width: 380px;*/
-	margin: 10px;
-	float: left;
+	font-size: 0.8em;
+	border: 1px solid black;
+	border-radius: 5px;
+	box-shadow: 0px 0px 3px gray;
+	margin-top: 5px;
+	padding: 3px;
 	background-image: url('../imagesCommon/intern.png');
 }
 .tagCloudElement {

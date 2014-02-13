@@ -109,7 +109,7 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		return "
 			<div title='Wien Innere Stadt: $desc  ($time) <br /> $desc_detail' style='text-align: center; display: inline-table'>
 				<img src='$icon_url' width='$image_width' height='$image_height' />
-				<div style='font-size: 0.8em; padding: 2px; border: 1px solid black; border-radius: 2px; box-shadow: 1px 1px 5px lightgray'>$temp °C</div>
+				<div style='font-size: 0.8em; padding: 3px; border: 1px solid black; border-radius: 5px; box-shadow: 0px 0px 3px gray'>$temp °C</div>
 			</div>
 		";
 	}
