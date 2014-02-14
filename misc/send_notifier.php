@@ -22,7 +22,7 @@
 	$headers[] = "X-Mailer: PHP/" . phpversion();
 	$headers[] = "Precedence: bulk";
 	// mail footer
-	$footer = '<br /><div style="margin: 10px"><small>Die Benachrichtigungen können auf <a href="' . SITE_URL . '">' . SITE_URL . '</a> verändert/abgestellt werden.</small></div>';
+	$footer = '<div style="margin: 0px 10px">Die Benachrichtigungen können auf <a href="' . SITE_URL . '">' . SITE_URL . '</a> verändert/abgestellt werden.</div>';
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
 

@@ -115,7 +115,6 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 	}
 
 	return "Aktuelles Wetter: <a title='$desc_detail' href='javascript:void(0)' style='cursor: default'>$temp °C | $desc ($time)</a>";
-
 }
 
 ?>
