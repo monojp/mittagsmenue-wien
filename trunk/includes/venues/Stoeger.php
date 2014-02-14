@@ -17,6 +17,10 @@ class Stoeger extends FoodGetterVenue {
 		parent::__construct();
 	}
 
+	private function alternative_date_fix($date) {
+		return str_replace('Donnerstag', 'Donnerstage', $date);
+	}
+
 	protected function parseDataSource() {
 		$dataTmp = file_get_contents($this->dataSource);
 		if ($dataTmp === FALSE)
@@ -32,8 +36,12 @@ class Stoeger extends FoodGetterVenue {
 		// vorspeise
 		$today = getGermanDayName() . ' ' . date('j.', $this->timestamp) . getGermanMonthName() . ' ' . date('Y', $this->timestamp);
 		$posStart = strposAfter($dataTmp, $today);
-		if ($posStart === FALSE)
-			return;
+		if ($posStart === FALSE) {
+			$today = $this->alternative_date_fix($today);
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart === FALSE)
+				return;
+		}
 		$posEnd = stripos($dataTmp, '</p>', $posStart);
 		if (!$posEnd)
 			return;
@@ -109,6 +117,8 @@ class Stoeger extends FoodGetterVenue {
 		$today = getGermanDayName() . ' ' . date('j.', $this->timestamp) . getGermanMonthName() . ' ' . date('Y', $this->timestamp);
 
 		if ($this->date == $today)
+			return true;
+		else if ($this->date == $this->alternative_date_fix($today))
 			return true;
 		else
 			return false;

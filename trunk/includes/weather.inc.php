@@ -107,7 +107,7 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		$icon_url = 'data:image/png;base64,' . base64_encode(file_get_contents(WEATHER_IMG_PATH . basename($icon_url)));
 
 		return "
-			<div title='Wien Innere Stadt: $desc  ($time) <br /> $desc_detail' style='text-align: center; display: inline-table'>
+			<div title='Wien Innere Stadt: $desc ($time) $desc_detail' style='text-align: center; display: inline-table'>
 				<img src='$icon_url' width='$image_width' height='$image_height' />
 				<div style='font-size: 0.8em; padding: 3px; border: 1px solid black; border-radius: 5px; box-shadow: 0px 0px 3px gray'>$temp °C</div>
 			</div>
