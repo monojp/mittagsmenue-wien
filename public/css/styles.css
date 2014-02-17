@@ -88,7 +88,7 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	text-decoration: line-through;
 }
 #weatherContainer {
-	margin-top: -8px
+	margin-top: -5px
 }
 #dialog_vote_summary {
 	display: none;

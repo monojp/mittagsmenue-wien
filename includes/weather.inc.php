@@ -13,19 +13,27 @@ function queryTemperature() {
 
 	// get description
 	$start = strposAfter($html, 'alt="Wien Innere Stadt:');
+	if ($start === false)
+		return false;
 	$end = strpos($html, '"', $start);
 	$desc = substr($html, $start, $end - $start);
 	$desc = cleanText($desc);
 
 	// get temperature
 	$start = strposAfter($html, 'title="Wien Innere Stadt, Temp:');
+	if ($start === false)
+		return false;
 	$end = strpos($html, '&deg;C', $start);
 	$temp = substr($html, $start, $end - $start);
 	$temp = cleanText($temp);
 
 	// get icon url
 	$start = strposAfter($html, 'http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tawes-verlaufsgraphiken/wien_innere_stadt/temperatur');
+	if ($start === false)
+		return false;
 	$start = strposAfter($html, 'src="', $start);
+	if ($start === false)
+		return false;
 	$end = strpos($html, '"', $start);
 	$iconUrl = substr($html, $start, $end - $start);
 	$iconUrl = cleanText($iconUrl);
@@ -41,6 +49,8 @@ function queryTemperature() {
 
 	// get forecast for the day
 	$start = strposAfter($html, 'prognosenText">');
+	if ($start === false)
+		return false;
 	$end = strpos($html, '</div>', $start);
 	$desc_detail = substr($html, $start, $end - $start);
 	$desc_detail = cleanText(strip_tags($desc_detail));
@@ -74,6 +84,11 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		(intval(date('i', $data['timestamp'])) >= 30 && in_range(intval(date('i')), 1, 30)) // cache was made at an minute >= 30 and the current minute range is 1-30 (new hour = new weather data)
 	) {
 		$weather = queryTemperature();
+
+		// no / invalid data
+		if ($weather === false)
+			return false;
+
 		$temp = $weather['temp'];
 		$desc = $weather['desc'];
 		$desc_detail = $weather['desc_detail'];
