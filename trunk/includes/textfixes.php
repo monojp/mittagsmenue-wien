@@ -100,6 +100,9 @@ $searchReplace = array(
 	'1/2.' => '1/2', // haas beisl "1/2. brathuhn" fix, because "2." is not allowed
 	'gemichtem' => 'gemischtem',
 	'Schafskäse&Blattspinat' => 'Schafskäse & Blattspinat',
+	'&Croutons' => '& Croutons',
+	'"Altes Fassl"mit' => '"Altes Fassl" mit',
+	'gebr.Speck' => 'gebr. Speck',
 );
 
 ?>

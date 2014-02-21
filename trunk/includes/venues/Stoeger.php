@@ -37,10 +37,14 @@ class Stoeger extends FoodGetterVenue {
 		$today = getGermanDayName() . ' ' . date('j.', $this->timestamp) . getGermanMonthName() . ' ' . date('Y', $this->timestamp);
 		$posStart = strposAfter($dataTmp, $today);
 		if ($posStart === FALSE) {
-			$today = $this->alternative_date_fix($today);
+			$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . getGermanMonthName() . ' ' . date('Y', $this->timestamp);
 			$posStart = strposAfter($dataTmp, $today);
-			if ($posStart === FALSE)
-				return;
+			if ($posStart === FALSE) {
+				$today = $this->alternative_date_fix($today);
+				$posStart = strposAfter($dataTmp, $today);
+				if ($posStart === FALSE)
+					return;
+			}
 		}
 		$posEnd = stripos($dataTmp, '</p>', $posStart);
 		if (!$posEnd)
@@ -114,11 +118,12 @@ class Stoeger extends FoodGetterVenue {
 
 	public function isDataUpToDate() {
 		//return false;
+		$date_check = str_replace(',', '', $this->date);
 		$today = getGermanDayName() . ' ' . date('j.', $this->timestamp) . getGermanMonthName() . ' ' . date('Y', $this->timestamp);
 
-		if ($this->date == $today)
+		if ($date_check == $today)
 			return true;
-		else if ($this->date == $this->alternative_date_fix($today))
+		else if ($date_check == $this->alternative_date_fix($today))
 			return true;
 		else
 			return false;

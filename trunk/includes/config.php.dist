@@ -45,6 +45,4 @@ if (date('N') == 5) // friday
 else
 	$voting_over_time = strtotime('11:50');
 
-$tracking_code = "<js tracking code>";
-
 ?>

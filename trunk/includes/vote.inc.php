@@ -160,7 +160,12 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			$downVotes = empty($downVotes) ? '-' : implode(', ', $downVotes);
 			$specialVote = empty($specialVote) ? '-' : $specialVote;
 
-			$row_style = in_array($specialVote, array('Verweigerung', 'Egal')) ? 'color: #999' : '';
+			if ($specialVote == 'Verweigerung')
+				$row_style = 'color: #f99';
+			else if ($specialVote == 'Egal')
+				$row_style = 'color: #999';
+			else
+				$row_style = '';
 			$upVotes_style = ($upVotes == '-') ? 'text-align: center' : '';
 			$downVotes_style = ($downVotes == '-') ? 'text-align: center' : '';
 			$specialVote_style = ($specialVote == '-' || count($specialVote) < 7) ? 'text-align: center' : '';
@@ -174,7 +179,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 		}
 		$html .= '</table>';
 
-		// top 3 rating
+		// top ratings
 		$html .= '<table style="border-spacing: 5px">';
 		$html .= '<tr><td><b>Ranking:</b></td></tr>';
 		$cnt = 1;

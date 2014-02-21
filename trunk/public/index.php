@@ -3,10 +3,6 @@
 	require_once('header.php');
 	echo '</head><body>';
 
-	// tracking code
-	if (isset($tracking_code) && !empty($tracking_code))
-		echo $tracking_code;
-
 	// overlay info box on the top
 	if (is_intern_ip())
 		echo get_overlay_info_html();
@@ -86,14 +82,8 @@
 	// loading container because venues are shown via JS when dom ready
 	if (!isset($_GET['minimal']))
 		echo get_loading_container_html();
-?>
-<div id="noVenueFoundNotifier" style="display: none">
-	<p>
-		Es wurde leider nichts gefunden :(
-		<br />
-		Bitte ändern Sie den Ausgangsort und/oder den Umkreis.
-	</p>
-</div>
-<?
+
+	echo '<div id="noVenueFoundNotifier" style="display: none"><p>Es wurde leider nichts gefunden :(<br />Bitte ändern Sie den Ausgangsort und/oder den Umkreis.</p></div>';
+
 	require_once('footer.php');
 ?>

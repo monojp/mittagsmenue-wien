@@ -10,19 +10,20 @@
 	header("Expires: $ts");
 	header("Pragma: cache");
 	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
-?>
 
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title><?php echo META_KEYWORDS ?></title>
-<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-<meta name="robots" content="INDEX,FOLLOW" />
-<meta name="keywords" content="<?php echo META_KEYWORDS ?>" />
-<meta name="description" content="<?php echo META_DESCRIPTION ?>" />
-<meta name="viewport" content="width=device-width" />
+	// start output buffering with custom html compress handler
+	ob_start('html_compress');
 
-<?php
+	echo '<!DOCTYPE html>';
+	echo '<html xmlns="http://www.w3.org/1999/xhtml">';
+	echo '<head>';
+	echo '<title>' . META_KEYWORDS . '</title>';
+	echo '<meta http-equiv="Content-type" content="text/html;charset=UTF-8" />';
+	echo '<meta name="robots" content="INDEX,FOLLOW" />';
+	echo '<meta name="keywords" content="' . META_KEYWORDS . '" />';
+	echo '<meta name="description" content="' .  META_DESCRIPTION . '" />';
+	echo '<meta name="viewport" content="width=device-width" />';
+
 	require_once('../includes/venues.php');
 
 	// css
