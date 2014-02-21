@@ -9,10 +9,6 @@
 
 <?php
 
-// tracking code
-if (isset($tracking_code) && !empty($tracking_code))
-	echo $tracking_code;
-
 // get keyword
 $keyword = '';
 if (isset($_POST['keyword']))
@@ -183,7 +179,6 @@ else {
 ?>
 <script type="text/javascript">
 	head.ready('scripts', function() {
-		// init tagcloud
 		head.ready("tagcloud", function () {
 			$.fn.tagcloud.defaults = {
 				size: {start: 10, end: 17, unit: 'pt'},

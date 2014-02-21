@@ -32,4 +32,7 @@ echo '<br /><br />Keywords: ' . implode(', ', $key_desc);
 
 echo '<br /><br /></body></html>';
 
+// write custom compressed output buffer
+ob_end_flush();
+
 ?>

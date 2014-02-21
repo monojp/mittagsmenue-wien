@@ -49,6 +49,7 @@
 				getTemperatureString(false, false) .
 			'</div>';
 			$html .= $footer;
+			$html = html_compress($html);
 
 			$success = mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 			if ($success)
@@ -61,6 +62,7 @@
 			// build html
 			$html = "<div style='margin: 10px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 			$html .= $footer;
+			$html = html_compress($html);
 
 			$success = mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 			if ($success)

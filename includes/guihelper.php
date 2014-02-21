@@ -69,8 +69,7 @@ function get_location_opener_html() {
 	return '
 		<div class="subheader_div">
 			Lokale rund um <a href="javascript:void(0)" onclick="setLocationDialog(this)" title="Adresse festlegen">
-				<span id="location">' . $city . '</span></a>
-			(<a href="javascript:void(0)" onclick="showLocation(this)" title="Google Maps Mashup">Standort-Infos</a>)
+				<span id="location">' . $city . '</span></a> (<a href="javascript:void(0)" onclick="showLocation(this)" title="Google Maps Mashup">Standort-Infos</a>)
 		</div>
 	';
 }
@@ -179,8 +178,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 			<fieldset>
 				<label for="email">Email-Benachrichtigung an</label>
 				<p>
-					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%"
-						title="wird versendet um ' . $voting_over_time_print . '" />
+					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
 				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' />
@@ -206,9 +204,6 @@ function get_vote_div_html() {
 		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
 	else {
 		$vote_loader = '
-		<audio id="audio_notification" class="hidden">
-			<source src="sounds/receive.wav" type="audio/ogg">
-		</audio>
 		<div style="margin: 0px 5px">
 			Warte auf weitere Stimmen
 			<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
