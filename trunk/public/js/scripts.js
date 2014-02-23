@@ -1,11 +1,10 @@
 var intervalVotes = false;
-var venueDivDisplay = null;
 var usedGeolocation = false;
 var oldVoteData = null;
 var voting_over_interval_multiplier = 1;
 var venues_ajax_query = Array();
-var ajax_retry_time_max = 500;
-var ajax_retry_count_max = 5;
+var ajax_retry_time_max = 1000;
+var ajax_retry_count_max = 10;
 
 function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
@@ -77,7 +76,6 @@ function vote_helper(action, identifier, note, try_count) {
 			// got valid vote result
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				//$("#dialog_vote_summary").show();
 				$("#dialog_vote_summary").css('display', 'table');
 				// highlight dialog, play notification sound
 				$("#dialog_vote_summary").effect('highlight');
@@ -121,6 +119,10 @@ function vote_get() {
 // delete vote
 function vote_delete() {
 	vote_helper('vote_delete', null, null, 0);
+}
+// delete vote part
+function vote_delete_part(identifier) {
+	vote_helper('vote_delete_part', identifier, null, 0);
 }
 // got (lat / long) location => get address from it
 function positionHandler(position) {
