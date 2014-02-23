@@ -42,6 +42,19 @@
 
 			saveReturnVotes($votes);
 		}
+		// delete a vote part
+		else if ($action == 'vote_delete_part') {
+			check_voting_time();
+
+			if (!$identifier) {
+				echo json_encode(array('alert' => 'Es wurde kein Identifier angegeben!'));
+				exit;
+			}
+
+			unset($votes['venue'][$ipPrint][$identifier]);
+
+			saveReturnVotes($votes);
+		}
 		// vote up
 		else if ($action == 'vote_up') {
 			check_voting_time();

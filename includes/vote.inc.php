@@ -156,25 +156,43 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			sort($upVotes);
 			sort($downVotes);
 
-			$upVotes = empty($upVotes) ? '-' : implode(', ', $upVotes);
-			$downVotes = empty($downVotes) ? '-' : implode(', ', $downVotes);
-			$specialVote = empty($specialVote) ? '-' : $specialVote;
-
+			// style adaptions according to vote
 			if ($specialVote == 'Verweigerung')
 				$row_style = 'color: #f99';
 			else if ($specialVote == 'Egal')
 				$row_style = 'color: #999';
 			else
 				$row_style = '';
+
+			// cleanup data for output
+			array_walk($upVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
+			array_walk($downVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
+			$specialVote = htmlspecialchars($specialVote);
+
+			// current user => add delete functionality
+			if ($user == ip_anonymize()) {
+				array_walk($upVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
+				array_walk($downVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
+				if (!empty($specialVote))
+					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
+				else
+					$specialVote = '<a href="javascript:void(0)" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
+			}
+
+			// prepare data for output
+			$upVotes = empty($upVotes) ? '-' : implode(', ', $upVotes);
+			$downVotes = empty($downVotes) ? '-' : implode(', ', $downVotes);
+			$specialVote = empty($specialVote) ? '-' : $specialVote;
+
 			$upVotes_style = ($upVotes == '-') ? 'text-align: center' : '';
 			$downVotes_style = ($downVotes == '-') ? 'text-align: center' : '';
 			$specialVote_style = ($specialVote == '-' || count($specialVote) < 7) ? 'text-align: center' : '';
 
 			$html .= "<tr style='$row_style'>
 				<td>" . htmlspecialchars($user) . "</td>
-				<td style='$upVotes_style'>" . htmlspecialchars($upVotes) . "</td>
-				<td style='$downVotes_style'>" . htmlspecialchars($downVotes) . "</td>
-				<td style='$specialVote_style'>" . htmlspecialchars($specialVote) . "</td>
+				<td style='$upVotes_style'>" . $upVotes . "</td>
+				<td style='$downVotes_style'>" . $downVotes . "</td>
+				<td style='$specialVote_style'>" . $specialVote . "</td>
 			</tr>";
 		}
 		$html .= '</table>';
