@@ -5,7 +5,9 @@
 	header("Vary: Accept-Encoding");
 	header("Content-Type: text/html; charset=UTF-8");
 
-	if (!is_intern_ip()) {
+	// disallow access for extern ips; even with valid userid
+	// otherwise users could lock themselves out from extern
+	if (!is_intern_ip() || custom_userid_current()) {
 		echo json_encode(array('alert' => 'Zugriff verweigert!'));
 		exit;
 	}

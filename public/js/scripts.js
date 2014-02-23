@@ -749,6 +749,10 @@ window.alert = function(message, alertTitle, showIcon, width) {
 	if (typeof width == 'undefined')
 		width = 300;
 
+	// remove old alert elements (avoids stacking)
+	$('.alert').remove();
+
+	// create new alert element
 	$(document.createElement('div'))
 		.attr({title: alertTitle, 'class': 'alert'})
 		.html(message)
