@@ -24,12 +24,9 @@
 		}*/
 		// TODO new checks
 	}
-	$ipPrint = ip_anonymize($_SERVER['REMOTE_ADDR']);
-	$action = null;
-	if (isset($_POST['action']))
-		$action = trim($_POST['action']);
-	else if (isset($_GET['action']))
-		$action = trim($_GET['action']);
+	$ipPrint = ip_anonymize(get_identifier_ip());
+
+	$action = get_var('action');
 
 	// --------------
 	// handle actions

@@ -27,6 +27,8 @@ define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
 define('PRIVACY_INFO', '<text>');
 
+define('ADMIN_EMAIL', '<email>');
+
 setlocale(LC_ALL, array('de_AT', 'de_DE'));
 
 $overlay_info_data = '';

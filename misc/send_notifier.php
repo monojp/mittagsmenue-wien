@@ -9,7 +9,7 @@
 	// get action paramter
 	if (count($argv) == 2)
 		$action = trim($argv[1]);
-	if (!$action)
+	if (!isset($action) || !$action)
 		$action = get_var('action');
 	if (!in_array($action, array('remind', 'notify')))
 		exit("error, parameter action [remind|notify] invalid!\n");
@@ -21,8 +21,6 @@
 	$headers[] = "Content-type: text/html; charset=utf-8";
 	$headers[] = "X-Mailer: PHP/" . phpversion();
 	$headers[] = "Precedence: bulk";
-	// mail footer
-	$footer = '<div style="margin: 0px 10px">Die Benachrichtigungen können auf <a href="' . SITE_URL . '">' . SITE_URL . '</a> verändert/abgestellt werden.</div>';
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
 
@@ -41,6 +39,12 @@
 		if ($voted_mail_only && !isset($votes['venue'][$user]))
 			continue;
 
+		// get/generate custom_userid_access_url
+		$custom_userid = custom_userid_get($ip);
+		if (!$custom_userid)
+			$custom_userid = custom_userid_generate($ip);
+		$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
+
 		// notify, votes exist and valid
 		if ($action == 'notify' && $votes && !empty($votes['venue'])) {
 			// build html
@@ -48,7 +52,7 @@
 			$html .= '<div style="margin: 10px">' .
 				getTemperatureString(false, false) .
 			'</div>';
-			$html .= $footer;
+			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
 			$html = html_compress($html);
 
 			$success = mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
@@ -61,7 +65,7 @@
 		else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$user])) {
 			// build html
 			$html = "<div style='margin: 10px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
-			$html .= $footer;
+			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
 			$html = html_compress($html);
 
 			$success = mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));

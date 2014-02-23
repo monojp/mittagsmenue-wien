@@ -10,13 +10,7 @@
 
 	// handle actions
 	if ($action) {
-
-		// return email config
-		/*if ($action == 'email_config_get') {
-			$user = ip_anonymize($_SERVER['REMOTE_ADDR']);
-			echo json_encode(email_config_get($user));
-		}
-		else */if ($action == 'email_config_set') {
+		if ($action == 'email_config_set') {
 			$user = $_SERVER['REMOTE_ADDR'];
 			$email = get_var('email');
 			$vote_reminder = get_var('vote_reminder');

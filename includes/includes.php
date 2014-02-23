@@ -3,12 +3,13 @@
 require_once('config.php');
 require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
+require_once('customuserid.inc.php');
 
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code
 if (
 	!isset($_GET['minimal']) &&
-	stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
+	isset($_SERVER['HTTP_USER_AGENT']) && stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
 ) {
 	error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
 	header('HTTP/1.1 301 Moved Permanently');
@@ -214,9 +215,15 @@ function array_occurence_count($needle, $haystack) {
 	}
 	return $counter;
 }
+function get_identifier_ip() {
+	$ip = custom_userid_original_ip();
+	if (!$ip && isset($_SERVER['REMOTE_ADDR']))
+		$ip = $_SERVER['REMOTE_ADDR'];
+	return $ip;
+}
 function is_intern_ip() {
 	//return true; // DEBUG
-	$ip = $_SERVER['REMOTE_ADDR'];
+	$ip = get_identifier_ip();
 	$allow_voting_ip_prefix = ALLOW_VOTING_IP_PREFIX;
 	if (empty($allow_voting_ip_prefix) || strpos($ip, $allow_voting_ip_prefix) === 0)
 		return true;
@@ -564,8 +571,12 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 }
 
 // gets an anonymized name of an ip
-function ip_anonymize($ip) {
+function ip_anonymize($ip = null) {
 	global $ip_usernames;
+
+	if (!$ip)
+		$ip = get_identifier_ip();
+	$ip_original = custom_userid_original_ip();
 
 	// do ip <=> name stuff
 	// anonymyze ip
@@ -578,6 +589,8 @@ function ip_anonymize($ip) {
 	// set username
 	if (isset($ip_usernames[$ip]))
 		$ipPrint = $ip_usernames[$ip];
+	else if (isset($ip_usernames[$ip_original]))
+		$ipPrint = $ip_usernames[$ip_original];
 	else if (is_intern_ip())
 		$ipPrint = 'Guest_' . $ipLast;
 	else
