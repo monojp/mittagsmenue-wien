@@ -20,12 +20,40 @@ $.extend({
 	}
 });
 
+function custom_userid_generate(try_count) {
+	$.ajax({
+		type: "POST",
+		url:  'customuserid.php',
+		data: { "action": "custom_userid_generate", 'userid' : $('#userid').html() },
+		dataType: "json",
+		success: function(result) {
+			// alert from server (e.g. error)
+			if (typeof result.alert != 'undefined') {
+				alert(result.alert);
+			}
+			// got valid access url
+			else if (typeof result.access_url != 'undefined') {
+				$("#custom_userid_url").html(result.access_url);
+			}
+			else
+				alert('Fehler beim Erstellen der externen Zugriffs-URL.');
+		},
+		error: function() {
+			// retry on error
+			if (try_count < ajax_retry_count_max)
+				window.setTimeout(function() { custom_userid_generate(try_count+1) }, (Math.random()*ajax_retry_time_max)+1);
+			else
+				alert('Fehler beim Erstellen der externen Zugriffs-URL.');
+		}
+	});
+}
+
 // sends vote action (vote_up, vote_down, vote_get) and identifier (delete, restaurant name, ..) to server
 function vote_helper(action, identifier, note, try_count) {
 	$.ajax({
 		type: "POST",
-		url:  "vote.php",
-		data: { "action": action, "identifier": identifier, "note": note},
+		url:  'vote.php',
+		data: { "action": action, "identifier": identifier, "note": note, 'userid' : $('#userid').html()},
 		dataType: "json",
 		success: function(result) {
 
@@ -102,8 +130,8 @@ function positionHandler(position) {
 	// get address via ajax
 	$.ajax({
 		type: "POST",
-		url:  "locator.php",
-		data: { "action": "latlngToAddress", "lat": lat, "lng": lng},
+		url:  'locator.php',
+		data: { "action": "latlngToAddress", "lat": lat, "lng": lng, 'userid' : $('#userid').html()},
 		dataType: "json",
 		success: function(result) {
 
@@ -212,8 +240,8 @@ function setLocation(location, force_geolocation, try_count) {
 	// get lat / lng via ajax
 	$.ajax({
 		type: "POST",
-		url:  "locator.php",
-		data: { "action": "addressToLatLong", "address": location},
+		url:  'locator.php',
+		data: { "action": "addressToLatLong", "address": location, 'userid' : $('#userid').html()},
 		dataType: "json",
 		success: function(result) {
 
@@ -379,7 +407,8 @@ function handle_href_reference_details(id, reference, name, try_count) {
 			'action'    : 'details',
 			'id'        : id,
 			'reference' : reference,
-			'sensor'    : isMobileDevice()
+			'sensor'    : isMobileDevice(),
+			'userid'    : $('#userid').html()
 		},
 		dataType: 'json',
 		async: false,
@@ -417,7 +446,8 @@ function get_alt_venues(lat, lng, radius, results_old, success_function, try_cou
 			'lat'    : lat,
 			'lng'    : lng,
 			'radius' : radius,
-			'sensor' : isMobileDevice()
+			'sensor' : isMobileDevice(),
+			'userid' : $('#userid').html()
 		},
 		dataType: "json",
 		success: function(result) {
@@ -556,7 +586,8 @@ function setVoteSettingsDialog() {
 						'action': 'email_config_set',
 						'email': $('#email').val(),
 						'vote_reminder': $('#vote_reminder').is(':checked'),
-						'voted_mail_only': $('#voted_mail_only').is(':checked')
+						'voted_mail_only': $('#voted_mail_only').is(':checked'),
+						'userid' : $('#userid').html()
 					},
 					dataType: "json",
 					success: function(result) {
@@ -576,17 +607,6 @@ function setVoteSettingsDialog() {
 
 // INIT
 $(document).ready(function() {
-	// overwrite tooltip methode to use
-	// html tooltips
-	// update 2014-02-13: not used anymore?
-	/*$.widget("ui.tooltip", $.ui.tooltip, {
-		options: {
-			content: function () {
-				return $(this).prop('title');
-			}
-		}
-	});*/
-
 	// location ready event
 	var locationReadyFired = false;
 	$(document).on('locationReady', function() {

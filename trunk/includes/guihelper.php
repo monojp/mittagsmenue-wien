@@ -2,6 +2,7 @@
 
 require_once('../includes/includes.php');
 require_once('../includes/vote.inc.php');
+require_once('../includes/customuserid.inc.php');
 
 // default location for JS
 $city = LOCATION_FALLBACK;
@@ -10,16 +11,6 @@ $lng = LOCATION_FALLBACK_LNG;
 $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
-
-/*function get_default_location_values_html() {
-	global $city, $lat, $lng;
-
-	return "
-		<div id='default_city' style='display: none'>$city</div>
-		<div id='default_lat' style='display: none'>$lat</div>
-		<div id='default_lng' style='display: none'>$lng</div>
-	";
-}*/
 
 function get_overlay_info_html() {
 	global $overlay_info_data;
@@ -150,14 +141,37 @@ function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email_config = email_config_get($_SERVER['REMOTE_ADDR']);
+	$email_config = email_config_get(get_identifier_ip());
 	$email = isset($email_config['email']) ? $email_config['email'] : '';
 	$vote_reminder = isset($email_config['vote_reminder']) ? $email_config['vote_reminder'] : false;
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 	$voted_mail_only = isset($email_config['voted_mail_only']) ? $email_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
+	$custom_userid_gui_output = '';
+	$custom_userid = custom_userid_get();
+	if (!$custom_userid)
+		$custom_userid = get_var('userid');
+
+	// only show the custom_userid GUI intern
+	// otherwise users could lock themselves out from extern
+	if (!$custom_userid || is_intern_ip()) {
+		$custom_userid_url = custom_userid_access_url_get($custom_userid);
+		$custom_userid_url = empty($custom_userid_url) ? 'nicht gesetzt' : $custom_userid_url;
+		$custom_userid_gui_output = '
+			<br />
+			<fieldset>
+				<label for="email">Externe Zugriffs-URL</label>
+				<p id="custom_userid_url">
+				' . $custom_userid_url . '
+				</p>
+				<a href="javascript:void(0)" onclick="custom_userid_generate()">Neue URL generieren</a>
+			</fieldset>
+		';
+	}
+
 	return '
+		<div style="display: none" id="userid">' . $custom_userid . '</div>
 		<div id="setAlternativeVenuesDialog" class="hidden">
 			<fieldset>
 				<p id="div_voting_alt_loader">
@@ -173,6 +187,9 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<p>
 				' . get_special_vote_actions_html() . '
 				</p>
+				<p>
+					Benutzername: ' . ip_anonymize() . '
+				</p>
 			</fieldset>
 			<br />
 			<fieldset>
@@ -181,15 +198,14 @@ function get_alt_venue_and_vote_setting_dialog() {
 					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
 				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
-					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' />
-					Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
+					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
 				</label>
 				<br />
 				<label title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
-					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' />
-					Email(s) nur versenden, wenn selbst gevoted
+					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Email(s) nur versenden, wenn selbst gevoted
 				</label>
 			</fieldset>
+			' . $custom_userid_gui_output . '
 		</div>
 	';
 }

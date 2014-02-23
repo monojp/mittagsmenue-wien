@@ -6,11 +6,7 @@
 	header("Content-Type: text/html; charset=UTF-8");
 
 
-	$action = null;
-	if (isset($_POST['action']))
-		$action = trim($_POST['action']);
-	else if (isset($_GET['action']))
-		$action = trim($_GET['action']);
+	$action = get_var('action');
 
 	// handle actions
 	if ($action) {
