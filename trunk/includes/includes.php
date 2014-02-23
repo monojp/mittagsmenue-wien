@@ -580,12 +580,11 @@ function ip_anonymize($ip = null) {
 
 	// do ip <=> name stuff
 	// anonymyze ip
-	$ipLast = explode('.', $ip);
-	$ipLast = $ipLast[3];
-	$ipPrint = explode('.', $ip);
-	for ($i=0; $i<count($ipPrint)-1; $i++)
-		$ipPrint[$i] = 'x';
-	$ipPrint = implode('.', $ipPrint);
+	$ip_parts = explode('.', $ip);
+	$ipLast = end($ip_parts);
+	for ($i=0; $i<count($ip_parts)-1; $i++)
+		$ip_parts[$i] = 'x';
+	$ipPrint = implode('.', $ip_parts);
 	// set username
 	if (isset($ip_usernames[$ip]))
 		$ipPrint = $ip_usernames[$ip];
