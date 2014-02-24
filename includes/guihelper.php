@@ -155,7 +155,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 
 	// only show the custom_userid GUI intern
 	// otherwise users could lock themselves out from extern
-	if (!$custom_userid && is_intern_ip()) {
+	if (!custom_userid_current() && is_intern_ip()) {
 		$custom_userid_url = custom_userid_access_url_get($custom_userid);
 		$custom_userid_url = empty($custom_userid_url) ? 'nicht gesetzt' : $custom_userid_url;
 		$custom_userid_gui_output = '
