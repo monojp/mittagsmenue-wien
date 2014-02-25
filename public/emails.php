@@ -11,7 +11,7 @@
 	// handle actions
 	if ($action) {
 		if ($action == 'email_config_set') {
-			$user = $_SERVER['REMOTE_ADDR'];
+			$user = get_identifier_ip();
 			$email = get_var('email');
 			$vote_reminder = get_var('vote_reminder');
 			$voted_mail_only = get_var('voted_mail_only');
