@@ -66,7 +66,8 @@ function vote_helper(action, identifier, note, try_count) {
 			intervalVotes = setInterval(function(){vote_get()}, Math.floor(5000 * voting_over_interval_multiplier));
 
 			// exit, if we got the same as before
-			if (typeof JSON != 'undefined' && JSON.stringify(oldVoteData) == JSON.stringify(result))
+			// except it is a server alert
+			if (typeof JSON != 'undefined' && JSON.stringify(oldVoteData) == JSON.stringify(result) && typeof result.alert == 'undefined')
 				return;
 
 			// alert from server (e.g. error)
@@ -77,8 +78,9 @@ function vote_helper(action, identifier, note, try_count) {
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
 				$("#dialog_vote_summary").css('display', 'table');
-				// highlight dialog, play notification sound
-				$("#dialog_vote_summary").effect('highlight');
+				// highlight dialog (only if voting not over)
+				if (!result.voting_over)
+					$("#dialog_vote_summary").effect('highlight');
 			}
 			// no | empty result => hide voting dialog
 			else {
