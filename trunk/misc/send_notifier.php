@@ -55,7 +55,7 @@
 			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
 			$html = html_compress($html);
 
-			$success = mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
+			$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 			if ($success)
 				echo "sent email to $email";
 			else
@@ -68,7 +68,7 @@
 			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
 			$html = html_compress($html);
 
-			$success = mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
+			$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 			if ($success)
 				echo "sent email to $email";
 			else
