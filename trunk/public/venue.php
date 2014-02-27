@@ -16,7 +16,7 @@
 		$timestamp = get_var('timestamp');
 
 		$venue = new $classname;
-		echo json_encode($venue->getMenuData());
+		echo json_encode(html_compress($venue->getMenuData()));
 	}
 	else {
 		echo json_encode(array('alert' => 'No classname set'));

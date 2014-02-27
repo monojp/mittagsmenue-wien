@@ -4,7 +4,7 @@ class tewa extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'tewa Naschmarkt';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Naschmarkt 672, 1040 Wien';
 		$this->addressLat = '48.199469';
 		$this->addressLng = '16.364790';
