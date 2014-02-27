@@ -113,7 +113,7 @@ function get_note_dialog_html() {
 				<fieldset>
 					<label for="noteInput">Notiz</label>
 					<br />
-					<input type="text" name="note" id="noteInput" value="" maxlength="64" style="width: 100%" />
+					<input type="text" name="note" id="noteInput" value="" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 100%" />
 				</fieldset>
 			</form>
 		</div>

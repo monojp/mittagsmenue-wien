@@ -2,6 +2,7 @@
 
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_MAILS_FILE', TMP_PATH . 'votemails.json');
+define('VOTE_NOTE_MAX_LENGTH', 128);
 
 // get's mail config of the user or from all if null
 function email_config_get($user = null) {
@@ -168,6 +169,9 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			array_walk($upVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
 			array_walk($downVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
 			$specialVote = htmlspecialchars($specialVote);
+
+			// replace urls with an a tag
+			$specialVote = preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank">$1</a>', $specialVote);
 
 			// current user => add delete functionality
 			if ($user == ip_anonymize()) {
