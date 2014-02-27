@@ -91,7 +91,7 @@ function get_location_dialog_html() {
 								<div id="sliderDistance" style="width: 100px"></div>
 							</td>
 							<td>
-								<input type="text" id="distance" style="width: 50px; margin-left: 10px" />
+								<input type="number" id="distance" style="width: 50px; margin-left: 10px" />
 							</td>
 						</tr>
 						<tr>
@@ -195,7 +195,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 			<fieldset>
 				<label for="email">Email-Benachrichtigung an</label>
 				<p>
-					<input type="text" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
+					<input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
 				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
