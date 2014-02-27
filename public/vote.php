@@ -141,14 +141,14 @@
 			$note = str_replace_array($badwords, '***', $note);
 
 			// check vote length
-			if (strlen($note) > 64) {
-				echo json_encode(array('alert' => 'Die Notiz ist zu lange! Es sind max. 64 Zeichen erlaubt!'));
+			if (strlen($note) > VOTE_NOTE_MAX_LENGTH) {
+				echo json_encode(array('alert' => 'Die Notiz ist zu lange! Es sind max. ' . VOTE_NOTE_MAX_LENGTH . ' Zeichen erlaubt!'));
 				exit;
 			}
 
 			// check vote via regex
-			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\.:_#\*\?\!()-]*$/', $note)) {
-				echo json_encode(array('alert' => 'Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")" und Umlaute'));
+			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\/\.:_#\*\?\!()-]*$/', $note)) {
+				echo json_encode(array('alert' => 'Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")", "/" und Umlaute'));
 				exit;
 			}
 
