@@ -124,12 +124,12 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		return "
 			<div title='Wien Innere Stadt: $desc ($time) $desc_detail' style='text-align: center; display: inline-table'>
 				<img src='$icon_url' width='$image_width' height='$image_height' />
-				<div style='font-size: 0.8em; padding: 3px; border: 1px solid black; border-radius: 5px; box-shadow: 0px 0px 3px gray'>$temp °C</div>
+				<div style='color: black ! important; font-size: 0.8em; padding: 3px; border: 1px solid black; border-radius: 5px; box-shadow: 0px 0px 3px gray'>$temp °C</div>
 			</div>
 		";
 	}
 
-	return "Aktuelles Wetter: <a title='$desc_detail' href='javascript:void(0)' style='cursor: default'>$temp °C | $desc ($time)</a>";
+	return "Aktuelles Wetter: <a title='$desc_detail' href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank' style='cursor: default'>$temp °C | $desc ($time)</a>";
 }
 
 ?>

@@ -27,7 +27,9 @@ function get_overlay_info_html() {
 
 function get_temperature_info_html() {
 	return "
-		<div id='weatherContainer' class='dialog_opener_float'></div>
+		<a href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank'>
+			<div id='weatherContainer' class='dialog_opener_float'></div>
+		</a>
 		<script type='text/javascript'>
 			head.ready('scripts', function() {
 				$.ajax({

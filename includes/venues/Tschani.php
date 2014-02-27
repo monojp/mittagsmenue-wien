@@ -4,7 +4,7 @@ class Tschani extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Gasthaus T\'schani';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Marchettigasse 1, 1060 Wien';
 		$this->addressLat = '48.191212';
 		$this->addressLng = '16.351033';

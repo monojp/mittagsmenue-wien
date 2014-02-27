@@ -628,8 +628,6 @@ function in_range($val, $min, $max) {
 
 // removes unecessary data (newlines, ..) from html
 function html_compress($html) {
-	$response = $html;
-
 	// newlines, tabs & carriage return
 	$response = str_replace(array("\n", "\t", "\r"), '', $html);
 	// convert multiple spaces into one

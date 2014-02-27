@@ -217,7 +217,8 @@ function vote_summary_html($votes, $include_head_body_tags) {
 
 	if ($include_head_body_tags)
 		$html .= '</body></html>';
-	return $html;
+
+	return html_compress($html);
 }
 
 ?>
