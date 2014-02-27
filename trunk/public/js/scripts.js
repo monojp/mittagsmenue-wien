@@ -551,6 +551,7 @@ function init_venues_alt() {
 			$('#table_voting_alt').show();
 			if (dataTable.length > 0)
 				dataTable.fnAdjustColumnSizing();
+			$('#table_voting_alt').parent().find('input[type="text"]').attr('type', 'search');
 			$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
 		}, 0);
 	}, 0);

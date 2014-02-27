@@ -70,7 +70,7 @@ echo '<br /><br />';
 
 $action = htmlspecialchars($_SERVER['REQUEST_URI']);
 echo "Stichwort-Suche: <form action='$action' method='post'>
-	<input type='text' name='food' value='$foodKeyword'></input>
+	<input type='search' name='food' value='$foodKeyword'></input>
 </form>";
 
 if (!empty($datasetSize)) {
@@ -204,6 +204,7 @@ else {
 			}
 		});
 		$('#table_ingredients').show();
+		$('#table_ingredients').parent().find('input[type="text"]').attr('type', 'search');
 		$('#table_compositions').dataTable({
 			'aaSorting': [[ 2, 'desc' ]],
 			"oLanguage": {
@@ -219,9 +220,10 @@ else {
 				}
 			}
 		});
+		$('#table_compositions').parent().find('input[type="text"]').attr('type', 'search');
+		$('#table_compositions').show();
 
 		$('#tagCloudFoods').show();
-		$('#table_compositions').show();
 		$('#loader_stats').hide();
 	});
 </script>
