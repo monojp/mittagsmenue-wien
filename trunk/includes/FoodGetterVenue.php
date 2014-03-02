@@ -145,7 +145,7 @@ abstract class FoodGetterVenue {
 					}
 					else {
 						foreach ($price as &$p) {
-							$p = trim($p, ' ,.');
+							$p = trim($p, ' ,./');
 							$p = str_replace(',', '.', $p);
 							$p = money_format('%.2n', $p);
 						}
