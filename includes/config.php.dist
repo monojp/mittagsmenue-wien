@@ -29,7 +29,10 @@ define('PRIVACY_INFO', '<text>');
 
 define('ADMIN_EMAIL', '<email>');
 
-setlocale(LC_ALL, array('de_AT', 'de_DE'));
+$locales = array('de_AT.UTF-8', 'de_AT.UTF-8');
+$locale_new = setlocale(LC_ALL, $locales);
+if (!in_array($locale_new, $locales))
+	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
 
 $overlay_info_data = '';
 $overlay_info_version = '1.0';
