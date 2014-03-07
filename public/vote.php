@@ -161,7 +161,7 @@
 		}
 		// get all votes
 		else if ($action == 'vote_get') {
-			if (isset($votes['venue'])) {
+			if (isset($votes['venue']) && !empty($votes['venue'])) {
 				// sort and return votes
 				if (is_array($votes['venue']))
 					ksort($votes['venue']);

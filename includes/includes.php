@@ -581,7 +581,6 @@ function ip_anonymize($ip = null) {
 
 	if (!$ip)
 		$ip = get_identifier_ip();
-	$ip_original = custom_userid_original_ip();
 
 	// do ip <=> name stuff
 	// anonymyze ip
@@ -593,8 +592,6 @@ function ip_anonymize($ip = null) {
 	// set username
 	if (isset($ip_usernames[$ip]))
 		$ipPrint = $ip_usernames[$ip];
-	else if (isset($ip_usernames[$ip_original]))
-		$ipPrint = $ip_usernames[$ip_original];
 	else if (is_intern_ip())
 		$ipPrint = 'Guest_' . $ipLast;
 	else
