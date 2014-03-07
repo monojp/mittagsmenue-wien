@@ -112,8 +112,8 @@ function get_note_dialog_html() {
 function get_special_vote_actions_html() {
 	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Verweigerung\')">Verweigerung</a>';
 	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Egal\')">Egal</a>';
-	$actions[] = '<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz setzen</a>';
-	$actions[] = '<a href="javascript:void(0)" onclick="vote_delete()">Vote Löschen</a>';
+	$actions[] = '<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz</a>';
+	$actions[] = '<a href="javascript:void(0)" onclick="vote_delete()">Löschen</a>';
 	return implode(' | ', $actions);
 }
 
@@ -211,7 +211,7 @@ function get_vote_div_html() {
 		$vote_loader = '
 		<div style="margin: 0px 5px">
 			Warte auf weitere Stimmen
-			<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
+			<img src="imagesCommon/loader_small.gif" width="100" height="15" alt="ladebalken" style="vertical-align: middle" />
 		</div>
 		';
 		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time_print!";
@@ -223,6 +223,7 @@ function get_vote_div_html() {
 		<div style="clear: both"></div>
 		<div id="dialog_vote_summary">
 			<div id="dialog_ajax_data"></div>
+			<div style="margin: 5px">' . get_special_vote_actions_html() . '</div>
 			' . $vote_loader . '
 			<div class="error" style="margin: 5px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
 				' . $voting_info_text . '
