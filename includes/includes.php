@@ -11,7 +11,7 @@ if (
 	!isset($_GET['minimal']) &&
 	isset($_SERVER['HTTP_USER_AGENT']) && stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
 ) {
-	error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
+	//error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
 	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ?minimal&' . $_SERVER['QUERY_STRING']);
 }

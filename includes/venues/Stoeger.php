@@ -18,7 +18,10 @@ class Stoeger extends FoodGetterVenue {
 	}
 
 	private function alternative_date_fix($date) {
-		return str_replace('Donnerstag', 'Donnerstage', $date);
+		$date = str_replace('Donnerstag', 'Donnerstage', $date);
+		$date = str_replace('Mittwoch,', 'Mitwoch', $date);
+		$date = str_replace('Mittwoch', 'Mitwoch', $date);
+		return $date;
 	}
 
 	protected function parseDataSource() {
@@ -68,12 +71,12 @@ class Stoeger extends FoodGetterVenue {
 		$posStart = strposAfter($dataTmp, '>', $posEnd);
 		if (!$posStart)
 			return;
-		$posEnd = stripos($dataTmp, '</p>', $posStart);
+		$posEnd = stripos($dataTmp, '<hr', $posStart);
 		if (!$posEnd)
 			return;
 		$main = substr($dataTmp, $posStart, $posEnd - $posStart);
 		$main = strip_tags($main, '<br>');
-		//error_log(print_r($data, true));
+		//error_log(print_r($main, true));
 		//return;
 		// remove unwanted stuff
 		$main = str_replace(array('&nbsp;'), '', $main);
@@ -85,23 +88,25 @@ class Stoeger extends FoodGetterVenue {
 		//error_log(print_r($main, true));
 		//return;
 
-		// get price out of main
-		$posStart = strposAfter($main, '€');
-		$price = substr($main, $posStart);
-		$price = trim($price);
-		$price = str_replace(',', '.', $price);
-		//error_log(print_r($price, true));
+		// get prices out of main via regex
+		preg_match_all('/[0-9]+,[0-9]+/', $main, $prices);
+		//error_log(print_r($prices[0], true));
 		//return;
-		$this->price = $price;
+		$this->price = isset($prices[0]) ? $prices[0] : null;
 
 		// cleanup main
-		$posEnd = stripos($main, 'á');
-		$main = substr($main, 0, $posEnd);
+		$main = preg_replace('/[0-9]+,[0-9]+/', '', $main);
+		$main = str_replace_array(array('€', 'á'), '', $main);
 		$main = trim($main);
 		//error_log(print_r($main, true));
 		//return;
 
-		$data = "$starter\n1. $main";
+		$data = "$starter";
+		$main = explode('oder', $main);
+		foreach ($main as $index => $food) {
+			$food = cleanText($food);
+			$data .= "\n" . ($index + 1) . ". $food";
+		}
 		$data = str_replace("\n", "<br />", $data);
 		//error_log(print_r($data, true));
 		//return;
