@@ -3,7 +3,7 @@ var usedGeolocation = false;
 var oldVoteData = null;
 var voting_over_interval_multiplier = 1;
 var venues_ajax_query = Array();
-var ajax_retry_time_max = 1000;
+var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
 
 function isMobileDevice() {
