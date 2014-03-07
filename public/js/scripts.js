@@ -82,11 +82,6 @@ function vote_helper(action, identifier, note, try_count) {
 				if (!result.voting_over)
 					$("#dialog_vote_summary").effect('highlight');
 			}
-			// no | empty result => hide voting dialog
-			else {
-				if (intervalVotes)
-					$("#dialog_vote_summary").hide();
-			}
 			oldVoteData = result;
 		},
 		error: function() {

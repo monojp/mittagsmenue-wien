@@ -47,6 +47,10 @@
 
 			unset($votes['venue'][$ip][$identifier]);
 
+			// no user votes anymore? remove whole user info
+			if (empty($votes['venue'][$ip]))
+				unset($votes['venue'][$ip]);
+
 			saveReturnVotes($votes);
 		}
 		// vote up
@@ -150,14 +154,14 @@
 			ksort($votes['venue'][$ip]);
 
 			// delete entry if empty note is the only vote
-			if (empty($note) && count($votes['venue'][$ipPrint]) == 1)
+			if (empty($note) && count($votes['venue'][$ip]) == 1)
 				unset($votes['venue'][$ip]);
 
 			saveReturnVotes($votes);
 		}
 		// get all votes
 		else if ($action == 'vote_get') {
-			if (isset($votes['venue']) && !empty($votes['venue'])) {
+			if (isset($votes['venue'])) {
 				// sort and return votes
 				if (is_array($votes['venue']))
 					ksort($votes['venue']);
