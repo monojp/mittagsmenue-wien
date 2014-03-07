@@ -12,19 +12,6 @@ $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
 
-function get_overlay_info_html() {
-	global $overlay_info_data;
-	global $overlay_info_version;
-
-	if (empty($overlay_info_data) || empty($overlay_info_version))
-		return;
-
-	return "
-		<div id='overlay_info_version' style='display: none'>$overlay_info_version</div>
-		<div id='overlay_info' style='display: none'>$overlay_info_data</div>
-	";
-}
-
 function get_temperature_info_html() {
 	return "
 		<a href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank'>

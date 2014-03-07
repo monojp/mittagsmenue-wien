@@ -174,7 +174,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			$specialVote = preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank">$1</a>', $specialVote);
 
 			// current user => add delete functionality
-			if ($user == ip_anonymize()) {
+			if ($user == get_identifier_ip()) {
 				array_walk($upVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
 				array_walk($downVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
 				if (!empty($specialVote))
@@ -193,7 +193,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			$specialVote_style = ($specialVote == '-' || count($specialVote) < 7) ? 'text-align: center' : '';
 
 			$html .= "<tr style='$row_style'>
-				<td>" . htmlspecialchars($user) . "</td>
+				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>
 				<td style='$upVotes_style'>" . $upVotes . "</td>
 				<td style='$downVotes_style'>" . $downVotes . "</td>
 				<td style='$specialVote_style'>" . $specialVote . "</td>
