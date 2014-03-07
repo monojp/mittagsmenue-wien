@@ -1,6 +1,11 @@
 <?php
 	require_once('../includes/guihelper.php');
 	require_once('header.php');
+
+	// minimal site and votes allowed, refresh every 10s
+	if (isset($_GET['minimal']) && show_voting())
+		echo '<meta http-equiv="refresh" content="10" />';
+
 	echo '</head><body>';
 
 	// date picker element
@@ -30,8 +35,15 @@
 	echo "<span style='font-weight: bold; font-size: 2em'>Mittagsmenü Wien, $dayText</span><br />";
 
 	// show minimal (no JS) site notice
-	if (isset($_GET['minimal']))
+	if (isset($_GET['minimal'])) {
 		echo get_minimal_site_notice_html();
+		// also show the current voting status if voting allowed
+		if (show_voting()) {
+			$votes = getAllVotes();
+			if (!empty($votes))
+				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
+		}
+	}
 	else {
 		// location and alt_venue_and_vote_setting opener
 		echo '<div class="dialog_opener_float">' . get_location_opener_html() . get_alt_venue_and_vote_setting_opener_html() . '</div>';
