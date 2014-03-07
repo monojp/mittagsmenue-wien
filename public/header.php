@@ -27,7 +27,7 @@
 	require_once('../includes/venues.php');
 
 	// css
-	if (USE_MINIMZED_JS_CSS) {
+	if (USE_MINIMZED_JS_CSS_HTML) {
 		$stylesCSS = 'css/styles-min.css';
 	}
 	else {
@@ -43,7 +43,7 @@
 	$headLoadJS = 'js/head.min.js';
 	$jqueryJS = 'js/jquery-1.11.0.min.js';
 	$jqueryUiJS = 'js/jquery-ui-1.10.4.custom.min.js';
-	if (USE_MINIMZED_JS_CSS) {
+	if (USE_MINIMZED_JS_CSS_HTML) {
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de-min.js';
 		$scriptsJS = 'js/scripts-min.js';
 		$jqueryCookieJS = 'js/jquery.cookie-min.js';
