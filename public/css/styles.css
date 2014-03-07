@@ -94,6 +94,9 @@ a:visited:not(.ui-state-default):not(.menuData) {
 .tagCloudElement {
 	margin-right: 10px;
 }
+#table_ingredients, #table_ingredients td, #table_ingredients th, #table_compositions, #table_compositions td, #table_compositions th {
+	border: 1px solid gray;
+}
 #table_ingredients_wrapper, #table_compositions_wrapper {
 	float: left;
 	padding: 10px;

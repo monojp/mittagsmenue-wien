@@ -40,21 +40,19 @@
 		echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.min.css') . '" />';
 
 	// javascript
-	$headLoadJS = 'js/head.min.js';
+	$headLoadJS = 'js/head.load.min.js';
 	$jqueryJS = 'js/jquery-1.11.0.min.js';
 	$jqueryUiJS = 'js/jquery-ui-1.10.4.custom.min.js';
 	if (USE_MINIMZED_JS_CSS_HTML) {
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de-min.js';
 		$scriptsJS = 'js/scripts-min.js';
 		$jqueryCookieJS = 'js/jquery.cookie-min.js';
-		$tagCloudJS = 'js/jquery.tagcloud-min.js';
 		$tableJS = 'js/jquery.dataTables-min.js';
 	}
 	else {
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de.js';
 		$scriptsJS = 'js/scripts.js';
 		$jqueryCookieJS = 'js/jquery.cookie.js';
-		$tagCloudJS = 'js/jquery.tagcloud.js';
 		$tableJS = 'js/jquery.dataTables.js';
 	}
 	if (!isset($_GET['minimal']))
@@ -70,7 +68,6 @@
 				head.js("' . cacheSafeUrl($jqueryUiJS) . '", function() {
 					head.js(
 						{jqueryui_datepicker_de: "' . cacheSafeUrl($datePickerLocalJS). '"},
-						{tagcloud: "' . cacheSafeUrl($tagCloudJS) .'"},
 						{table: "' . cacheSafeUrl($tableJS) .'"}
 					);
 				});

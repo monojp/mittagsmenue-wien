@@ -70,32 +70,13 @@ echo '<br /><br />';
 
 $action = htmlspecialchars($_SERVER['REQUEST_URI']);
 echo "Stichwort-Suche: <form action='$action' method='post'>
-	<input type='search' name='food' value='$foodKeyword'></input>
+	<input type='search' name='food' value='$foodKeyword' />
 </form>";
 
 if (!empty($datasetSize)) {
+	// loader for javascript
 	if (!isset($_GET['minimal']))
 		echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />';
-	// tagcloud with ingredients
-	// usage see https://github.com/addywaddy/jquery.tagcloud.js
-	if (empty($foodKeyword))
-		echo '<h2>Tag Cloud</h2>';
-	else
-		echo '<h2>Tag Cloud bezogen auf "' . $foodKeyword . '"</h2>';
-	if (!isset($_GET['minimal']))
-		echo '<div id="tagCloudFoods" style="display: none">';
-	else
-		echo '<div id="tagCloudFoods">';
-	$cnt = 1;
-	foreach ($foods as $food => $amount) {
-		$url = htmlspecialchars('statistics.php?date=' . $date . '&keyword=' . urlencode($keyword) . '&food=' . urlencode($food));
-		$food = htmlspecialchars($food);
-		echo "<a href='$url' rel='$amount' class='tagCloudElement'>$food</a>";
-		$cnt++;
-		if ($cnt > 128) break;
-	}
-	echo '</div>';
-	echo '<br />';
 
 	if (empty($foodKeyword))
 		echo '<h2>Häufigkeiten</h2>';
@@ -103,9 +84,9 @@ if (!empty($datasetSize)) {
 		echo '<h2>Häufigkeiten bezogen auf "' . $foodKeyword . '"</h2>';
 	arsort($foods);
 	if (!isset($_GET['minimal']))
-		echo '<table id="table_ingredients" border="1" class="stats" style="display: none">';
+		echo '<table id="table_ingredients" class="stats" style="display: none">';
 	else
-		echo '<table id="table_ingredients" border="1" class="stats">';
+		echo '<table id="table_ingredients" class="stats">';
 	echo '<thead><tr style="text-align: left">
 		<th>Bestandteil</th>
 		<th>Daten</th>
@@ -133,7 +114,7 @@ if (!empty($datasetSize)) {
 
 	arsort($compositionsAbsolute);
 	if (!isset($_GET['minimal']))
-		echo '<table id="table_compositions" border="1" class="stats" style="display: none">';
+		echo '<table id="table_compositions" class="stats" style="display: none">';
 	else
 		echo '<br /><table id="table_compositions" border="1" class="stats">';
 	echo '<thead><tr style="text-align: left">
@@ -178,15 +159,6 @@ else {
 
 ?>
 <script type="text/javascript">
-	head.ready('scripts', function() {
-		head.ready("tagcloud", function () {
-			$.fn.tagcloud.defaults = {
-				size: {start: 10, end: 17, unit: 'pt'},
-				color: {start: '#aaa', end: '#f02'}
-			};
-			$('#tagCloudFoods a').tagcloud();
-		});
-	});
 	head.ready('table', function() {
 		$('#table_ingredients').dataTable({
 			'aaSorting': [[ 2, 'desc' ]],
@@ -223,7 +195,6 @@ else {
 		$('#table_compositions').parent().find('input[type="text"]').attr('type', 'search');
 		$('#table_compositions').show();
 
-		$('#tagCloudFoods').show();
 		$('#loader_stats').hide();
 	});
 </script>
