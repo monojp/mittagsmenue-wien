@@ -63,11 +63,11 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	font-size: 0.8em;
 }
 .icon {
-	margin: 5px;
+	margin: 0px 5px;
 	vertical-align: middle;
 }
 .menu {
-	margin-top: 5px;
+	margin-top: 3px;
 }
 .menuData {
 	/*font-weight: bold;*/

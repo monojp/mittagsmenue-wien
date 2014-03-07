@@ -9,26 +9,33 @@ define('WEATHER_IMG_PATH', dirname(__FILE__) . '/../public/' . WEATHER_IMG_PATH_
 function queryTemperature() {
 	$temp = $desc = $desc_detail = null;
 
-	$html = file_get_contents('http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien/?' . uniqid());
+	$html = file_get_contents('http://www.zamg.ac.at/cms/de/wetter/wetter-oesterreich/wien/?' . uniqid());
 
 	// get description
-	$start = strposAfter($html, 'alt="Wien Innere Stadt:');
+	$start = strposAfter($html, 'alt="Wien:');
 	if ($start === false)
 		return false;
 	$end = strpos($html, '"', $start);
 	$desc = substr($html, $start, $end - $start);
 	$desc = cleanText($desc);
+	//error_log($desc);
 
 	// get temperature
-	$start = strposAfter($html, 'title="Wien Innere Stadt, Temp:');
+	$start = strposAfter($html, 'title="Wien,');
 	if ($start === false)
 		return false;
-	$end = strpos($html, '&deg;C', $start);
+	$end = strposAfter($html, '&deg;"', $start);
 	$temp = substr($html, $start, $end - $start);
+	$temp = str_replace(' ', '', $temp);
+	$temp = str_replace('Min:', 'Min: ', $temp);
+	$temp = str_replace('Max:', 'Max: ', $temp);
+	$temp = str_replace('/', ' / ', $temp);
+	$temp = trim($temp, '"');
 	$temp = cleanText($temp);
+	//error_log($temp);
 
 	// get icon url
-	$start = strposAfter($html, 'http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/tawes-verlaufsgraphiken/wien_innere_stadt/temperatur');
+	$start = strposAfter($html, 'olimg_eins_wien');
 	if ($start === false)
 		return false;
 	$start = strposAfter($html, 'src="', $start);
@@ -38,14 +45,13 @@ function queryTemperature() {
 	$iconUrl = substr($html, $start, $end - $start);
 	$iconUrl = cleanText($iconUrl);
 	$iconFilename = basename($iconUrl);
+	//error_log($iconFilename);
 	// get icon data and save locally
 	$iconData = file_get_contents($iconUrl);
 	file_put_contents(WEATHER_IMG_PATH . $iconFilename, $iconData);
 	$iconLocalUrl = WEATHER_IMG_PATH_NAME . $iconFilename;
 	// trim icon with imagemagick to minimize not used space
-	shell_exec("convert $iconLocalUrl -trim $iconLocalUrl 2> /dev/null");
-
-	$html = file_get_contents('http://www.zamg.ac.at/cms/de/wetter/wetter-oesterreich/wien/?' . uniqid());
+	shell_exec("convert $iconLocalUrl -trim +repage $iconLocalUrl 2> /dev/null");
 
 	// get forecast for the day
 	$start = strposAfter($html, 'prognosenText">');
@@ -53,7 +59,9 @@ function queryTemperature() {
 		return false;
 	$end = strpos($html, '</div>', $start);
 	$desc_detail = substr($html, $start, $end - $start);
+	$desc_detail = str_replace('aktualisiert', ' aktualisiert', $desc_detail);
 	$desc_detail = cleanText(strip_tags($desc_detail));
+	//error_log($desc_detail);
 
 	return array(
 		'temp'        => $temp,
@@ -124,12 +132,12 @@ function getTemperatureString($show_image = true, $use_cache = true) {
 		return "
 			<div title='Wien Innere Stadt: $desc ($time) $desc_detail' style='text-align: center; display: inline-table'>
 				<img src='$icon_url' width='$image_width' height='$image_height' />
-				<div style='color: black ! important; font-size: 0.8em; padding: 3px; border: 1px solid black; border-radius: 5px; box-shadow: 0px 0px 3px gray'>$temp °C</div>
+				<div style='color: black ! important; font-size: 0.8em'>$temp</div>
 			</div>
 		";
 	}
 
-	return "Aktuelles Wetter: <a title='$desc_detail' href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank' style='cursor: default'>$temp °C | $desc ($time)</a>";
+	return "Aktuelles Wetter: <a title='$desc_detail' href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank' style='cursor: default'>$temp | $desc ($time)</a>";
 }
 
 ?>
