@@ -34,9 +34,6 @@ $locale_new = setlocale(LC_ALL, $locales);
 if (!in_array($locale_new, $locales))
 	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
 
-$overlay_info_data = '';
-$overlay_info_version = '1.0';
-
 $ip_usernames = array(
 	'192.168.0.1' => 'Alice',
 	'192.168.0.2' => 'Bob'

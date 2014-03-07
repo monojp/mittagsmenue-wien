@@ -17,14 +17,8 @@
 	$identifier = isset($_POST['identifier']) ? $_POST['identifier'] : null;
 	if ($identifier) {
 		$identifier = trim($_POST['identifier']);
-		// check if valid vote
-		/*if (!in_array($identifier, $vote_valid_identifiers)) {
-			echo json_encode(array('alert' => 'Der angegebene Identifier ist unbekannt!'));
-			exit;
-		}*/
-		// TODO new checks
 	}
-	$ipPrint = ip_anonymize(get_identifier_ip());
+	$ip = get_identifier_ip();
 
 	$action = get_var('action');
 
@@ -38,7 +32,7 @@
 		if ($action == 'vote_delete') {
 			check_voting_time();
 
-			unset($votes['venue'][$ipPrint]);
+			unset($votes['venue'][$ip]);
 
 			saveReturnVotes($votes);
 		}
@@ -51,7 +45,7 @@
 				exit;
 			}
 
-			unset($votes['venue'][$ipPrint][$identifier]);
+			unset($votes['venue'][$ip][$identifier]);
 
 			saveReturnVotes($votes);
 		}
@@ -65,15 +59,15 @@
 			}
 
 			// delete special vote if set and no user comment
-			if (isset($votes['venue'][$ipPrint]['special']) && in_array($votes['venue'][$ipPrint]['special'], array('Egal', 'Verweigerung')))
-				unset($votes['venue'][$ipPrint]['special']);
+			if (isset($votes['venue'][$ip]['special']) && in_array($votes['venue'][$ip]['special'], array('Egal', 'Verweigerung')))
+				unset($votes['venue'][$ip]['special']);
 
-			$votes['venue'][$ipPrint][$identifier] = 'up';
-			ksort($votes['venue'][$ipPrint]);
+			$votes['venue'][$ip][$identifier] = 'up';
+			ksort($votes['venue'][$ip]);
 
 			// limit amount of up votes
 			$down_cnt = 0;
-			foreach ($votes['venue'][$ipPrint] as $vote) {
+			foreach ($votes['venue'][$ip] as $vote) {
 				if ($vote == 'up')
 					$down_cnt++;
 			}
@@ -94,15 +88,15 @@
 			}
 
 			// delete special vote if set and no user comment
-			if (isset($votes['venue'][$ipPrint]['special']) && in_array($votes['venue'][$ipPrint]['special'], array('Egal', 'Verweigerung')))
-				unset($votes['venue'][$ipPrint]['special']);
+			if (isset($votes['venue'][$ip]['special']) && in_array($votes['venue'][$ip]['special'], array('Egal', 'Verweigerung')))
+				unset($votes['venue'][$ip]['special']);
 
-			$votes['venue'][$ipPrint][$identifier] = 'down';
-			ksort($votes['venue'][$ipPrint]);
+			$votes['venue'][$ip][$identifier] = 'down';
+			ksort($votes['venue'][$ip]);
 
 			// limit amount of down votes
 			$down_cnt = 0;
-			foreach ($votes['venue'][$ipPrint] as $vote) {
+			foreach ($votes['venue'][$ip] as $vote) {
 				if ($vote == 'down')
 					$down_cnt++;
 			}
@@ -123,10 +117,10 @@
 			}
 
 			// delete other votes
-			unset($votes['venue'][$ipPrint]);
+			unset($votes['venue'][$ip]);
 
-			$votes['venue'][$ipPrint]['special'] = $identifier;
-			ksort($votes['venue'][$ipPrint]);
+			$votes['venue'][$ip]['special'] = $identifier;
+			ksort($votes['venue'][$ip]);
 
 			saveReturnVotes($votes);
 		}
@@ -152,12 +146,12 @@
 				exit;
 			}
 
-			$votes['venue'][$ipPrint]['special'] = $note;
-			ksort($votes['venue'][$ipPrint]);
+			$votes['venue'][$ip]['special'] = $note;
+			ksort($votes['venue'][$ip]);
 
 			// delete entry if empty note is the only vote
 			if (empty($note) && count($votes['venue'][$ipPrint]) == 1)
-				unset($votes['venue'][$ipPrint]);
+				unset($votes['venue'][$ip]);
 
 			saveReturnVotes($votes);
 		}

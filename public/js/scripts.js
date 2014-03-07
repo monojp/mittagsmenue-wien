@@ -668,22 +668,6 @@ $(document).ready(function() {
 		else {
 			setLocation(null, false, 0);
 		}
-
-		// show overlay info if not already shown
-		// uses cookie to save/compare version info
-		if ($('#overlay_info_version').length) {
-			var overlay_info_version = $.trim($('#overlay_info_version').html());
-			var overlay_info_version_cookie = $.trim($.cookie('overlay_info_version'));
-			if (overlay_info_version != overlay_info_version_cookie) {
-				$('#overlay_info').show("slide", {direction: "up"});
-				// hide after 10 seconds, save version to cookie
-				// to not show again
-				setTimeout(function() {
-					$.cookie('overlay_info_version', overlay_info_version, { expires: 7 });
-					$('#overlay_info').hide("slide", {direction: "up"});
-				}, 10000);
-			}
-		}
 	});
 	// fallback with timer if location ready event not fired
 	setTimeout(function() {

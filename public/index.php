@@ -3,10 +3,6 @@
 	require_once('header.php');
 	echo '</head><body>';
 
-	// overlay info box on the top
-	if (is_intern_ip())
-		echo get_overlay_info_html();
-
 	// date picker element
 	echo '<input type="hidden" id="datePicker" />';
 	// current date via get

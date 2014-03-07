@@ -1,5 +1,6 @@
 <?php
 
+require_once('dependencycheck.php');
 require_once('config.php');
 require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
@@ -55,6 +56,10 @@ else
 /*
  * Utils
  */
+function command_exist($cmd) {
+	$returnVal = shell_exec("which $cmd");
+	return (empty($returnVal) ? false : true);
+}
 function cacheSafeUrl($file) {
 	return $file . "?" . filemtime($file);
 }
