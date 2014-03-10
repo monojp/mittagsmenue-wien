@@ -12,7 +12,7 @@ class Salzberg extends FoodGetterVenue {
 		$this->url = 'http://www.salzberg.at/';
 		$this->dataSource = 'http://www.salzberg.at/mittagskarte.pdf';
 		$this->statisticsKeyword = 'salzberg';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

@@ -11,7 +11,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->url = 'http://www.waldviertlerhof.at/';
 		$this->dataSource = 'http://www.waldviertlerhof.at/htm/wochenmenue.doc';
 		$this->statisticsKeyword = 'waldviertlerhof';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

@@ -10,7 +10,7 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 		$this->url = 'http://www.silberwirt.at/';
 		$this->dataSource = 'http://www.silberwirt.at/pdf.php?days=23';
 		$this->statisticsKeyword = 'silberwirt';
-		$this->weekendMenu = 1;
+		$this->no_menu_days = array(0);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

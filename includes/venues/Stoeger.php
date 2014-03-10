@@ -11,7 +11,7 @@ class Stoeger extends FoodGetterVenue {
 		$this->url = 'http://www.zumstoeger.at';
 		$this->dataSource = 'http://www.zumstoeger.at/heute.php';
 		$this->statisticsKeyword = 'zumstoeger';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 1, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

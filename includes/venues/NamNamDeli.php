@@ -11,7 +11,7 @@ class NamNamDeli extends FoodGetterVenue {
 		$this->url = 'http://www.nam-nam.at/';
 		$this->dataSource = 'http://www.nam-nam.at/media/deli_Wochenkarte/wochenkarte_deli.pdf';
 		$this->statisticsKeyword = 'nam-nam';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

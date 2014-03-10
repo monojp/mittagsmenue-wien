@@ -10,7 +10,7 @@ class AltesFassl extends FoodGetterVenue {
 		$this->url = 'http://www.zum-alten-fassl.at/';
 		$this->dataSource = 'http://www.zum-alten-fassl.at/index.php/menues/mittagsmenues';
 		$this->statisticsKeyword = 'zum-alten-fassl';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();

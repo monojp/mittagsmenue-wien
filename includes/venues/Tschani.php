@@ -11,7 +11,7 @@ class Tschani extends FoodGetterVenue {
 		$this->url = 'http://www.gasthaus-tschani.at/';
 		$this->dataSource = 'http://www.gasthaus-tschani.at/cms/pages/wochenmenueplan.php';
 		$this->statisticsKeyword = 'gasthaus-tschani';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
