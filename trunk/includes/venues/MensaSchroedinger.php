@@ -11,7 +11,7 @@ class MensaSchroedinger extends FoodGetterVenue {
 		$this->url = 'http://menu.mensen.at/index/index/locid/52';
 		$this->dataSource = 'http://menu.mensen.at/index/index/locid/52';
 		$this->statisticsKeyword = 'mensen';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'mit Dessert / ohne Dessert';
 

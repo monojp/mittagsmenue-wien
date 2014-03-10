@@ -18,7 +18,7 @@ abstract class FoodGetterVenue {
 	protected $date = null;
 	protected $price = null;
 	protected $statisticsKeyword = null;
-	protected $weekendMenu = 0; // 0: none, 1: saturday, 2: saturday + sunday
+	protected $no_menu_days = array(); // 0 sunday - 7 saturday
 	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
 	protected $price_nested_info = null;
@@ -203,18 +203,20 @@ abstract class FoodGetterVenue {
 			$string .= '<a href="javascript:void(0)" onclick="vote_down(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_contra" title="Vote Down"></span></a>';
 		}
 
-		// no food on weekends
-		if ((getGermanDayNameShort() == 'Sa' || getGermanDayNameShort() == 'So') &&
-			$this->weekendMenu == 0) {
-			$string .= '<br /><span class="error">Leider kein Mittagsmenü am Wochenende :(</span><br />';
-			$string .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
+		// check no menu days
+		$no_menu_day = false;
+		$dayNr = date('w', $this->timestamp);
+		foreach ((array)$this->no_menu_days as $day) {
+			if ($dayNr == $day) {
+				$dayName = getGermanDayName();
+				$string .= "<br /><span class='error'>Leider kein Mittagsmenü am $dayName :(</span><br />";
+				$string .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
+				$no_menu_day = true;
+				break;
+			}
 		}
-		// no food on sundays
-		else if (getGermanDayNameShort() == 'So' && $this->weekendMenu == 1) {
-			$string .= '<br /><span class="error">Leider kein Mittagsmenü am Sonntag :(</span><br />';
-			$string .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
-		}
-		else {
+
+		if (!$no_menu_day) {
 			// old data getter
 			if (isset($_GET['minimal']))
 				$string .= $this->getMenuData();

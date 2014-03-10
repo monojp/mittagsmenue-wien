@@ -10,7 +10,7 @@ class TasteOfIndia extends FoodGetterVenue {
 		$this->url = 'http://www.taste-of-india.at/';
 		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue.html';
 		$this->statisticsKeyword = 'taste-of-india';
-		$this->weekendMenu = 0;
+		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
