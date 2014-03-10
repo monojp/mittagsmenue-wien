@@ -157,7 +157,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'm. islam kg', 'andreas gruber', 'Schnaps- Club Hofstöckl', 'Wien - Margit Köffler', 'Göd Manfred', 'keg', 'hans rudolf siegl',
 			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Hofer', 'Penny Markt', 'Osteria Vinoteca Panarea', 'Little Stage',
 			'Zum Stöger', 'Lidl Austria', 'Inh. Kaya Aydin', 'SPAR Österreichische Warenhandels-AG', 'WerkzeugH', '- BAR - ENOTECA', 'Motto Club-Restaurant-Bar',
-			'Waldviertlerhof', 'conceptspace', 'Public-theplacetobe', 'Ankerbrot AG',
+			'Waldviertlerhof', 'conceptspace', 'Public-theplacetobe', 'Ankerbrot AG', 'International Limited', 'Espresso Italiano',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
