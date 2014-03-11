@@ -19,7 +19,7 @@
 		echo json_encode(html_compress($venue->getMenuData()));
 	}
 	else {
-		echo json_encode(array('alert' => 'No classname set'));
+		echo json_encode(array('alert' => js_message_prepare('No classname set')));
 	}
 
 ?>

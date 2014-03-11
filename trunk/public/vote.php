@@ -9,7 +9,7 @@
 	global $voting_over_time;
 
 	if (!is_intern_ip()) {
-		echo json_encode(array('alert' => 'Zugriff verweigert!'));
+		echo json_encode(array('alert' => js_message_prepare('Zugriff verweigert!')));
 		exit;
 	}
 
@@ -41,7 +41,7 @@
 			check_voting_time();
 
 			if (!$identifier) {
-				echo json_encode(array('alert' => 'Es wurde kein Identifier angegeben!'));
+				echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
 				exit;
 			}
 
@@ -58,7 +58,7 @@
 			check_voting_time();
 
 			if (!$identifier) {
-				echo json_encode(array('alert' => 'Es wurde kein Identifier angegeben!'));
+				echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
 				exit;
 			}
 
@@ -76,7 +76,7 @@
 					$down_cnt++;
 			}
 			if ($down_cnt > 3) {
-				echo json_encode(array('alert' => 'Bitte nicht mehr als 3 Lokale aufwerten. Es kann auch "Egal" gevoted werden ;)'));
+				echo json_encode(array('alert' => js_message_prepare('Bitte nicht mehr als 3 Lokale aufwerten. Es kann auch "Egal" gevoted werden ;)')));
 				exit;
 			}
 			else
@@ -87,7 +87,7 @@
 			check_voting_time();
 
 			if (!$identifier) {
-				echo json_encode(array('alert' => 'Es wurde kein Identifier angegeben!'));
+				echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
 				exit;
 			}
 
@@ -105,7 +105,7 @@
 					$down_cnt++;
 			}
 			if ($down_cnt > 3) {
-				echo json_encode(array('alert' => 'Bitte nicht mehr als 3 Lokale abwerten. Es kann auch "Verweigerung" gevoted werden ;)'));
+				echo json_encode(array('alert' => js_message_prepare('Bitte nicht mehr als 3 Lokale abwerten. Es kann auch "Verweigerung" gevoted werden ;)')));
 				exit;
 			}
 			else
@@ -116,7 +116,7 @@
 			check_voting_time();
 
 			if (!$identifier) {
-				echo json_encode(array('alert' => 'Es wurde kein Identifier angegeben!'));
+				echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
 				exit;
 			}
 
@@ -140,13 +140,13 @@
 
 			// check vote length
 			if (strlen($note) > VOTE_NOTE_MAX_LENGTH) {
-				echo json_encode(array('alert' => 'Die Notiz ist zu lange! Es sind max. ' . VOTE_NOTE_MAX_LENGTH . ' Zeichen erlaubt!'));
+				echo json_encode(array('alert' => js_message_prepare('Die Notiz ist zu lange! Es sind max. ' . VOTE_NOTE_MAX_LENGTH . ' Zeichen erlaubt!')));
 				exit;
 			}
 
 			// check vote via regex
 			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\/\.:_#\*\?\!()-]*$/', $note)) {
-				echo json_encode(array('alert' => 'Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")", "/" und Umlaute'));
+				echo json_encode(array('alert' => js_message_prepare('Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")", "/" und Umlaute')));
 				exit;
 			}
 
@@ -175,11 +175,11 @@
 		}
 		// undefined action
 		else {
-			echo json_encode(array('alert' => 'Die übertragene Aktion ist ungültig!'));
+			echo json_encode(array('alert' => js_message_prepare('Die übertragene Aktion ist ungültig!')));
 		}
 	}
 	else {
-		echo json_encode(array('alert' => 'Es wurde keine Aktion übertragen!'));
+		echo json_encode(array('alert' => js_message_prepare('Es wurde keine Aktion übertragen!')));
 	}
 
 ?>

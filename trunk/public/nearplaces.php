@@ -35,7 +35,7 @@ if ($action) {
 	// do a places details search with a given place reference
 	else if ($action == 'details') {
 		if (!$id || !$reference)
-			echo json_encode(array('error' => '"reference" oder "id" leer!'));
+			echo json_encode(array('error' => js_message_prepare('"reference" oder "id" leer!')));
 
 		$response = details_cache_read($id, $reference);
 		if ($response === null) {
@@ -85,9 +85,9 @@ if ($action) {
 	}
 	// undefined action
 	else
-		echo json_encode(array('error' => 'Die gewählte Aktion ist ungültig!'));
+		echo json_encode(array('error' => js_message_prepare('Die gewählte Aktion ist ungültig!')));
 }
 else
-	echo json_encode(array('error' => 'Es ist keine Aktion gesetzt!'));
+	echo json_encode(array('error' => js_message_prepare('Es ist keine Aktion gesetzt!')));
 
 ?>
