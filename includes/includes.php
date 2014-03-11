@@ -70,6 +70,15 @@ function strposAfter($haystack, $needle, $offset=0) {
 	return $pos;
 }
 /*
+ * prepare a html message for javascript output
+ * escapes special chars, slashes and wordwraps message
+ */
+function js_message_prepare($message, $width = 50) {
+	$message = wordwrap($message, $width, '<br />');
+	return $message;
+	//return addslashes($message);
+}
+/*
  * finds the n'th occurence of a string
  */
 function strnpos($haystack, $needle, $offset, $n) {

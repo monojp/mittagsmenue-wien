@@ -279,6 +279,7 @@ function setLocationDialog(el) {
 	// show dialog
 	$('#setLocationDialog').dialog({
 		modal: true,
+		resizable: false,
 		title: "Adresse festlegen",
 		buttons: {
 			"Ok": function() {
@@ -291,7 +292,7 @@ function setLocationDialog(el) {
 				$(this).dialog("close");
 			}
 		},
-		width: "380"
+		width: 'auto'
 	});
 	// close shown tooltip
 	$(el).tooltip("close");
@@ -390,6 +391,7 @@ function setNoteDialog() {
 	// show dialog
 	$('#setNoteDialog').dialog({
 		modal: true,
+		resizable: false,
 		title: "Notiz erstellen",
 		buttons: {
 			"Ok": function() {
@@ -399,7 +401,7 @@ function setNoteDialog() {
 				$(this).dialog("close");
 			}
 		},
-		width: "400"
+		width: 'auto'
 	});
 }
 
@@ -563,13 +565,14 @@ function setAlternativeVenuesDialog() {
 	// show dialog
 	$('#setAlternativeVenuesDialog').dialog({
 		modal: true,
+		resizable: false,
 		title: "Lokale in der Nähe",
 		buttons: {
 			"Schließen": function() {
 				$(this).dialog("close");
 			}
 		},
-		width: '750'
+		width: 'auto'
 	});
 }
 // updates the gui on user changes
@@ -581,6 +584,7 @@ function setVoteSettingsDialog() {
 	// show dialog
 	$('#setVoteSettingsDialog').dialog({
 		modal: true,
+		resizable: false,
 		title: "Spezial-Votes & Einstellungen",
 		buttons: {
 			"Speichern / Schließen": function() {
@@ -606,7 +610,7 @@ function setVoteSettingsDialog() {
 				$(this).dialog("close");
 			}
 		},
-		width: '440'
+		width: 'auto'
 	});
 }
 
@@ -736,7 +740,7 @@ window.alert = function(message, alertTitle, showIcon, width) {
 	if (typeof showIcon == 'undefined' || showIcon)
 		message = '<table><tr><td><span class="ui-icon ui-icon-alert" style="margin-right: 5px"></span></td><td>' + message + '</td></tr></table>';
 	if (typeof width == 'undefined')
-		width = 300;
+		width = 'auto';
 
 	// remove old alert elements (avoids stacking)
 	$('.alert').remove();
