@@ -46,10 +46,14 @@
 		$jqueryCookieJS = 'js/jquery.cookie.js';
 		$tableJS = 'js/jquery.dataTables.js';
 	}
+	// basic css
+	echo '
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.css') . '" />
+	';
+	// javascript
 	if (!isset($_GET['minimal']))
 		echo '
-			<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />
-			<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.css') . '" />
 			<script src="' . cacheSafeUrl($headLoadJS) . '" type="text/javascript"></script>
 			<script type="text/javascript">
 				head.js("' . cacheSafeUrl($jqueryJS) . '", function() {
