@@ -26,30 +26,21 @@
 
 	require_once('../includes/venues.php');
 
-	// css
-	if (USE_MINIMZED_JS_CSS_HTML) {
-		$stylesCSS = 'css/styles-min.css';
-	}
-	else {
-		$stylesCSS = 'css/styles.css';
-	}
-	// default css
-	echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />';
-	// jquery-ui css when not minimal
-	if (!isset($_GET['minimal']))
-		echo '<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.min.css') . '" />';
-
-	// javascript
+	// css and javascript
 	$headLoadJS = 'js/head.load.min.js';
 	$jqueryJS = 'js/jquery-1.11.0.min.js';
 	$jqueryUiJS = 'js/jquery-ui-1.10.4.custom.min.js';
 	if (USE_MINIMZED_JS_CSS_HTML) {
+		$stylesCSS = 'css/styles-min.css';
+		$jqeryuiCSS = 'css/black-tie/jquery-ui-1.10.4.custom.min.css';
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de-min.js';
 		$scriptsJS = 'js/scripts-min.js';
 		$jqueryCookieJS = 'js/jquery.cookie-min.js';
 		$tableJS = 'js/jquery.dataTables-min.js';
 	}
 	else {
+		$stylesCSS = 'css/styles.css';
+		$jqeryuiCSS = 'css/black-tie/jquery-ui-1.10.4.custom.css';
 		$datePickerLocalJS = 'js/jquery.ui.datepicker-de.js';
 		$scriptsJS = 'js/scripts.js';
 		$jqueryCookieJS = 'js/jquery.cookie.js';
@@ -57,6 +48,8 @@
 	}
 	if (!isset($_GET['minimal']))
 		echo '
+			<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />
+			<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.css') . '" />
 			<script src="' . cacheSafeUrl($headLoadJS) . '" type="text/javascript"></script>
 			<script type="text/javascript">
 				head.js("' . cacheSafeUrl($jqueryJS) . '", function() {
