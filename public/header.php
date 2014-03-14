@@ -49,7 +49,7 @@
 	// basic css
 	echo '
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/black-tie/jquery-ui-1.10.4.custom.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($jqeryuiCSS) . '" />
 	';
 	// javascript
 	if (!isset($_GET['minimal']))
