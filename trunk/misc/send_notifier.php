@@ -56,9 +56,7 @@
 			$html = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
-			if ($success)
-				echo "sent email to $email";
-			else
+			if (!$success)
 				echo "error sending email to $email";
 		}
 		// remind
@@ -69,9 +67,7 @@
 			$html = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
-			if ($success)
-				echo "sent email to $email";
-			else
+			if (!$success)
 				echo "error sending email to $email";
 		}
 	}
