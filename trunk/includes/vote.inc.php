@@ -98,7 +98,7 @@ function getAllVotes() {
 function vote_summary_html($votes, $include_head_body_tags) {
 	$html = '';
 	if ($include_head_body_tags)
-		$html .= '<html><head><title>Voting</title></head><body>';
+		$html .= '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Voting</title></head><body>';
 
 	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
 		// get venue ratings
