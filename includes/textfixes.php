@@ -103,6 +103,7 @@ $searchReplace = array(
 	'&Croutons' => '& Croutons',
 	'"Altes Fassl"mit' => '"Altes Fassl" mit',
 	'gebr.Speck' => 'gebr. Speck',
+	', (1/ 0)' => '',
 );
 
 ?>
