@@ -1,5 +1,5 @@
 <?php
-	require_once('../includes/includes.php');
+	require_once(__DIR__ . '/../includes/includes.php');
 
 	header("Vary: Accept-Encoding");
 	header("Content-Type: text/html; charset=UTF-8");
@@ -24,7 +24,7 @@
 	echo '<meta name="description" content="' .  META_DESCRIPTION . '" />';
 	echo '<meta name="viewport" content="width=device-width" />';
 
-	require_once('../includes/venues.php');
+	require_once(__DIR__ . '/../includes/venues.php');
 
 	// css and javascript
 	$headLoadJS = 'js/head.load.min.js';
