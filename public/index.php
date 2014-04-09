@@ -8,11 +8,6 @@
 
 	echo '</head><body>';
 
-	// date picker element
-	echo '<input type="hidden" id="datePicker" />';
-	// current date via get
-	echo "<input type='hidden' id='date_GET' value='$date_GET' />";
-
 	if (!isset($_GET['minimal'])) {
 		// default values for reset actions
 		//echo get_default_location_values_html();
@@ -30,8 +25,8 @@
 
 	// header text
 	$dayName = getGermanDayName();
-	$date = date_offsetted('d.m.Y');
-	$dayText = "<a id='dateHeader' href='javascript:void(0)' title='Klicken, zum Kalender öffnen'>$dayName $date</a>";
+	$date = date_offsetted('Y-m-d');
+	$dayText = "$dayName <input type='date' id='date' title='' value='$date' />";
 	echo "<span style='font-weight: bold; font-size: 2em'>Mittagsmenü Wien, $dayText</span><br />";
 
 	// show minimal (no JS) site notice
