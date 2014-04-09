@@ -101,7 +101,7 @@ class MensaFreihaus extends FoodGetterVenue {
 		$data = strip_tags($data);
 		$price[] = cleanText($data);
 		// brainfood
-		$price_return = str_replace_array(array('klein', 'groß'), '', $price_return);
+		$price_return = str_replace_array(array('klein', 'groß', 'kl.', 'gr.'), '', $price_return);
 		$price_return = explode('€', $price_return);
 		foreach ($price_return as &$price_return_element) {
 			$price_return_element = cleanText($price_return_element);
