@@ -1,5 +1,5 @@
 <?php
-	require_once('../includes/guihelper.php');
+	require_once(__DIR__ . '/../includes/guihelper.php');
 	require_once('header.php');
 
 	// minimal site and votes allowed, refresh every 10s

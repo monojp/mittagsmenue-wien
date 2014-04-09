@@ -1,8 +1,8 @@
 <?php
 
-	require_once(dirname(__FILE__) . '/../includes/includes.php');
-	require_once(dirname(__FILE__) . '/../includes/vote.inc.php');
-	require_once(dirname(__FILE__) . '/../includes/weather.inc.php');
+	require_once(__DIR__ . '/../includes/includes.php');
+	require_once(__DIR__ . '/../includes/vote.inc.php');
+	require_once(__DIR__ . '/../includes/weather.inc.php');
 
 	$votes = getAllVotes();
 
