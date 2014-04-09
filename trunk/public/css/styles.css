@@ -81,6 +81,12 @@ a:visited:not(.ui-state-default):not(.menuData) {
 #weatherContainer {
 	/*margin-top: -5px*/
 }
+#date {
+	text-decoration: inherit;
+	font: inherit;
+	border: 0;
+	color: #36c;
+}
 #dialog_vote_summary {
 	display: none;
 	font-size: 0.8em;

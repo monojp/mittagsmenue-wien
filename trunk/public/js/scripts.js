@@ -683,31 +683,14 @@ $(document).ready(function() {
 	if ($('#show_voting').length)
 		vote_get();
 
-	// date picker
-	$("#datePicker").datepicker({
-		dateFormat: "yy-mm-dd",
-		minDate: new Date(2012, 10, 30),
-		maxDate: "1M",
-		onSelect: function(dateText, inst) {
-			document.location = window.location.protocol + "//" +
-				window.location.host + window.location.pathname +
-				"?date=" + dateText;
-		}
-	});
-
 	// connect distance input with distance slider
 	$('#distance').on('input change', function() {
 		setDistance($(this).val());
 	});
 
-	// show datePicker when clicking on date header
-	$('#dateHeader').click(function(event) {
-		// close shown tooltip
-		$("#dateHeader").tooltip("close");
-		// show datepicker
-		$("#datePicker").datepicker("show");
-		// set current selected date
-		$("#datePicker").datepicker("setDate", $('#date_GET').val());
+	// date change handler
+	$('#date').bind('change', function() {
+		document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
 	});
 
 	// set submit handler for location input form
