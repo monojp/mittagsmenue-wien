@@ -6,9 +6,6 @@
 
 require_once('../includes/nearplaces.inc.php');
 
-header("Vary: Accept-Encoding");
-header("Content-Type: text/html; charset=UTF-8");
-
 // get variables with fallback to defaults
 $action = get_var('action');
 $lat = is_var('lat') ? get_var('lat') : LOCATION_FALLBACK_LAT;

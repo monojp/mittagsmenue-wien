@@ -66,7 +66,7 @@
 		new Waldviertlerhof(),
 		new MensaFreihaus(),
 		new MensaSchroedinger(),
-		new Stoeger(),
+		//new Stoeger(),
 		new tewa(),
 		new Tschani(),
 		//new Martin(),

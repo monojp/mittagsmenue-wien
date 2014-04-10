@@ -2,9 +2,6 @@
 
 	require_once('../includes/includes.php');
 
-	header("Vary: Accept-Encoding");
-	header("Content-Type: text/html; charset=UTF-8");
-
 	// handle actions
 	if (isset($_POST['action'])) {
 		$action = trim($_POST['action']);

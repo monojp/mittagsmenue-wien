@@ -5,9 +5,6 @@
 
 	session_write_close();
 
-	header("Vary: Accept-Encoding");
-	header("Content-Type: text/html; charset=UTF-8");
-
 	// --------------
 	// handle actions
 	$classname = get_var('classname');

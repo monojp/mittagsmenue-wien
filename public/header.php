@@ -1,16 +1,6 @@
 <?php
 	require_once(__DIR__ . '/../includes/includes.php');
 
-	header("Vary: Accept-Encoding");
-	header("Content-Type: text/html; charset=UTF-8");
-
-	// cache 1 hour
-	$seconds_to_cache = 3600;
-	$ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-	header("Expires: $ts");
-	header("Pragma: cache");
-	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
-
 	// start output buffering with custom html compress handler
 	ob_start('html_compress');
 
