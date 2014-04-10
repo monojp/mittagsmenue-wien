@@ -3,9 +3,6 @@
 	require_once('../includes/includes.php');
 	require_once('../includes/vote.inc.php');
 
-	header("Vary: Accept-Encoding");
-	header("Content-Type: text/html; charset=UTF-8");
-
 	global $voting_over_time;
 
 	if (!is_intern_ip()) {

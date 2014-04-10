@@ -6,6 +6,23 @@ require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
 require_once('customuserid.inc.php');
 
+mb_internal_encoding('UTF-8');
+
+// valid session for 3 hours
+$server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
+session_set_cookie_params(3 * 60, '/', $server_name, false, true);
+session_start();
+
+header("Vary: Accept-Encoding");
+header("Content-Type: application/xhtml+xml; charset=UTF-8");
+
+// cache 1 week
+$seconds_to_cache = 604800;
+$ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
+header("Expires: $ts");
+header("Pragma: cache");
+header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
+
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code
 if (
@@ -16,13 +33,6 @@ if (
 	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ?minimal&' . $_SERVER['QUERY_STRING']);
 }
-
-mb_internal_encoding('UTF-8');
-
-// valid session for 3 hours
-$server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
-session_set_cookie_params(3 * 60, '/', $server_name, false, true);
-session_start();
 
 /*
  * Global variables
