@@ -316,8 +316,8 @@ function setDistance(distance) {
 function showLocation(el) {
 	// current location
 	var latlng = $('#lat').html() + "," + $('#lng').html();
-	var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="+latlng+"&zoom=15&language=de&size=400x300&sensor=false"+
-	"&markers=color:red|"+latlng;
+	var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="+latlng+"&amp;zoom=15&amp;language=de&amp;size=400x300&amp;sensor=false"+
+	"&amp;markers=color:red|"+latlng;
 
 	// marker for each venue
 	var marker = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -328,7 +328,7 @@ function showLocation(el) {
 		var lngVenue = $(this).children('.lng').html();
 		var title = $(this).children('[class="title"]').children('a').html()
 
-		img_url += "&markers=color:red|label:" + marker[cnt] + "|" + latVenue + "," + lngVenue;
+		img_url += "&amp;markers=color:red|label:" + marker[cnt] + "|" + latVenue + "," + lngVenue;
 		if (cnt < 5)
 			key += marker[cnt] + ": " + title + "<br />";
 		cnt++;
