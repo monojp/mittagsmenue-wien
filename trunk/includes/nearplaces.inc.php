@@ -176,12 +176,14 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$reference = isset($result['reference']) ? $result['reference'] : null;
 		$types = isset($result['types']) ? $result['types'] : null;
 		$price_level = isset($result['price_level']) ? $result['price_level'] : null;
-		$maps_href = "https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng";
+		$maps_href = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
 		$name_url_safe = urlencode($name);
-		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage' target='_blank'>$name</a>";
+		$name_escaped = htmlspecialchars($name, ENT_QUOTES);
+		$name_escaped = str_replace("'", '', $name_escaped);
+		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage' target='_blank'>$name_escaped</a>";
 
 		$response[] = array(
-			'name'        => $name,
+			'name'        => htmlspecialchars($name, ENT_QUOTES),
 			'lat'         => $lat,
 			'lng'         => $lng,
 			'href'        => $href,

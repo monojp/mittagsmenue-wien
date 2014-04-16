@@ -39,6 +39,8 @@ $ip_usernames = array(
 	'192.168.0.2' => 'Bob'
 );
 
+date_default_timezone_set('Europe/Vienna');
+
 $voting_show_start = strtotime('08:00');
 $voting_show_end = strtotime('15:00');
 
