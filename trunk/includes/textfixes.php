@@ -23,7 +23,8 @@ $cacheDataDelete = array(
 	'!!!', 'feiertag', 'Feiertag', 'FEIERTAG', 'Feiertagsbrunch',
 	'Genussregion Tullnerfelder Schwein', 'la carte', 'geschlossen',
 	'Geschlossen', 'Silvester', 'Neujahr', 'FROHE', 'OSTERN', 'CHRISTI',
-	'HIMMELFAHRT', 'GESCHLOSSEN', 'Heiliger Abend',
+	'HIMMELFAHRT', 'GESCHLOSSEN', 'Heiliger Abend', 'G E SC H L O S S E N',
+	'F E I E R T A G',
 );
 
 $searchReplace = array(
