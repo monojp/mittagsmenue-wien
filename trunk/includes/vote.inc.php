@@ -185,13 +185,13 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			}
 
 			// prepare data for output
-			$upVotes = empty($upVotes) ? '-' : implode(', ', $upVotes);
-			$downVotes = empty($downVotes) ? '-' : implode(', ', $downVotes);
+			$upVotes     = empty($upVotes)     ? '-' : implode(', ', $upVotes);
+			$downVotes   = empty($downVotes)   ? '-' : implode(', ', $downVotes);
 			$specialVote = empty($specialVote) ? '-' : $specialVote;
 
-			$upVotes_style = ($upVotes == '-') ? 'text-align: center' : '';
-			$downVotes_style = ($downVotes == '-') ? 'text-align: center' : '';
-			$specialVote_style = ($specialVote == '-' || count($specialVote) < 7) ? 'text-align: center' : '';
+			$upVotes_style     = ($upVotes     == '-') ? 'color: #999; text-align: center' : 'color: #008000';
+			$downVotes_style   = ($downVotes   == '-') ? 'color: #999; text-align: center' : 'color: #FF0000';
+			$specialVote_style = ($specialVote == '-') ? 'color: #999; text-align: center' : 'text-align: center';
 
 			$html .= "<tr style='$row_style'>
 				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>

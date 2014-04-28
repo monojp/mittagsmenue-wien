@@ -20,30 +20,16 @@ class Waldviertlerhof extends FoodGetterVenue {
 	protected function parseDataSource() {
 		$dataTmp = doctotxt($this->dataSource);
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
-		//var_export($dataTmp);
+		//error_log($dataTmp);
 		//return;
 
-		// check if current day is in menu range
-		$rangeStart = strposAfter($dataTmp, 'KW');
-		$rangeStop = strpos($dataTmp, date('Y', $this->timestamp), $rangeStart);
-		if (!$rangeStart || !$rangeStop)
+		// check if current week number matches
+		$week_number = date('W', $this->timestamp);
+		preg_match('/[0-9]{2}[\. ]+KW/', $dataTmp, $matches);
+		if (empty($matches))
 			return;
-		$range_date = substr($dataTmp, $rangeStart, $rangeStop - $rangeStart);
-		$range_date = trim($range_date, '. ');
-		$range_date = str_replace(array(getGermanMonthName(), getGermanMonthName(1), '.'), '', $range_date);
-		$range_date = explode('-', $range_date);
-		if (count($range_date) != 2)
-			return;
-		$range_date_min = intval($range_date[0]);
-		$range_date_max = intval($range_date[1]);
-		$today = intval(date('j', $this->timestamp));
-		if (
-			($today >= $range_date_min && $today <= $range_date_max) ||
-			($today <= $range_date_min && $today <= $range_date_max)
-		) {
-			// all fine
-		}
-		else
+		$week_number_match = trim($matches[0], 'KW. ');
+		if ($week_number != $week_number_match)
 			return;
 
 		$today = getGermanDayName();
@@ -77,7 +63,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->data = $data;
 
 		// set date
-		$this->date = $today;
+		$this->date = $week_number . $today;
 
 		//var_export($data);
 		//return;
@@ -88,7 +74,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 	}
 
 	public function isDataUpToDate() {
-		if ($this->date == getGermanDayName())
+		if ($this->date == date('W', $this->timestamp) . getGermanDayName())
 			return true;
 		else
 			return false;
