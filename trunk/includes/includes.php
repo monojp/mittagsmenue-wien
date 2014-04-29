@@ -76,7 +76,7 @@ function cacheSafeUrl($file) {
 	return $file . "?" . filemtime($file);
 }
 function strposAfter($haystack, $needle, $offset=0) {
-	$pos = strpos($haystack, $needle, $offset);
+	$pos = mb_strpos($haystack, $needle, $offset);
 	if ($pos !== FALSE)
 		$pos += strlen($needle);
 	return $pos;
@@ -96,7 +96,7 @@ function js_message_prepare($message, $width = 50) {
 function strnpos($haystack, $needle, $offset, $n) {
 	$pos = $offset;
 	for ($i=0; $i<$n; $i++)
-		$pos = strpos($haystack, $needle, $pos + strlen($needle));
+		$pos = mb_strpos($haystack, $needle, $pos + strlen($needle));
 	return $pos;
 }
 function strnposAfter($haystack, $needle, $offset, $n) {
@@ -226,7 +226,7 @@ function explode_by_array($delimiter_array, $string, $case_insensitive=true) {
 function stringsExist($haystack, $needles) {
 	$exists = false;
 	foreach ($needles as $needle) {
-		if (strpos($haystack, $needle) !== false) {
+		if (mb_strpos($haystack, $needle) !== false) {
 			$exists = true;
 			break;
 		}
@@ -251,7 +251,7 @@ function is_intern_ip() {
 	//return true; // DEBUG
 	$ip = get_identifier_ip();
 	$allow_voting_ip_prefix = ALLOW_VOTING_IP_PREFIX;
-	if (empty($allow_voting_ip_prefix) || strpos($ip, $allow_voting_ip_prefix) === 0)
+	if (empty($allow_voting_ip_prefix) || mb_strpos($ip, $allow_voting_ip_prefix) === 0)
 		return true;
 	return false;
 }

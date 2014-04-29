@@ -17,6 +17,9 @@ $GOOGLE_API_KEYS = array(
 	/* put a list of api keys here (1 is also enough) */
 );
 
+$fb_app_id     = '<your fb app id>';
+$fb_app_secret = '<your fb app secret>';
+
 define('USE_MINIMZED_JS_CSS', true);
 
 define('SITE_URL', '<url>');
