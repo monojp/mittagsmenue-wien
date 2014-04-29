@@ -70,6 +70,7 @@
 		new tewa(),
 		new Tschani(),
 		//new Martin(),
+		new Woracziczky(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;
