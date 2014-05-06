@@ -31,17 +31,17 @@ class Tschani extends FoodGetterVenue {
 
 		// check if current day is in menu range
 		$rangeStart = strposAfter($dataTmp, 'vom');
-		$rangeStop = strpos($dataTmp, '-', $rangeStart);
+		$rangeStop = mb_strpos($dataTmp, '-', $rangeStart);
 		if (!$rangeStart || !$rangeStop)
 			return;
-		$range_date_start = substr($dataTmp, $rangeStart, $rangeStop - $rangeStart);
+		$range_date_start = mb_substr($dataTmp, $rangeStart, $rangeStop - $rangeStart);
 		$range_date_start = trim($range_date_start, '. ');
 		$range_date_start = strtotime($range_date_start);
 		$rangeStart2 = strposAfter($dataTmp, '-', $rangeStop);
-		$rangeStop2 = strpos($dataTmp, '<', $rangeStart2);
+		$rangeStop2 = mb_strpos($dataTmp, '<', $rangeStart2);
 		if (!$rangeStart2 || !$rangeStop2)
 			return;
-		$range_date_end = substr($dataTmp, $rangeStart2, $rangeStop2 - $rangeStart2);
+		$range_date_end = mb_substr($dataTmp, $rangeStart2, $rangeStop2 - $rangeStart2);
 		$range_date_end = trim($range_date_end, '. ');
 		$range_date_end = strtotime($range_date_end);
 		$range_date_end = strtotime('+1 days', $range_date_end);
@@ -57,14 +57,14 @@ class Tschani extends FoodGetterVenue {
 		$posStart = striposAfter($dataTmp, getGermanDayName());
 		if ($posStart === FALSE)
 			return;
-		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
+		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// friday
 		if (!$posEnd) {
-			$posEnd = stripos($dataTmp, '</div>', $posStart);
+			$posEnd = mb_stripos($dataTmp, '</div>', $posStart);
 			if (!$posEnd)
 				return;
 		}
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data, '<br>');
 		//error_log(print_r($data, true));
 		//return;

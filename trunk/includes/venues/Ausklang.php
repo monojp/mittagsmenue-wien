@@ -38,11 +38,11 @@ class Ausklang extends FoodGetterVenue {
 				return;*/
 			return;
 		}
-		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
+		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// last day of the week
 		if (!$posEnd)
 			$posEnd = mb_strpos($dataTmp, 'menü', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = strip_tags($data, '<br>');
 		//var_export($data);
 		//return;

@@ -24,7 +24,7 @@ class DeliciousMonster extends FoodGetterVenue {
 		//var_export($dataTmp);
 
 		$today = date('j.n.', $this->timestamp);
-		$today = strtoupper(getGermanDayName()) . " $today";
+		$today = mb_strtoupper(getGermanDayName()) . " $today";
 		$posStart = strposAfter($dataTmp, $today);
 		if ($posStart === FALSE)
 		{
@@ -33,11 +33,11 @@ class DeliciousMonster extends FoodGetterVenue {
 			if ($posStart === FALSE)
 				return;
 		}
-		$posEnd = stripos($dataTmp, '*', $posStart);
+		$posEnd = mb_stripos($dataTmp, '*', $posStart);
 		// last day of the week
 		if (!$posEnd)
-			$posEnd = strpos($dataTmp, 'Alle', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
+			$posEnd = mb_strpos($dataTmp, 'Alle', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = strip_tags($data);
 		// split per new line
 		$foods = explode("\n", $data);
@@ -56,7 +56,7 @@ class DeliciousMonster extends FoodGetterVenue {
 			}
 		}
 
-		$data = str_replace("\n", "<br />", $data);
+		$data = mb_str_replace("\n", "<br />", $data);
 		$this->data = $data;
 
 		// set date

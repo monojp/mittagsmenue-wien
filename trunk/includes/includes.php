@@ -78,7 +78,7 @@ function cacheSafeUrl($file) {
 function strposAfter($haystack, $needle, $offset=0) {
 	$pos = mb_strpos($haystack, $needle, $offset);
 	if ($pos !== FALSE)
-		$pos += strlen($needle);
+		$pos += mb_strlen($needle);
 	return $pos;
 }
 /*
@@ -96,19 +96,19 @@ function js_message_prepare($message, $width = 50) {
 function strnpos($haystack, $needle, $offset, $n) {
 	$pos = $offset;
 	for ($i=0; $i<$n; $i++)
-		$pos = mb_strpos($haystack, $needle, $pos + strlen($needle));
+		$pos = mb_strpos($haystack, $needle, $pos + mb_strlen($needle));
 	return $pos;
 }
 function strnposAfter($haystack, $needle, $offset, $n) {
 	$pos = strnpos($haystack, $needle, $offset, $n);
 	if ($pos !== FALSE)
-		$pos += strlen($needle);
+		$pos += mb_strlen($needle);
 	return $pos;
 }
 function striposAfter($haystack, $needle, $offset=0) {
-	$pos = stripos($haystack, $needle, $offset);
+	$pos = mb_stripos($haystack, $needle, $offset);
 	if ($pos !== FALSE)
-		$pos += strlen($needle);
+		$pos += mb_strlen($needle);
 	return $pos;
 }
 function mb_str_replace($needle, $replacement, $haystack) {
@@ -175,7 +175,7 @@ function getGermanDayName($offset = 0) {
 		return 'not valid';
 }
 function getGermanDayNameShort($offset = 0) {
-	return substr(getGermanDayName($offset), 0, 2);
+	return mb_substr(getGermanDayName($offset), 0, 2);
 }
 function getGermanMonthName($offset = 0) {
 	global $timestamp;
@@ -286,12 +286,12 @@ function getCacheData($keyword, $foodKeyword) {
 
 	if (empty($keyword) || empty($foodKeyword))
 		return null;
-	if (strlen($keyword) < 3 || strlen($foodKeyword) < 3)
+	if (mb_strlen($keyword) < 3 || mb_strlen($foodKeyword) < 3)
 		return null;
 
 	// sort cacheDataExplode (longer stuff first)
 	usort($cacheDataExplode, function($a,$b) {
-		return strlen($b) - strlen($a);
+		return mb_strlen($b) - mb_strlen($a);
 	});
 
 	$foods = array(); // ingredients
@@ -314,7 +314,7 @@ function getCacheData($keyword, $foodKeyword) {
 		// food cleaner (for old stat files)
 		$food = cleanText($food);
 
-		if (!empty($dataKeyword) && stripos($food, $dataKeyword) === false)
+		if (!empty($dataKeyword) && mb_stripos($food, $dataKeyword) === false)
 			continue;
 
 		// multi food support (e.g. 1. pizza with ham, 2. pizza with bacon, ..)
@@ -324,7 +324,7 @@ function getCacheData($keyword, $foodKeyword) {
 				$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
 				$foodSingle = trim($foodSingle);
 
-				if (!empty($foodKeyword) && stripos($foodSingle, $foodKeyword) === false)
+				if (!empty($foodKeyword) && mb_stripos($foodSingle, $foodKeyword) === false)
 					continue;
 
 				if (empty($foodSingle))
@@ -544,7 +544,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 
 	// sort cacheDataExplode (longer stuff first)
 	usort($cacheDataExplode, function($a,$b) {
-		return strlen($b) - strlen($a);
+		return mb_strlen($b) - mb_strlen($a);
 	});
 
 	$date = date_from_offset($dateOffset);
@@ -561,7 +561,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 
 	// sort after array length, begin with longest first
 	usort($foodMulti, function($a, $b) {
-		return strlen($b) - strlen($a);
+		return mb_strlen($b) - mb_strlen($a);
 	});
 
 	$replace_pairs = array();
@@ -571,7 +571,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
 			$foodSingle = cleanText($foodSingle);
 
-			if (empty($foodSingle) || strlen($foodSingle) < 3)
+			if (empty($foodSingle) || mb_strlen($foodSingle) < 3)
 				continue;
 
 			$foodSingle_slashes = "\"$foodSingle\"";

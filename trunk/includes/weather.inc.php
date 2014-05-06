@@ -15,8 +15,8 @@ function queryTemperature() {
 	$start = strposAfter($html, 'alt="Wien:');
 	if ($start === false)
 		return false;
-	$end = strpos($html, '"', $start);
-	$desc = substr($html, $start, $end - $start);
+	$end = mb_strpos($html, '"', $start);
+	$desc = mb_substr($html, $start, $end - $start);
 	$desc = cleanText($desc);
 	//error_log($desc);
 
@@ -25,11 +25,11 @@ function queryTemperature() {
 	if ($start === false)
 		return false;
 	$end = strposAfter($html, '&deg;"', $start);
-	$temp = substr($html, $start, $end - $start);
-	$temp = str_replace(' ', '', $temp);
-	$temp = str_replace('Min:', 'Min: ', $temp);
-	$temp = str_replace('Max:', 'Max: ', $temp);
-	$temp = str_replace('/', ' / ', $temp);
+	$temp = mb_substr($html, $start, $end - $start);
+	$temp = mb_str_replace(' ', '', $temp);
+	$temp = mb_str_replace('Min:', 'Min: ', $temp);
+	$temp = mb_str_replace('Max:', 'Max: ', $temp);
+	$temp = mb_str_replace('/', ' / ', $temp);
 	$temp = trim($temp, '"');
 	$temp = cleanText($temp);
 	//error_log($temp);
@@ -41,8 +41,8 @@ function queryTemperature() {
 	$start = strposAfter($html, 'src="', $start);
 	if ($start === false)
 		return false;
-	$end = strpos($html, '"', $start);
-	$iconUrl = substr($html, $start, $end - $start);
+	$end = mb_strpos($html, '"', $start);
+	$iconUrl = mb_substr($html, $start, $end - $start);
 	$iconUrl = cleanText($iconUrl);
 	$iconFilename = basename($iconUrl);
 	//error_log($iconFilename);
@@ -57,9 +57,9 @@ function queryTemperature() {
 	$start = strposAfter($html, 'prognosenText">');
 	if ($start === false)
 		return false;
-	$end = strpos($html, '</div>', $start);
-	$desc_detail = substr($html, $start, $end - $start);
-	$desc_detail = str_replace('aktualisiert', ' aktualisiert', $desc_detail);
+	$end = mb_strpos($html, '</div>', $start);
+	$desc_detail = mb_substr($html, $start, $end - $start);
+	$desc_detail = mb_str_replace('aktualisiert', ' aktualisiert', $desc_detail);
 	$desc_detail = cleanText(strip_tags($desc_detail));
 	//error_log($desc_detail);
 

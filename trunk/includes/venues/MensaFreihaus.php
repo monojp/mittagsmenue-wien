@@ -22,8 +22,8 @@ class MensaFreihaus extends FoodGetterVenue {
 		$posStart = strnposAfter($dataTmp, 'menu-item-text">', strrpos($dataTmp, $title_search), date('N', $this->timestamp));
 		if ($posStart === false)
 			return null;
-		$posEnd = stripos($dataTmp, '</div>', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$posEnd = mb_stripos($dataTmp, '</div>', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data, '<br>');
 		//var_export($data);
 		//return;
@@ -42,7 +42,7 @@ class MensaFreihaus extends FoodGetterVenue {
 			if (!empty($food)) {
 				if ($cnt == 1)
 					$data .= $food;
-				else if ($cnt == 2 && stripos($data, 'suppe') !== false)
+				else if ($cnt == 2 && mb_stripos($data, 'suppe') !== false)
 					$data .= ", $food";
 				else if (strpos($food, '€') !== false)
 					$price_return = $food;
@@ -90,14 +90,14 @@ class MensaFreihaus extends FoodGetterVenue {
 		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 1</h2>', 0, 1);
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
 		$price[] = cleanText($data);
 		// menu classic 2
 		$posStart = strnposAfter($dataTmp, '<h2>Menü Classic 2</h2>', 0, 1);
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
 		$price[] = cleanText($data);
 		// brainfood

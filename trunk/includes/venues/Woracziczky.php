@@ -55,18 +55,18 @@ class Woracziczky extends FoodGetterVenue {
 			preg_match_all('/\n.+\n/', $message, $matches);
 
 			/* try alternative form
-				* <lunch info> das ist unser Mittagsmenü!
-				*/
+			* <lunch info> das ist unser Mittagsmenü!
+			*/
 			if (empty($matches[0])) {
 				preg_match('/.*(das ist unser Mittagsmenü)/', $message, $matches);
-				$matches[0] = isset($matches[0]) ? array(str_replace('das ist unser Mittagsmenü', '', $matches[0])) : null;
+				$matches[0] = isset($matches[0]) ? array(mb_str_replace('das ist unser Mittagsmenü', '', $matches[0])) : null;
 
 				/* try alternative form
-					 * <lunch info> sind heute unser Mittagsmenü
-					 */
+				 * <lunch info> sind heute unser Mittagsmenü
+				 */
 				if (empty($matches[0])) {
 					preg_match('/.*(sind heute unser Mittagsmenü)/', $message, $matches);
-					$matches[0] = isset($matches[0]) ? array(str_replace('sind heute unser Mittagsmenü', '', $matches[0])) : null;
+					$matches[0] = isset($matches[0]) ? array(mb_str_replace('sind heute unser Mittagsmenü', '', $matches[0])) : null;
 
 					// still nothing found, skip
 					if (empty($matches[0]))
@@ -78,14 +78,14 @@ class Woracziczky extends FoodGetterVenue {
 			$longest_length = 0;
 			$longest_key = 0;
 			foreach ($matches[0] as $key => $match) {
-				$current_length = strlen($match);
+				$current_length = mb_strlen($match);
 				if (
 					$current_length > $longest_length &&
 					(
-						strpos($match, 'auf') !== FALSE ||
-						strpos($match, 'mit') !== FALSE ||
-						strpos($match, 'und') !== FALSE ||
-						strpos($match, 'in') !== FALSE
+						mb_strpos($match, 'auf') !== FALSE ||
+						mb_strpos($match, 'mit') !== FALSE ||
+						mb_strpos($match, 'und') !== FALSE ||
+						mb_strpos($match, 'in') !== FALSE
 					)
 				) {
 					$longest_length = $current_length;
@@ -94,11 +94,16 @@ class Woracziczky extends FoodGetterVenue {
 			}
 
 			$mittagsmenue = $matches[0][$longest_key];
-			$mittagsmenue = trim($mittagsmenue, "\n!;-) ");
 
 			// strip unwanted words from the beginning
-			if (stripos($mittagsmenue, 'eine') == 0)
-				$mittagsmenue = substr($mittagsmenue, striposAfter($mittagsmenue, 'eine'));
+			if (mb_stripos($mittagsmenue, 'eine') == 0)
+				$mittagsmenue = mb_substr($mittagsmenue, striposAfter($mittagsmenue, 'eine'));
+
+			// strip unwanted phrases
+			$mittagsmenue = mb_str_replace('gibt es heute für euch', '', $mittagsmenue);
+
+			// clean menu
+			$mittagsmenue = trim($mittagsmenue, "\n!;-:.) ");
 
 			$data = $mittagsmenue;
 			$today = getGermanDayName();
