@@ -30,11 +30,11 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 		if ($posStart === FALSE) {
 				return;
 		}
-		$posEnd = stripos($dataTmp, $tomorrow, $posStart);
+		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
 		// last day of the week
 		if (!$posEnd)
-			$posEnd = stripos($dataTmp, 'br', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
+			$posEnd = mb_stripos($dataTmp, 'br', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		//var_export($data);
 		$data = strip_tags($data);
 		// remove unwanted stuff

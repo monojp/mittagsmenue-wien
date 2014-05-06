@@ -32,14 +32,14 @@ class tewa extends FoodGetterVenue {
 		$posStart = striposAfter($dataTmp, getGermanDayName());
 		if ($posStart === FALSE)
 			return;
-		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
+		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// friday
 		if (!$posEnd) {
-			$posEnd = stripos($dataTmp, '</tr>', $posStart);
+			$posEnd = mb_stripos($dataTmp, '</tr>', $posStart);
 			if (!$posEnd)
 				return;
 		}
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data, '<br>');
 		//error_log(print_r($data, true));
 		//return;
@@ -74,7 +74,7 @@ class tewa extends FoodGetterVenue {
 		//return;
 
 		// get prices out of data
-		$data_price = str_replace(',', '.', $data);
+		$data_price = mb_str_replace(',', '.', $data);
 		$price = null;
 		preg_match_all('/[0-9]{1,2}[.][0-9]{1,2}/', $data_price, $price);
 		$this->price = $price[0];

@@ -29,11 +29,11 @@ class TasteOfIndia extends FoodGetterVenue {
 		$posStart = striposAfter($dataTmp, $todayHotfix);
 		if ($posStart === FALSE)
 			return;
-		$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
+		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// last day of the week
 		if (!$posEnd)
-			$posEnd = stripos($dataTmp, '</table>', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
+			$posEnd = mb_stripos($dataTmp, '</table>', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 
 		$data = strip_tags($data);
 		$data = str_replace(array('1', '2', '3', '4', "\t"), '', $data);
@@ -56,7 +56,7 @@ class TasteOfIndia extends FoodGetterVenue {
 			}
 		}
 
-		$data = str_replace("\n", "<br />", $data);
+		$data = mb_str_replace("\n", "<br />", $data);
 		$this->data = $data;
 
 		// set date
@@ -64,8 +64,8 @@ class TasteOfIndia extends FoodGetterVenue {
 
 		// set price
 		$posStart = striposAfter($dataTmp, 'Men&uuml;');
-		$posEnd = stripos($dataTmp, '&euro;', $posStart);
-		$this->price = cleanText(substr($dataTmp, $posStart, $posEnd-$posStart));
+		$posEnd = mb_stripos($dataTmp, '&euro;', $posStart);
+		$this->price = cleanText(mb_substr($dataTmp, $posStart, $posEnd-$posStart));
 
 		//return $this->data;
 	}

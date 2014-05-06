@@ -38,11 +38,11 @@ class Waldviertlerhof extends FoodGetterVenue {
 		if ($posStart === FALSE) {
 			return;
 		}
-		$posEnd = stripos($dataTmp, $tomorrow, $posStart);
+		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
 		// last day of the week
 		if (!$posEnd)
-			$posEnd = stripos($dataTmp, 'Ihre Tischreservierung', $posStart);
-		$dataTmp = substr($dataTmp, $posStart, $posEnd-$posStart);
+			$posEnd = mb_stripos($dataTmp, 'Ihre Tischreservierung', $posStart);
+		$dataTmp = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$dataTmp = explode('|', $dataTmp);
 		//var_export($dataTmp);
 		//return;

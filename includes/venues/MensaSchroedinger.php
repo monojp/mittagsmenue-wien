@@ -22,8 +22,8 @@ class MensaSchroedinger extends FoodGetterVenue {
 		$posStart = strnposAfter($dataTmp, 'menu-item-text">', strrpos($dataTmp, $title_search), date('N', $this->timestamp));
 		if ($posStart === false)
 			return null;
-		$posEnd = stripos($dataTmp, '</div>', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$posEnd = mb_stripos($dataTmp, '</div>', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data, '<br>');
 		//var_export($data);
 		//return;
@@ -43,7 +43,7 @@ class MensaSchroedinger extends FoodGetterVenue {
 				if ($cnt == 1)
 					$data .= $food;
 				else if (
-					($cnt == 2 && stripos($data, 'suppe') !== false) || // suppe, xx
+					($cnt == 2 && mb_stripos($data, 'suppe') !== false) || // suppe, xx
 					$cnt == count($foods) // xx, dessert
 				)
 					$data .= ", $food";
@@ -92,7 +92,7 @@ class MensaSchroedinger extends FoodGetterVenue {
 		$posStart = strposAfter($dataTmp, '<h2>Menü Classic 1</h2>');
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
 		$data = str_replace('€', '', $data);
 		$data = explode('/', $data);
@@ -106,7 +106,7 @@ class MensaSchroedinger extends FoodGetterVenue {
 		/*$posStart = strposAfter($dataTmp, '<h2>Menü Classic 2</h2>');
 		$posStart = strposAfter($dataTmp, '€', $posStart);
 		$posEnd = strpos($dataTmp, '<div', $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
 		$data = strip_tags($data);
 		$data = str_replace('€', '', $data);
 		$data = explode('/', $data);
