@@ -54,25 +54,32 @@ class Woracziczky extends FoodGetterVenue {
 			 */
 			preg_match_all('/\n.+\n/', $message, $matches);
 
-			/* try alternative form
-			* <lunch info> das ist unser Mittagsmenü!
-			*/
+			$alternative_regexes = array(
+				array(
+					'regex' => '/.*(das ist unser Mittagsmenü)/',
+					'strip' => 'das ist unser Mittagsmenü',
+				),
+				array(
+					'regex' => '/.*(sind heute unser Mittagsmenü)/',
+					'strip' => 'sind heute unser Mittagsmenü',
+				),
+				array(
+					'regex' => '/.*(das alles bieten wir euch heute in der Mittagspause)/',
+					'strip' => 'das alles bieten wir euch heute in der Mittagspause',
+				),
+			);
+			/*
+			 * try alternative regexes
+			 */
 			if (empty($matches[0])) {
-				preg_match('/.*(das ist unser Mittagsmenü)/', $message, $matches);
-				$matches[0] = isset($matches[0]) ? array(mb_str_replace('das ist unser Mittagsmenü', '', $matches[0])) : null;
-
-				/* try alternative form
-				 * <lunch info> sind heute unser Mittagsmenü
-				 */
-				if (empty($matches[0])) {
-					preg_match('/.*(sind heute unser Mittagsmenü)/', $message, $matches);
-					$matches[0] = isset($matches[0]) ? array(mb_str_replace('sind heute unser Mittagsmenü', '', $matches[0])) : null;
-
-					// still nothing found, skip
-					if (empty($matches[0]))
-						continue;
+				foreach ($alternative_regexes as $regex_data) {
+					preg_match($regex_data['regex'], $message, $matches);
+					$matches[0] = isset($matches[0]) ? array(mb_str_replace($regex_data['strip'], '', $matches[0])) : null;
 				}
 			}
+			// still nothing found, skip
+			if (empty($matches[0]))
+				continue;
 
 			// get longest match which also contains a keyword
 			$longest_length = 0;
@@ -96,14 +103,26 @@ class Woracziczky extends FoodGetterVenue {
 			$mittagsmenue = $matches[0][$longest_key];
 
 			// strip unwanted words from the beginning
-			if (mb_stripos($mittagsmenue, 'eine') == 0)
-				$mittagsmenue = mb_substr($mittagsmenue, striposAfter($mittagsmenue, 'eine'));
+			$unwanted_words_beginning = array(
+				'ein', 'eine', 'Ein', 'Eine',
+			);
+			foreach ($unwanted_words_beginning as $word) {
+				if (mb_stripos($mittagsmenue, $word) == 0)
+					$mittagsmenue = mb_substr($mittagsmenue, striposAfter($mittagsmenue, $word));
+			}
 
 			// strip unwanted phrases
-			$mittagsmenue = mb_str_replace('gibt es heute für euch', '', $mittagsmenue);
+			$unwanted_phrases = array(
+				'gibt es heute für euch', 'Sonne und Schanigarten',
+			);
+			foreach ($unwanted_phrases as $phrase)
+				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);
 
 			// clean menu
-			$mittagsmenue = trim($mittagsmenue, "\n!;-:.) ");
+			$mittagsmenue = trim($mittagsmenue, "\n!;-:,.) ");
+
+			// first character should be uppercase
+			$mittagsmenue = ucfirst($mittagsmenue);			
 
 			$data = $mittagsmenue;
 			$today = getGermanDayName();
