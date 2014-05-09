@@ -157,7 +157,12 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'm. islam kg', 'andreas gruber', 'Schnaps- Club Hofstöckl', 'Wien - Margit Köffler', 'Göd Manfred', 'keg', 'hans rudolf siegl',
 			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Hofer', 'Penny Markt', 'Osteria Vinoteca Panarea', 'Little Stage',
 			'Zum Stöger', 'Lidl Austria', 'Inh. Kaya Aydin', 'SPAR Österreichische Warenhandels-AG', 'WerkzeugH', '- BAR - ENOTECA', 'Motto Club-Restaurant-Bar',
-			'Waldviertlerhof', 'conceptspace', 'Public-theplacetobe', 'Ankerbrot AG', 'International Limited', 'Espresso Italiano', 'Oxy Zentrum',
+			'Waldviertlerhof', 'conceptspace', 'Public-theplacetobe', 'Ankerbrot AG', 'International Limited', 'Espresso Italiano', 'Oxy Zentrum', 'Pizza Hotline',
+			'Burger Bring', 'LA VITA È BELLA', 'Rori\'s Finest Sweets', 'Pizza Da Capo', 'Motto', 'Bäckerei Cafe Felzl', 'Cafe 60', 'Vinothek Pub Klemo', 'Café Standard',
+			'Collina Vienna', 'Cafe Willendorf', 'Pizzeria La Carne', 'Deli', 'Il Cantuccino', 'Mokador Caffe', 'Home Made - Grocery & Café', 'Schnipi Schnitzel- u Pizzazustellung',
+			'Rosa Lila Tip', 'Senhor Vinho', 'Gergely\'s', 'Chicken King & Makara Noodle', 'Vinoteca Tropea - Vienna', 'Schlupfwinkel Abendbeisl', 'Andino', 'Lehmberg',
+			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
+			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis','Fleischboutique', 
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
