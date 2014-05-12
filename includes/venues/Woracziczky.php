@@ -52,20 +52,24 @@ class Woracziczky extends FoodGetterVenue {
 			 * <lunch info>
 			 * <random text>
 			 */
-			preg_match_all('/\n.+\n/', $message, $matches);
+			preg_match_all('/\n\n.+\n\n/', $message, $matches);
 
 			$alternative_regexes = array(
 				array(
-					'regex' => '/.*(das ist unser Mittagsmenü)/',
-					'strip' => 'das ist unser Mittagsmenü',
+					'regex' => '/.*(das ist)/',
+					'strip' => 'das ist',
 				),
 				array(
-					'regex' => '/.*(sind heute unser Mittagsmenü)/',
-					'strip' => 'sind heute unser Mittagsmenü',
+					'regex' => '/.*(sind heute)/',
+					'strip' => 'sind heute',
 				),
 				array(
-					'regex' => '/.*(das alles bieten wir euch heute in der Mittagspause)/',
-					'strip' => 'das alles bieten wir euch heute in der Mittagspause',
+					'regex' => '/.*(das alles)/',
+					'strip' => 'das alles',
+				),
+				array(
+					'regex' => '/.*(ist so ein)/',
+					'strip' => 'ist so ein',
 				),
 			);
 			/*
@@ -104,11 +108,20 @@ class Woracziczky extends FoodGetterVenue {
 
 			// strip unwanted words from the beginning
 			$unwanted_words_beginning = array(
-				'ein', 'eine', 'Ein', 'Eine',
+				'ein', 'eine', 'einer', 'mit',
 			);
-			foreach ($unwanted_words_beginning as $word) {
-				if (mb_stripos($mittagsmenue, $word) == 0)
-					$mittagsmenue = mb_substr($mittagsmenue, striposAfter($mittagsmenue, $word));
+			// longer strings first
+			usort($unwanted_words_beginning, function($a,$b) {
+				return mb_strlen($b) - mb_strlen($a);
+			});
+			$keys = array_keys($unwanted_words_beginning);
+			for ($i=0; $i<count($keys); $i++) {
+				$word = $unwanted_words_beginning[$i];
+				if (mb_stripos($mittagsmenue, $word) === 0) {
+					$mittagsmenue = mb_substr($mittagsmenue, mb_strlen($word));
+					$mittagsmenue = trim($mittagsmenue);
+					$i=-1; // restart
+				}
 			}
 
 			// strip unwanted phrases
