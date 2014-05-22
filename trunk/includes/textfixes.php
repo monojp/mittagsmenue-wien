@@ -15,7 +15,7 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	'gegrilltes', 'gegrillte', 'hausgemachter', 'hausgemachten', 'hausgemachtes', 'hausgemachte', 'saftiges', 'buntes',
 	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gebacken', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante', 'geröstetem', 'geröstetes',
 	'gerösteten', 'gerösteter', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtem', 'gekochtes', 'gekochter', 'gekocht',
-	'ofenwarmer', 'wiener', ' mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische',
+	'ofenwarmer', 'wiener', ' mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.');
 
@@ -105,6 +105,7 @@ $searchReplace = array(
 	'"Altes Fassl"mit' => '"Altes Fassl" mit',
 	'gebr.Speck' => 'gebr. Speck',
 	', (1/ 0)' => '',
+	'Meeeres' => 'Meeres',
 );
 
 ?>

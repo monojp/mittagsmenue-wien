@@ -53,7 +53,7 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 		$this->date = $today;
 
 		// set price
-		$this->price = '6,20';
+		$this->price = '6,50';
 
 		//var_export($data);
 

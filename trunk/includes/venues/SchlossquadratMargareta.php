@@ -53,7 +53,7 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 		$this->date = $today;
 
 		// set price
-		$this->price = '5,20';
+		$this->price = '5,60';
 
 		//var_export($data);
 

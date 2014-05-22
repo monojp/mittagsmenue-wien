@@ -45,7 +45,7 @@ function saveReturnVotes($votes) {
 	global $voting_over_time;
 
 	// save timestamp to delete old votings
-	$votes['time'] = time();
+	$votes['access'] = time();
 
 	// save votes to file
 	if (file_put_contents(VOTE_FILE, json_encode($votes)) === FALSE) {
@@ -88,7 +88,7 @@ function getAllVotes() {
 			$votes = array();
 
 		// clear old (5 hours) vote data
-		if ($votes['time'] < strtotime('-5 hours'))
+		if ($votes['access'] < strtotime('-5 hours'))
 			$votes = array();
 	}
 
