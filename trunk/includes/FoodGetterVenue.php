@@ -121,7 +121,7 @@ abstract class FoodGetterVenue {
 		if ($currentWeek > $wantedWeek && !$data)
 			$data = null;
 
-		if ($data && $this->isDataUpToDate()) {
+		if (!empty($data) && $this->isDataUpToDate()) {
 			// not from cache? => write back
 			if (!$this->dataFromCache)
 				$this->cacheWrite();

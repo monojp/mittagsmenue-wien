@@ -48,7 +48,7 @@ class Woracziczky extends FoodGetterVenue {
 			// nothing mittags-relevantes found
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch',
+				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
