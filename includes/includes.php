@@ -542,6 +542,9 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	global $cacheDataIgnore;
 	global $dateOffset;
 
+	if (empty($string))
+		return $string;
+
 	// sort cacheDataExplode (longer stuff first)
 	usort($cacheDataExplode, function($a,$b) {
 		return mb_strlen($b) - mb_strlen($a);
