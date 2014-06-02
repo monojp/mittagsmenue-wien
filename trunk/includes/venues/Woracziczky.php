@@ -80,6 +80,10 @@ class Woracziczky extends FoodGetterVenue {
 					'strip' => 'ist so ein',
 				),
 				array(
+					'regex' => '/.*(gibt es heute)/',
+					'strip' => 'gibt es heute',
+				),
+				array(
 					'regex' => '/(haben wir heute).*(für euch)/',
 					'strip' => array('haben wir heute', 'für euch'),
 				),
@@ -165,7 +169,7 @@ class Woracziczky extends FoodGetterVenue {
 
 			//error_log($mittagsmenue);
 			//break;
-			
+
 			// strip unwanted words from the beginning
 			$unwanted_words_beginning = array(
 				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir',
