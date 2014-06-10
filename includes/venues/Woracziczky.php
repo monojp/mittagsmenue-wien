@@ -7,7 +7,7 @@ class Woracziczky extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Gasthaus Woracziczky';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Spengergasse 52, 1050 Wien';
 		$this->addressLat = '48.189343';
 		$this->addressLng = '16.352982';
@@ -48,7 +48,7 @@ class Woracziczky extends FoodGetterVenue {
 			// nothing mittags-relevantes found
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich',
+				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
@@ -63,6 +63,10 @@ class Woracziczky extends FoodGetterVenue {
 			preg_match_all('/\n\n.+\n\n/', $message, $matches);
 
 			$alternative_regexes = array(
+				array(
+					'regex' => '/(heute im Wora gibt\?\n).[^\r\n]*/',
+					'strip' => 'heute im Wora gibt?',
+				),
 				array(
 					'regex' => '/.*(das ist)/',
 					'strip' => 'das ist',
@@ -97,7 +101,7 @@ class Woracziczky extends FoodGetterVenue {
 			/*
 			 * try alternative regexes
 			 */
-			if (empty($matches[0])) {
+			if (empty($matches[0]) || stringsExist(mb_strtolower($matches[0]), array('euch', 'freut', 'natürlich'))) {
 				foreach ($alternative_regexes as $regex_data) {
 					preg_match($regex_data['regex'], $message, $matches);
 
@@ -162,17 +166,20 @@ class Woracziczky extends FoodGetterVenue {
 			// strip unwanted phrases
 			$unwanted_phrases = array(
 				'gibt es heute für euch', 'Sonne und Schanigarten', 'als Hauptgericht', 'Heute gibt\'s bei uns', 'Wora', 'Essen',
-				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute',
+				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute', 'Sonnenschein', 'strahlender',
+				'gemütlichen',
 			);
 			foreach ($unwanted_phrases as $phrase)
 				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);
 
-			//error_log($mittagsmenue);
+			$mittagsmenue = trim($mittagsmenue, "\n!;-:,.-() ");
+
+			//error_log("'$mittagsmenue'");
 			//break;
 
-			// strip unwanted words from the beginning
+			// strip unwanted words from the beginning or end
 			$unwanted_words_beginning = array(
-				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir',
+				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir', 'und',
 			);
 			// longer strings first
 			usort($unwanted_words_beginning, function($a,$b) {
@@ -182,12 +189,21 @@ class Woracziczky extends FoodGetterVenue {
 			for ($i=0; $i<count($keys); $i++) {
 				$word = $unwanted_words_beginning[$i];
 				if (mb_stripos($mittagsmenue, $word) === 0) {
-					//error_log("stripped $word");
+					//error_log("stripped $word from beginning");
 					$mittagsmenue = mb_substr($mittagsmenue, mb_strlen($word));
 					$mittagsmenue = trim($mittagsmenue, "\n!;-:,.-() ");
 					$i=-1; // restart
 				}
+				else if (mb_stripos($mittagsmenue, $word) === strlen($mittagsmenue) - strlen($word) - 1) {
+					//error_log("stripped $word from end");
+					$mittagsmenue = mb_substr($mittagsmenue, 0, strlen($mittagsmenue) - strlen($word) - 1);
+					$mittagsmenue = trim($mittagsmenue, "\n!;-:,.-() ");
+					$i=-1; // restart
+				}
 			}
+
+			//error_log("'$mittagsmenue'");
+			//break;
 
 			// replace multiple whitespaces with one
 			$mittagsmenue = preg_replace('/\s{2,}/', ' ', $mittagsmenue);

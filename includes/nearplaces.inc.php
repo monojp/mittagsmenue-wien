@@ -162,7 +162,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Collina Vienna', 'Cafe Willendorf', 'Pizzeria La Carne', 'Deli', 'Il Cantuccino', 'Mokador Caffe', 'Home Made - Grocery & Café', 'Schnipi Schnitzel- u Pizzazustellung',
 			'Rosa Lila Tip', 'Senhor Vinho', 'Gergely\'s', 'Chicken King & Makara Noodle', 'Vinoteca Tropea - Vienna', 'Schlupfwinkel Abendbeisl', 'Andino', 'Lehmberg',
 			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
-			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis','Fleischboutique', 
+			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis', 'Fleischboutique', 'Celeste Cafe', 'Spar-supermarkt',
+			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -280,6 +281,41 @@ function details($id, $reference, $sensor) {
 	}
 
 	return handle_api_response($api_response);
+}
+
+function nearbysearch_full($lat, $lng, $radius, $sensor) {
+	$api_results = nearplace_cache_read($lat, $lng, $radius);
+	if ($api_results === null) {
+		$api_results = array();
+
+		// default nearbysearch
+		$api_response = nearbysearch($lat, $lng, $radius, $sensor);
+		$api_results = array_merge($api_results, (array)$api_response['results']);
+		while(1) {
+			usleep(1800 * 1000);
+			$api_response = nextpage_search($lat, $lng, $radius, $sensor);
+			if (!$api_response)
+				break;
+			else
+				$api_results = array_merge($api_results, (array)$api_response['results']);
+		}
+
+		// nearby search with opennow
+		$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
+		$api_results = array_merge($api_results, (array)$api_response['results']);
+		while(1) {
+			usleep(1800 * 1000);
+			$api_response = nextpage_search($lat, $lng, $radius, $sensor, true);
+			if (!$api_response)
+				break;
+			else
+				$api_results = array_merge($api_results, (array)$api_response['results']);
+		}
+
+		if ($api_results !== null)
+			nearplace_cache_write($lat, $lng, $radius, $api_results);
+	}
+	return $api_results;
 }
 
 ?>

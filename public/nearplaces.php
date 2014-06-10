@@ -11,6 +11,7 @@ $action = get_var('action');
 $lat = is_var('lat') ? get_var('lat') : LOCATION_FALLBACK_LAT;
 $lng = is_var('lng') ? get_var('lng') : LOCATION_FALLBACK_LNG;
 $radius = is_var('radius') ? get_var('radius') : '100';
+$radius_max = is_var('radius_max') ? get_var('radius_max') : LOCATION_DEFAULT_DISTANCE;
 $sensor = is_var('sensor') ? get_var('sensor') : 'false';
 $id = is_var('id') ? get_var('id') : null;
 $reference = is_var('reference') ? get_var('reference') : null;
@@ -44,39 +45,14 @@ if ($action) {
 	// do a full search with all pages (takes rather long because of sleeps)
 	// therefore it is cached
 	else if ($action == 'nearbysearch_full') {
-		$api_results = nearplace_cache_read($lat, $lng, $radius);
-		if ($api_results === null) {
-			$api_results = array();
-
-			// default nearbysearch
-			$api_response = nearbysearch($lat, $lng, $radius, $sensor);
-			$api_results = array_merge($api_results, (array)$api_response['results']);
-			while(1) {
-				usleep(1800 * 1000);
-				$api_response = nextpage_search($lat, $lng, $radius, $sensor);
-				if (!$api_response)
-					break;
-				else
-					$api_results = array_merge($api_results, (array)$api_response['results']);
-			}
-
-			// nearby search with opennow
-			$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
-			$api_results = array_merge($api_results, (array)$api_response['results']);
-			while(1) {
-				usleep(1800 * 1000);
-				$api_response = nextpage_search($lat, $lng, $radius, $sensor, true);
-				if (!$api_response)
-					break;
-				else
-					$api_results = array_merge($api_results, (array)$api_response['results']);
-			}
-
-			if ($api_results !== null)
-				nearplace_cache_write($lat, $lng, $radius, $api_results);
-		}
-
-		// build final response
+		$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
+		$response = build_response($lat, $lng, $api_results);
+		echo json_encode(remove_doubles($response));
+	}
+	// do a staged search (2 full searches in a row)
+	else if ($action == 'nearbysearch_staged') {
+		$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
+		$api_results = array_merge($api_results, nearbysearch_full($lat, $lng, $radius_max, $sensor));
 		$response = build_response($lat, $lng, $api_results);
 		echo json_encode(remove_doubles($response));
 	}
