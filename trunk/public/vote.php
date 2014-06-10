@@ -11,10 +11,7 @@
 	}
 
 	// check identifier if valid vote
-	$identifier = isset($_POST['identifier']) ? $_POST['identifier'] : null;
-	if ($identifier) {
-		$identifier = trim($_POST['identifier']);
-	}
+	$identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
 	$ip = get_identifier_ip();
 
 	$action = get_var('action');
@@ -158,17 +155,7 @@
 		}
 		// get all votes
 		else if ($action == 'vote_get') {
-			if (isset($votes['venue']) && !empty($votes['venue'])) {
-				// sort and return votes
-				if (is_array($votes['venue']))
-					ksort($votes['venue']);
-				echo json_encode(array(
-					'voting_over' => (time() >= $voting_over_time),
-					'html'        => vote_summary_html($votes, false),
-				));
-			}
-			else
-				echo json_encode('');
+			returnVotes($votes);
 		}
 		// undefined action
 		else {

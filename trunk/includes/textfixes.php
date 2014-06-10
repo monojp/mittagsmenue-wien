@@ -15,7 +15,7 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	'gegrilltes', 'gegrillte', 'hausgemachter', 'hausgemachten', 'hausgemachtes', 'hausgemachte', 'saftiges', 'buntes',
 	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gebacken', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante', 'geröstetem', 'geröstetes',
 	'gerösteten', 'gerösteter', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtem', 'gekochtes', 'gekochter', 'gekocht',
-	'ofenwarmer', 'wiener', ' mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von', 'G E S C H L O S S E N'
+	'ofenwarmer', 'wiener', ' mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.');
 
@@ -23,7 +23,7 @@ $cacheDataDelete = array(
 	'!!!', 'feiertag', 'Feiertag', 'FEIERTAG', 'Feiertagsbrunch',
 	'Genussregion Tullnerfelder Schwein', 'la carte', 'geschlossen',
 	'Geschlossen', 'Silvester', 'Neujahr', 'FROHE', 'OSTERN', 'CHRISTI',
-	'HIMMELFAHRT', 'GESCHLOSSEN', 'Heiliger Abend', 'G E SC H L O S S E N',
+	'HIMMELFAHRT', 'GESCHLOSSEN', 'Heiliger Abend', 'G E SC H L O S S E N', 'G E S C H L O S S E N',
 	'F E I E R T A G',
 );
 

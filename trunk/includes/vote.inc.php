@@ -41,6 +41,58 @@ function email_config_set($user, $email, $vote_reminder, $voted_mail_only) {
 	return file_put_contents(VOTE_MAILS_FILE, $data);
 }
 
+function returnVotes($votes) {
+	global $voting_over_time;
+	$html_return = (get_var('html') !== null) | (get_var('html/') !== null);
+
+	if (isset($votes['venue']) && !empty($votes['venue'])) {
+		if (is_array($votes['venue']))
+			ksort($votes['venue']);
+
+		if ($html_return) {
+			require_once('guihelper.php');
+			require_once('header.php');
+			if (show_voting() && isset($_GET['minimal'])) {
+				echo '<meta http-equiv="refresh" content="10" />';
+				echo get_minimal_site_notice_html();
+				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
+			}
+			else if (show_voting()) {
+				echo '<div style="display: none" id="show_voting"></div>';
+				echo get_vote_div_html();
+				echo get_noscript_html();
+			}
+			//echo vote_summary_html($votes, false);
+			require_once('footer.php');
+		}
+		else
+			echo json_encode(array(
+				'voting_over' => (time() >= $voting_over_time),
+				'html'        => vote_summary_html($votes, false),
+			));
+	}
+	// no voting data
+	else {
+		if ($html_return) {
+			require_once('guihelper.php');
+			require_once('header.php');
+			if (show_voting() && isset($_GET['minimal'])) {
+				echo '<meta http-equiv="refresh" content="10" />';
+				echo get_minimal_site_notice_html();
+				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
+			}
+			else if (show_voting()) {
+				echo '<div style="display: none" id="show_voting"></div>';
+				echo get_vote_div_html();
+				echo get_noscript_html();
+			}
+			require_once('footer.php');
+		}
+		else
+			echo json_encode('');
+	}
+}
+
 function saveReturnVotes($votes) {
 	global $voting_over_time;
 
@@ -48,24 +100,10 @@ function saveReturnVotes($votes) {
 	$votes['access'] = time();
 
 	// save votes to file
-	if (file_put_contents(VOTE_FILE, json_encode($votes)) === FALSE) {
+	if (file_put_contents(VOTE_FILE, json_encode($votes)) === FALSE)
 		echo json_encode(array('alert' => "Das Voting konnte nicht gesetzt werden!"));
-	}
 	// sort and return votes
-	else {
-		if (isset($votes['venue']) && !empty($votes['venue'])) {
-
-			if (is_array($votes['venue']))
-				ksort($votes['venue']);
-
-			echo json_encode(array(
-				'voting_over' => (time() >= $voting_over_time),
-				'html'        => vote_summary_html($votes, false),
-			));
-		}
-		else
-			echo json_encode('');
-	}
+	returnVotes($votes);
 }
 
 function check_voting_time() {

@@ -439,21 +439,18 @@ function handle_href_reference_details(id, reference, name, try_count) {
 	});
 }
 
-function get_alt_venues(lat, lng, radius, results_old, success_function, try_count) {
-	// if >= 10 venues found in step before in call succes_function immediately with empty new result
-	if (results_old.length >= 10)
-		return success_function(new Array());
-	// < 10 found in step before, do current query
+function get_alt_venues(lat, lng, radius, radius_max, success_function, try_count) {
 	$.ajax({
 		type: 'POST',
 		url:  'nearplaces.php',
 		data: {
-			'action' : 'nearbysearch_full',
-			'lat'    : lat,
-			'lng'    : lng,
-			'radius' : radius,
-			'sensor' : isMobileDevice(),
-			'userid' : $('#userid').html()
+			'action'     : 'nearbysearch_staged',
+			'lat'        : lat,
+			'lng'        : lng,
+			'radius'     : radius,
+			'radius_max' : radius_max,
+			'sensor'     : isMobileDevice(),
+			'userid'     : $('#userid').html()
 		},
 		dataType: "json",
 		success: function(result) {
@@ -464,7 +461,7 @@ function get_alt_venues(lat, lng, radius, results_old, success_function, try_cou
 		},
 		error: function() {
 			if (try_count < ajax_retry_count_max)
-				window.setTimeout(function() { get_alt_venues(lat, lng, radius, results_old, success_function, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
+				window.setTimeout(function() { get_alt_venues(lat, lng, radius, radius_max, success_function, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
 			else
 				alert('Fehler beim Abholen der Restaurants in der Nähe.');
 		}
@@ -478,84 +475,78 @@ function init_venues_alt() {
 	$('#table_voting_alt').hide();
 	$('#div_voting_alt_loader').show();
 
-	// first step: get venues in 650 m radius
+	// get venues in 1000 - user distance radius
 	var results = new Array();
-	get_alt_venues(lat, lng, 650, results, function (results_near) {
-		results = results.concat(results_near);
-		// second step: get venues in set user radius (default 5000 m)
-		get_alt_venues(lat, lng, $('#distance').val(), results_near, function (results_far) {
-			results = results.concat(results_far);
+	get_alt_venues(lat, lng, 1000, $('#distance').val(), function (results) {
+		// prepare data for table
+		data = new Array();
+		$(results).each(function(index, element) {
+			var distanceValue = distanceLatLng(lat, lng, element.lat, element.lng);
+			var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
+			var rating = '-';
+			if (element.rating)
+				rating = element.rating;
 
-			// prepare data for table
-			data = new Array();
-			$(results).each(function(index, element) {
-				var distanceValue = distanceLatLng(lat, lng, element.lat, element.lng);
-				var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
-				var rating = '-';
-				if (element.rating)
-					rating = element.rating;
+			var action_data = "<a href='" + element.maps_href + "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+			if ($('#show_voting').length) {
+				action_data += "<a href='javascript:void(0)' onclick='vote_up(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>\
+					<a href='javascript:void(0)' onclick='vote_down(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+			}
 
-				var action_data = "<a href='" + element.maps_href + "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
-				if ($('#show_voting').length) {
-					action_data += "<a href='javascript:void(0)' onclick='vote_up(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>\
-						<a href='javascript:void(0)' onclick='vote_down(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+			data[index] = new Array(
+				element.href,
+				distanceMetersRound,
+				rating,
+				action_data
+			);
+		});
+
+		var dataTable = $('#table_voting_alt').dataTable({
+			'aaData' : data,
+			'bSort': true,
+			/* make table replacable */
+			"bDestroy": true,
+			/* sort after distance, then after rating */
+			"aaSorting": [ [ 1, 'asc' ], [2, 'desc'] ],
+			'bLengthChange': false,
+			/* resize table to fit */
+			"bAutoWidth": true,
+			/* number of rows on one page */
+			'iDisplayLength': 8,
+			/* show all pages instead of just the next and before links */
+			"sPaginationType": "full_numbers",
+			/* no page x from y info and so on */
+			'bInfo' : false,
+			'aoColumns': [
+				{"sTitle": "Name"},
+				{"sTitle": "Distanz [m]", "sClass":" center"},
+				{"sTitle": "Rating", "sClass":" center"},
+				{"sTitle": "Aktionen", "sClass":" center"}
+			],
+			"oLanguage": {
+				"sProcessing":   "Bitte warten...",
+				"sLengthMenu":   "_MENU_ Einträge anzeigen",
+				"sZeroRecords":  "<p class='bold'>Leider nichts gefunden :(</p>",
+				"sInfo":         "_START_ bis _END_ von _TOTAL_ Einträgen",
+				"sInfoEmpty":    "0 bis 0 von 0 Einträgen",
+				"sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
+				"sInfoPostFix":  "",
+				"sSearch":       "Filter:",
+				"sUrl":          "",
+				"oPaginate": {
+					"sFirst":    "Anfang",
+					"sPrevious": "Zurück",
+					"sNext":     "Weiter",
+					"sLast":     "Ende"
 				}
-
-				data[index] = new Array(
-					element.href,
-					distanceMetersRound,
-					rating,
-					action_data
-				);
-			});
-
-			var dataTable = $('#table_voting_alt').dataTable({
-				'aaData' : data,
-				'bSort': true,
-				/* make table replacable */
-				"bDestroy": true,
-				/* sort after distance, then after rating */
-				"aaSorting": [ [ 1, 'asc' ], [2, 'desc'] ],
-				'bLengthChange': false,
-				/* resize table to fit */
-				"bAutoWidth": true,
-				/* number of rows on one page */
-				'iDisplayLength': 8,
-				/* show all pages instead of just the next and before links */
-				"sPaginationType": "full_numbers",
-				/* no page x from y info and so on */
-				'bInfo' : false,
-				'aoColumns': [
-					{"sTitle": "Name"},
-					{"sTitle": "Distanz [m]", "sClass":" center"},
-					{"sTitle": "Rating", "sClass":" center"},
-					{"sTitle": "Aktionen", "sClass":" center"}
-				],
-				"oLanguage": {
-					"sProcessing":   "Bitte warten...",
-					"sLengthMenu":   "_MENU_ Einträge anzeigen",
-					"sZeroRecords":  "<p class='bold'>Leider nichts gefunden :(</p>",
-					"sInfo":         "_START_ bis _END_ von _TOTAL_ Einträgen",
-					"sInfoEmpty":    "0 bis 0 von 0 Einträgen",
-					"sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
-					"sInfoPostFix":  "",
-					"sSearch":       "Filter:",
-					"sUrl":          "",
-					"oPaginate": {
-						"sFirst":    "Anfang",
-						"sPrevious": "Zurück",
-						"sNext":     "Weiter",
-						"sLast":     "Ende"
-					}
-				}
-			});
-			$('#div_voting_alt_loader').hide();
-			$('#table_voting_alt').show();
-			if (dataTable.length > 0)
-				dataTable.fnAdjustColumnSizing();
-			$('#table_voting_alt').parent().find('input[type="text"]').attr('type', 'search');
-			$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
-		}, 0);
+			}
+		});
+		$('#div_voting_alt_loader').hide();
+		$('#table_voting_alt').show();
+		if (dataTable.length > 0)
+			dataTable.fnAdjustColumnSizing();
+		$('#table_voting_alt').parent().find('input[type="text"]').attr('type', 'search');
+		$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
 	}, 0);
 }
 
