@@ -222,6 +222,8 @@ function remove_doubles($response) {
 function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null) {
 	global $GOOGLE_API_KEYS;
 
+	shuffle($GOOGLE_API_KEYS);
+
 	// get next_page_token from search before
 	if (!isset($_SESSION['nearplaces']['next_page_token']))
 		return null;
@@ -248,6 +250,8 @@ function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=n
 function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null) {
 	global $GOOGLE_API_KEYS;
 
+	shuffle($GOOGLE_API_KEYS);
+
 	// query api
 	foreach ($GOOGLE_API_KEYS as $api_key) {
 		if (LOG_API_REQUESTS)
@@ -267,6 +271,8 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 
 function details($id, $reference, $sensor) {
 	global $GOOGLE_API_KEYS;
+
+	shuffle($GOOGLE_API_KEYS);
 
 	// query api
 	foreach ($GOOGLE_API_KEYS as $api_key) {
