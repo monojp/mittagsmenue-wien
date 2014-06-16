@@ -8,7 +8,7 @@ require_once('FoodGetterVenue.php');
 $handle = opendir(dirname(__FILE__) . '/venues');
 if ($handle) {
 	while (false !== ($file = readdir($handle))) {
-		if ($file != '..' && $file != '.')
+		if ($file != '..' && $file != '.' && endswith($file, '.php'))
 			require_once "venues/$file";
 	}
 }

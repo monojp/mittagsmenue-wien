@@ -48,7 +48,7 @@ class Woracziczky extends FoodGetterVenue {
 			// nothing mittags-relevantes found
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt',
+				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
@@ -88,8 +88,16 @@ class Woracziczky extends FoodGetterVenue {
 					'strip' => 'gibt es heute',
 				),
 				array(
+					'regex' => '/.*(bei uns genießen)/',
+					'strip' => 'bei uns genießen',
+				),
+				array(
 					'regex' => '/(haben wir heute).*(für euch)/',
 					'strip' => array('haben wir heute', 'für euch'),
+				),
+				array(
+					'regex' => '/(heute für euch im Schanigarten).*/',
+					'strip' => 'heute für euch im Schanigarten',
 				),
 				array(
 					'regex' => '/.*(als Hauptspeise)/',
@@ -179,7 +187,7 @@ class Woracziczky extends FoodGetterVenue {
 
 			// strip unwanted words from the beginning or end
 			$unwanted_words_beginning = array(
-				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir', 'und',
+				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir', 'und', 'ihr', 'könnt', 'heute',
 			);
 			// longer strings first
 			usort($unwanted_words_beginning, function($a,$b) {

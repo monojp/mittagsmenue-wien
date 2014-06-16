@@ -667,4 +667,11 @@ function html_compress($html) {
 	return $response;
 }
 
+function endswith($haystack, $needle) {
+	$strlen = mb_strlen($haystack);
+	$needlelen = mb_strlen($needle);
+	if ($needlelen > $strlen) return false;
+	return substr_compare($haystack, $needle, -$needlelen) === 0;
+}
+
 ?>
