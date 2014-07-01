@@ -67,8 +67,8 @@
 		new MensaFreihaus(),
 		new MensaSchroedinger(),
 		//new Stoeger(),
-		new tewa(),
-		new Tschani(),
+		//new tewa(),
+		//new Tschani(),
 		//new Martin(),
 		new Woracziczky(),
 	);

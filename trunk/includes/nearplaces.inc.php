@@ -163,7 +163,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Rosa Lila Tip', 'Senhor Vinho', 'Gergely\'s', 'Chicken King & Makara Noodle', 'Vinoteca Tropea - Vienna', 'Schlupfwinkel Abendbeisl', 'Andino', 'Lehmberg',
 			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
 			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis', 'Fleischboutique', 'Celeste Cafe', 'Spar-supermarkt',
-			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner',
+			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner', 'NIPPON YA Handels',
+			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -298,7 +299,7 @@ function nearbysearch_full($lat, $lng, $radius, $sensor) {
 		$api_response = nearbysearch($lat, $lng, $radius, $sensor);
 		$api_results = array_merge($api_results, (array)$api_response['results']);
 		while(1) {
-			usleep(1800 * 1000);
+			sleep(2);
 			$api_response = nextpage_search($lat, $lng, $radius, $sensor);
 			if (!$api_response)
 				break;
@@ -307,16 +308,17 @@ function nearbysearch_full($lat, $lng, $radius, $sensor) {
 		}
 
 		// nearby search with opennow
-		$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
+		// UPDATE doesn't really make sense because of caching
+		/*$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
 		$api_results = array_merge($api_results, (array)$api_response['results']);
 		while(1) {
-			usleep(1800 * 1000);
+			sleep(2);
 			$api_response = nextpage_search($lat, $lng, $radius, $sensor, true);
 			if (!$api_response)
 				break;
 			else
 				$api_results = array_merge($api_results, (array)$api_response['results']);
-		}
+		}*/
 
 		if ($api_results !== null)
 			nearplace_cache_write($lat, $lng, $radius, $api_results);
