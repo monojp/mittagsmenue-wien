@@ -127,10 +127,14 @@
 			check_voting_time();
 
 			$note = trim($_POST['note']);
-			$badwords = cleanText(file_get_contents('../includes/badwords'));
-			$badwords = explode("\n", $badwords);
+			$badwords_raw = cleanText(file_get_contents('../includes/badwords'));
+			$badwords = explode("\n", $badwords_raw);
+			$badwords_noslash = explode("\n", mb_str_replace("'", '', $badwords_raw));
+			$badwords_nospace = explode("\n", mb_str_replace(' ', '', $badwords_raw));
 
-			$note = str_replace_array($badwords, '***', $note);
+			$note = str_ireplace_array($badwords, '***', $note);
+			$note = str_ireplace_array($badwords_noslash, '***', $note);
+			$note = str_ireplace_array($badwords_nospace, '***', $note);
 
 			// check vote length
 			if (strlen($note) > VOTE_NOTE_MAX_LENGTH) {
@@ -139,10 +143,11 @@
 			}
 
 			// check vote via regex
-			if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\/\.:_#\*\?\!()-]*$/', $note)) {
+			// UPDATE: not used anymore because everything is well escaped and formatted
+			/*if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\/\.:_#\*\?\!()-]*$/', $note)) {
 				echo json_encode(array('alert' => js_message_prepare('Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")", "/" und Umlaute')));
 				exit;
-			}
+			}*/
 
 			$votes['venue'][$ip]['special'] = $note;
 			ksort($votes['venue'][$ip]);

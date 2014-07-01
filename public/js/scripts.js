@@ -444,7 +444,8 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 		type: 'POST',
 		url:  'nearplaces.php',
 		data: {
-			'action'     : 'nearbysearch_staged',
+			//'action'     : 'nearbysearch_staged', // takes so long, is it worth it?
+			'action'     : 'nearbysearch_full',
 			'lat'        : lat,
 			'lng'        : lng,
 			'radius'     : radius,

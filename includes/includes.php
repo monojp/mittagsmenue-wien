@@ -112,20 +112,36 @@ function striposAfter($haystack, $needle, $offset=0) {
 	return $pos;
 }
 function mb_str_replace($needle, $replacement, $haystack) {
-    $needle_len = mb_strlen($needle);
-    $replacement_len = mb_strlen($replacement);
-    $pos = mb_strpos($haystack, $needle);
-    while ($pos !== false)
-    {
-        $haystack = mb_substr($haystack, 0, $pos) . $replacement
-                . mb_substr($haystack, $pos + $needle_len);
-        $pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
-    }
-    return $haystack;
+	$needle_len = mb_strlen($needle);
+	$replacement_len = mb_strlen($replacement);
+	$pos = mb_strpos($haystack, $needle);
+	while ($pos !== false) {
+		$haystack = mb_substr($haystack, 0, $pos) . $replacement
+				. mb_substr($haystack, $pos + $needle_len);
+		$pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
+	}
+	return $haystack;
+}
+function mb_str_ireplace($needle, $replacement, $haystack) {
+	$needle_len = mb_strlen($needle);
+	$replacement_len = mb_strlen($replacement);
+	$pos = mb_stripos($haystack, $needle);
+	while ($pos !== false) {
+		$haystack = mb_substr($haystack, 0, $pos) . $replacement
+				. mb_substr($haystack, $pos + $needle_len);
+		$pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
+	}
+	return $haystack;
 }
 function str_replace_array($search, $replace, $subject) {
 	foreach ($search as $s)
 		$subject = str_replace($s, $replace, $subject);
+	return $subject;
+}
+
+function str_ireplace_array($search, $replace, $subject) {
+	foreach ($search as $s)
+		$subject = mb_str_ireplace($s, $replace, $subject);
 	return $subject;
 }
 
