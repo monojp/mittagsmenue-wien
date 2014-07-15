@@ -48,7 +48,8 @@ class Woracziczky extends FoodGetterVenue {
 			// nothing mittags-relevantes found
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute',
+				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute', 'servieren euch', 'Bis gleich',
+				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
@@ -102,6 +103,10 @@ class Woracziczky extends FoodGetterVenue {
 				array(
 					'regex' => '/(heute für euch im Schanigarten).*/',
 					'strip' => 'heute für euch im Schanigarten',
+				),
+				array(
+					'regex' => '/(trotzen den Wolken).*/',
+					'strip' => 'trotzen den Wolken',
 				),
 				array(
 					'regex' => '/.*(als Hauptspeise)/',
@@ -179,7 +184,7 @@ class Woracziczky extends FoodGetterVenue {
 			$unwanted_phrases = array(
 				'gibt es heute für euch', 'Sonne und Schanigarten', 'als Hauptgericht', 'Heute gibt\'s bei uns', 'Wora', 'Essen',
 				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute', 'Sonnenschein', 'strahlender',
-				'gemütlichen', 'als wärmende Vorspeise', 'als köstliche Hauptspeise', 'als feine Hauptspeise',
+				'gemütlichen', 'als wärmende Vorspeise', 'als köstliche Hauptspeise', 'als feine Hauptspeis', 'warten auf euch',
 			);
 			foreach ($unwanted_phrases as $phrase)
 				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);

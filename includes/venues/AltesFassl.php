@@ -8,7 +8,7 @@ class AltesFassl extends FoodGetterVenue {
 		$this->addressLat = '48.191498';
 		$this->addressLng = '16.3604868';
 		$this->url = 'http://www.zum-alten-fassl.at/';
-		$this->dataSource = 'http://www.zum-alten-fassl.at/index.php/menues/mittagsmenues';
+		$this->dataSource = 'http://www.zum-alten-fassl.at/mittagsmenues.html';
 		$this->statisticsKeyword = 'zum-alten-fassl';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
@@ -25,8 +25,7 @@ class AltesFassl extends FoodGetterVenue {
 		//$todayHotfix = '30.05.';
 		$todayHotfix = $today;
 		$posStart = striposAfter($dataTmp, $todayHotfix);
-		if ($posStart === FALSE)
-		{
+		if ($posStart === FALSE) {
 			$today = date('d.m', $this->timestamp);
 			$posStart = striposAfter($dataTmp, $today);
 			if ($posStart === FALSE)
@@ -38,7 +37,8 @@ class AltesFassl extends FoodGetterVenue {
 		if (!$posEnd)
 			$posEnd = mb_stripos($dataTmp, 'MENÜ 1', $posStart);
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
-		$data = strip_tags($data);
+		$data = strip_tags($data, '<br>');
+		$data = str_ireplace(array("<br />","<br>","<br/>"), "\n", $data);
 		// remove unwanted stuff
 		$data = html_entity_decode($data);
 		$data = htmlentities($data);
@@ -48,16 +48,17 @@ class AltesFassl extends FoodGetterVenue {
 		// remove multiple newlines
 		$data = preg_replace("/([ ]*\n)+/i", "\n", $data);
 		$data = trim($data);
+		//return error_log($data);
 		$foods = explode("\n", $data);
 		// removes empty stuff in array
 		for ($i = 0; $i<count($foods); $i++) {
 			$foods[$i] = str_replace(array("\n", "\r"), '', $foods[$i]);
 		}
 		$foods = array_filter($foods, 'strlen');
-		//var_export($foods);
 		// set food
 		$menu = array();
 		$soup = null;
+		//return error_log(print_r($foods, true));
 		if (count($foods) >= 3 && count($foods) <= 4) {
 			$cnt = 0;
 			foreach ($foods as $food) {
@@ -74,6 +75,7 @@ class AltesFassl extends FoodGetterVenue {
 				$cnt++;
 			}
 		}
+		//return error_log($this->data);
 
 		// set date
 		$this->date = $today;
