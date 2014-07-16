@@ -21,11 +21,16 @@ a:not(.ui-state-default):not(.menuData) {
 	color: #36c ! important;
 	background-color: inherit;
 }
-a:hover:not(.ui-state-default):not(.menuData), a:focus:not(.ui-state-default):not(.menuData) {
-	text-decoration: none;
+a:hover {
+	text-decoration: underline;
 	cursor: pointer;
-	color: #36c ! important;
 	text-shadow: 0px 0px 10px lightgray;
+}
+a:hover:not(.ui-state-default):not(.menuData), a:focus:not(.ui-state-default):not(.menuData) {
+	text-decoration: underline;
+	cursor: pointer;
+	text-shadow: 0px 0px 10px lightgray;
+	color: #36c ! important;
 	background-color: inherit;
 }
 a:visited:not(.ui-state-default):not(.menuData) {
