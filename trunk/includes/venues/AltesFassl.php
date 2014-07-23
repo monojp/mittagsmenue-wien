@@ -44,7 +44,7 @@ class AltesFassl extends FoodGetterVenue {
 		$data = htmlentities($data);
 		$data = str_replace(array('&nbsp;'), '', $data);
 		$data = html_entity_decode($data);
-		$data = str_replace(array('***', '1)', '2)', '3)'), '', $data);
+		$data = str_replace(array('1)', '2)', '3)'), '', $data);
 		// remove multiple newlines
 		$data = preg_replace("/([ ]*\n)+/i", "\n", $data);
 		$data = trim($data);
@@ -56,24 +56,25 @@ class AltesFassl extends FoodGetterVenue {
 		}
 		$foods = array_filter($foods, 'strlen');
 		// set food
+		$menu_marker = '***';
+		$menu_marker_found = false;
 		$menu = array();
 		$soup = null;
 		//return error_log(print_r($foods, true));
-		if (count($foods) >= 3 && count($foods) <= 4) {
-			$cnt = 0;
-			foreach ($foods as $food) {
-				if (!$soup)
-					$soup = $food;
-				else {
-					$menu[$cnt++] = cleanText($food);
-				}
-			}
-			$this->data = "$soup";
-			$cnt = 1;
-			foreach ($menu as $item) {
-				$this->data .= "<br />$cnt. $item";
-				$cnt++;
-			}
+		$cnt = 0;
+		foreach ($foods as $food) {
+			if (strpos($food, $menu_marker) !== false)
+				$menu_marker_found = true;
+			else if (!$menu_marker_found)
+				$soup .= cleanText($food) . ' ';
+			else
+				$menu[$cnt++] = cleanText($food);
+		}
+		$this->data = cleanText($soup);
+		$cnt = 1;
+		foreach ($menu as $item) {
+			$this->data .= "<br />$cnt. $item";
+			$cnt++;
 		}
 		//return error_log($this->data);
 

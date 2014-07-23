@@ -61,9 +61,8 @@ class Woracziczky extends FoodGetterVenue {
 			 * <lunch info>
 			 * <random text>
 			 */
-			preg_match_all('/\n\n.+\n\n/', $message, $matches);
 
-			$alternative_regexes = array(
+			$regexes = array(
 				array(
 					'regex' => '/(heute im Wora gibt\?\n).[^\r\n]*/',
 					'strip' => 'heute im Wora gibt?',
@@ -110,44 +109,60 @@ class Woracziczky extends FoodGetterVenue {
 				),
 				array(
 					'regex' => '/.*(als Hauptspeise)/',
+					'strip' => 'als Hauptspeise',
+				),
+				array(
+					'regex' => '/.*\n\n(freuen sich schon auf eure Mittagspause)/',
+					'strip' => 'freuen sich schon auf eure Mittagspause',
+				),
+				array(
+					'regex' => '/\n\n.+\n\n/', // most common
 				),
 				array(
 					'regex' => '/\n\n.*\n.*\n\n/',
 				),
 			);
 			/*
-			 * try alternative regexes
+			 * try regexes
 			 */
-			if (empty($matches[0]) || stringsExist(mb_strtolower($matches[0]), array('euch', 'freut', 'natürlich'))) {
-				foreach ($alternative_regexes as $regex_data) {
-					preg_match($regex_data['regex'], $message, $matches);
+			foreach ($regexes as $regex_data) {
+				preg_match($regex_data['regex'], $message, $matches);
 
-					if (empty($matches))
+				if (empty($matches))
+					continue;
+
+				//error_log(print_r($matches, true));
+
+				// fix to get same outcome like preg_match_all
+				if (!isset($regex_data['strip'] )) {
+					$matches[0] = array($matches[0]);
+					//continue;
+					break;
+				}
+
+				// strip array of strings
+				if (is_array($regex_data['strip'])) {
+					$matches[0] = isset($matches[0]) ? $matches[0] : null;
+					foreach ((array)$regex_data['strip'] as $strip_data) {
+						$matches[0] = mb_str_replace($strip_data, '', $matches[0]);
+					}
+					$matches[0] = array($matches[0]);
+
+					// nothing found or found stuff too short, skip
+					if (strlen($matches[0]) < 15)
 						continue;
 
-					//error_log(print_r($matches, true));
+					break;
+				}
+				// string single string
+				else {
+					$matches[0] = isset($matches[0]) ? array(mb_str_replace($regex_data['strip'], '', $matches[0])) : null;
 
-					// fix to get same outcome like preg_match_all
-					if (!isset($regex_data['strip'] )) {
-						$matches[0] = array($matches[0]);
-						//continue;
-						break;
-					}
+					// nothing found or found stuff too short, skip
+					if (strlen($matches[0]) < 15)
+						continue;
 
-					// strip array of strings
-					if (is_array($regex_data['strip'])) {
-						$matches[0] = isset($matches[0]) ? $matches[0] : null;
-						foreach ((array)$regex_data['strip'] as $strip_data) {
-							$matches[0] = mb_str_replace($strip_data, '', $matches[0]);
-						}
-						$matches[0] = array($matches[0]);
-						break;
-					}
-					// string single string
-					else {
-						$matches[0] = isset($matches[0]) ? array(mb_str_replace($regex_data['strip'], '', $matches[0])) : null;
-						break;
-					}
+					break;
 				}
 			}
 			//error_log(print_r($matches[0], true));
@@ -175,6 +190,10 @@ class Woracziczky extends FoodGetterVenue {
 					$longest_key = $key;
 				}
 			}
+
+			// nothing found or found stuff too short, skip
+			if ($longest_length < 15)
+				continue;
 
 			$mittagsmenue = trim($matches[0][$longest_key]);
 			//error_log($mittagsmenue);

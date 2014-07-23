@@ -11,8 +11,8 @@
 		$action = trim($argv[1]);
 	if (!isset($action) || !$action)
 		$action = get_var('action');
-	if (!in_array($action, array('remind', 'notify')))
-		exit("error, parameter action [remind|notify] invalid!\n");
+	if (!in_array($action, array('remind', 'notify', 'dryrun')))
+		exit("error, parameter action [remind|notify|dryrun] invalid!\n");
 
 	// build mail headers
 	$headers = array();
@@ -25,18 +25,22 @@
 	$voting_over_time_print = date('H:i', $voting_over_time);
 
 	// loop user configs and send emails
-	$email_configs = email_config_get();
-	foreach ((array)$email_configs as $ip => $email_config) {
+	$user_configs = user_config_get();
+	foreach ((array)$user_configs as $ip => $user_config) {
 		$user = ip_anonymize($ip);
 		// get user config values
-		$email = isset($email_config['email']) ? $email_config['email'] : '';
-		$vote_reminder = isset($email_config['vote_reminder']) ? $email_config['vote_reminder'] : false;
-		$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-		$voted_mail_only = isset($email_config['voted_mail_only']) ? $email_config['voted_mail_only'] : false;
-		$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
+		$email = isset($user_config['email']) ? $user_config['email'] : '';
+		$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
+		$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
+		$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
+		$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN);
+
+		// no valid email
+		if (empty($email) || $email == 'null')
+			continue;
 
 		// user not voted, but wants mails only if votes => continue
-		if ($voted_mail_only && !isset($votes['venue'][$user]))
+		if ($voted_mail_only && !isset($votes['venue'][$ip]))
 			continue;
 
 		// get/generate custom_userid_access_url
@@ -69,6 +73,9 @@
 			$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 			if (!$success)
 				echo "error sending email to $email";
+		}
+		else if ($action == 'dryrun') {
+			echo "would send an email to $email\n";
 		}
 	}
 

@@ -63,7 +63,7 @@
 		$headers[] = "X-Mailer: PHP/" . phpversion();
 		$headers[] = "Precedence: bulk";
 		$message = 'user: ' . ip_anonymize($ip) . "\n" .
-			'userid: ' . $userid_new . "\n" . 
+			'userid: ' . $userid_new . "\n" .
 			'ip: ' . $ip;
 		mail(ADMIN_EMAIL, 'custom user id generated', $message, implode("\r\n", $headers));
 
@@ -76,6 +76,7 @@
 		}
 		// set url
 		$custom_userids[$ip] = $userid_new;
+		ksort($custom_userids);
 		// write to cache
 		if (file_put_contents(CUSTOM_USERID_CACHE_FILE, json_encode($custom_userids)) !== FALSE)
 			return $userid_new;
