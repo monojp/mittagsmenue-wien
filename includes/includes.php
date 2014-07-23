@@ -5,6 +5,7 @@ require_once('config.php');
 require_once('textfixes.php');
 require_once('CacheHandler_MySql.php');
 require_once('customuserid.inc.php');
+require_once('users.inc.php');
 
 mb_internal_encoding('UTF-8');
 
@@ -617,7 +618,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 
 // gets an anonymized name of an ip
 function ip_anonymize($ip = null) {
-	global $ip_usernames;
+	$user_config = user_config_get();
 
 	if (!$ip)
 		$ip = get_identifier_ip();
@@ -630,8 +631,8 @@ function ip_anonymize($ip = null) {
 		$ip_parts[$i] = 'x';
 	$ipPrint = implode('.', $ip_parts);
 	// set username
-	if (isset($ip_usernames[$ip]))
-		$ipPrint = $ip_usernames[$ip];
+	if (isset($user_config[$ip]['name']))
+		$ipPrint = $user_config[$ip]['name'];
 	else if (is_intern_ip())
 		$ipPrint = 'Guest_' . $ipLast;
 	else

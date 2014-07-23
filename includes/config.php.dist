@@ -6,6 +6,7 @@ define('DB_USER', '<username>');
 define('DB_PASSWORD', '<password>');
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
+define('USERS_FILE', TMP_PATH . 'users.json');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 
 define('LOCATION_FALLBACK', 'Grohgasse, 1050 Wien');
@@ -37,17 +38,12 @@ $locale_new = setlocale(LC_ALL, $locales);
 if (!in_array($locale_new, $locales))
 	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
 
-$ip_usernames = array(
-	'192.168.0.1' => 'Alice',
-	'192.168.0.2' => 'Bob'
-);
-
 date_default_timezone_set('Europe/Vienna');
 
 $voting_show_start = strtotime('08:00');
 $voting_show_end = strtotime('15:00');
 
-if (date('N') == 5) // friday
+if (date('N') == 5)
 	$voting_over_time = strtotime('14:00');
 else
 	$voting_over_time = strtotime('11:50');

@@ -4,6 +4,10 @@ require_once('includes.php');
 //require_once('CacheHandler_File.php');
 require_once('CacheHandler_MySql.php');
 
+abstract class VenueStateSpecial {
+	const Urlaub = 12345;
+}
+
 /*
  * Venue Class
  */
@@ -70,7 +74,6 @@ abstract class FoodGetterVenue {
 	public function getMenuData() {
 		global $cacheDataExplode;
 		global $cacheDataIgnore;
-		global $cacheDataDelete;
 		global $explodeNewLines;
 
 		// query cache
@@ -93,6 +96,14 @@ abstract class FoodGetterVenue {
 				}
 		}
 
+		// check if data suggests that venue is closed
+		/*if (stringsExist($data, $cacheDataDelete))
+			$data = null;*/
+
+		// special state urlaub
+		if ($this->data == VenueStateSpecial::Urlaub)
+			return '<br /><span class="error">Zurzeit geschlossen wegen Urlaub</span><br />';
+
 		// mark each ingredient by an href linking to search
 		$data = create_ingredient_hrefs($this->data, $this->statisticsKeyword, 'menuData');
 
@@ -107,10 +118,6 @@ abstract class FoodGetterVenue {
 			}
 			$data = implode('<br />', $data);
 		}
-
-		// check if data suggests that venue is closed
-		if (stringsExist($data, $cacheDataDelete))
-			$data = null;
 
 		// prepare return
 		$return = '';

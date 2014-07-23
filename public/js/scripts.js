@@ -582,13 +582,14 @@ function setVoteSettingsDialog() {
 			"Speichern / Schließen": function() {
 				$.ajax({
 					type: 'POST',
-					url: 'emails.php',
+					url: 'users.php',
 					data: {
-						'action': 'email_config_set',
-						'email': $('#email').val(),
-						'vote_reminder': $('#vote_reminder').is(':checked'),
+						'action'         : 'user_config_set',
+						'name'           : $('#name').val(),
+						'email'          : $('#email').val(),
+						'vote_reminder'  : $('#vote_reminder').is(':checked'),
 						'voted_mail_only': $('#voted_mail_only').is(':checked'),
-						'userid' : $('#userid').html()
+						'userid'         : $('#userid').html()
 					},
 					dataType: "json",
 					success: function(result) {

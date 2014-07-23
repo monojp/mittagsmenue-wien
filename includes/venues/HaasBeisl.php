@@ -28,6 +28,9 @@ class HaasBeisl extends FoodGetterVenue {
 		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
 		$dataTmp = html_entity_decode($dataTmp);
 
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
+
 		$month = getGermanMonthName();
 		if ($month == 'Februar')
 			$month = 'Feber';
@@ -69,11 +72,10 @@ class HaasBeisl extends FoodGetterVenue {
 		// remove "1.\n" dirty data
 		$data = preg_replace("/([1-9].)(\n)+/", "$1", $data);
 		$data = trim($data);
-		//var_export($data);
+		//return error_log($data);
 		// split per new line
 		$foods = explode("\n", $data);
-		//var_export($foods);
-		//return;
+		//return error_log(print_r($foods, true));
 
 		$data = null;
 		foreach ($foods as $food) {

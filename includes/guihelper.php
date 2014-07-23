@@ -130,7 +130,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email_config = email_config_get(get_identifier_ip());
+	$email_config = user_config_get(get_identifier_ip());
 	$email = isset($email_config['email']) ? $email_config['email'] : '';
 	$vote_reminder = isset($email_config['vote_reminder']) ? $email_config['vote_reminder'] : false;
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
@@ -176,8 +176,9 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<p>
 				' . get_special_vote_actions_html() . '
 				</p>
+				<label for="name">Benutzername</label>
 				<p>
-					Benutzername: ' . ip_anonymize() . '
+					<input type="text" name="name" id="name" value="' . ip_anonymize() . '" style="width: 100%" />
 				</p>
 			</fieldset>
 			<br />
