@@ -615,7 +615,7 @@ $(document).ready(function() {
 		locationReadyFired = true;
 		// add distance user-venue to each venue
 		// also hides venues which are too far away
-		head.ready('cookie', function() {
+		head.ready('scripts', function() {
 			var distance = $.cookie('distance');
 
 			// default distance
@@ -655,7 +655,7 @@ $(document).ready(function() {
 	});
 
 	// start location stuff
-	head.ready('cookie', function() {
+	head.ready('scripts', function() {
 		var location = $.cookie('location');
 		// custom location from cookie
 		if (typeof location != 'undefined' && location && location.length) {

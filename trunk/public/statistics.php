@@ -159,7 +159,7 @@ else {
 
 ?>
 <script type="text/javascript">
-	head.ready('table', function() {
+	head.ready('scripts', function() {
 		$('#table_ingredients').dataTable({
 			'aaSorting': [[ 2, 'desc' ]],
 			"oLanguage": {
