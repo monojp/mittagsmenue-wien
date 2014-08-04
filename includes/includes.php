@@ -112,6 +112,12 @@ function striposAfter($haystack, $needle, $offset=0) {
 		$pos += mb_strlen($needle);
 	return $pos;
 }
+function nmb_striposAfter($haystack, $needle, $offset=0) {
+	$pos = stripos($haystack, $needle, $offset);
+	if ($pos !== FALSE)
+		$pos += strlen($needle);
+	return $pos;
+}
 function mb_str_replace($needle, $replacement, $haystack) {
 	$needle_len = mb_strlen($needle);
 	$replacement_len = mb_strlen($replacement);
@@ -285,12 +291,6 @@ function show_voting() {
 		time() <= $voting_show_end
 	);
 }
-function show_weather() {
-	//return true; // DEBUG
-	global $dateOffset;
-
-	return ($dateOffset == 0);
-}
 
 /* returns an array with all the foods, the dates
  * and the datasetSize (amount of cache files)
@@ -440,8 +440,21 @@ function pdftohtml($file) {
 	// single HTML with all pages, ignore images, no paragraph merge, no frames, force hidden text extract
 	shell_exec("pdftohtml -s -i -nomerge -noframes -hidden $tmpPath $tmpPath");
 
-	// return html
-	return file_get_contents($tmpPath . '.html');
+	// parse html
+	$doc = new DOMDocument();
+	$doc->loadHTMLFile($tmpPath . '.html');
+	$html = $doc->saveHTML();
+
+	// remove unwanted stuff (fix broken htmlentities)
+	$html = html_entity_decode($html);
+	$html = htmlentities($html);
+	$html = preg_replace('/&nbsp;/', ' ', $html);
+	$html = preg_replace('/\\xe2\\x80\\x88/', ' ', $html);
+	$html = preg_replace('/[[:blank:]]+/', ' ', $html);
+	$html = html_entity_decode($html);
+
+	// return utf-8 encoded html
+	return mb_check_encoding($html, 'UTF-8') ? $html : utf8_encode($html);
 }
 
 function doctotxt($file) {
@@ -689,6 +702,22 @@ function endswith($haystack, $needle) {
 	$needlelen = mb_strlen($needle);
 	if ($needlelen > $strlen) return false;
 	return substr_compare($haystack, $needle, -$needlelen) === 0;
+}
+
+function build_minimal_url() {
+	global $dateOffset;
+	$url = '?minimal';
+	if (isset($dateOffset))
+		$url .= '&amp;date=' . date_from_offset($dateOffset);
+	if (isset($_GET['keyword']))
+		$url .= '&amp;keyword=' . $_GET['keyword'];
+	if (isset($_GET['food']))
+		$url .= '&amp;food=' . $_GET['food'];
+	if (isset($_GET['action']))
+		$url .= '&amp;action=' . $_GET['action'];
+	if (isset($_GET['html']) || isset($_GET['html/']))
+		$url .= '&amp;html';
+	return $url;
 }
 
 ?>

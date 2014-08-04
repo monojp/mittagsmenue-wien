@@ -58,6 +58,10 @@ class MensaFreihaus extends FoodGetterVenue {
 		$dataTmp = file_get_contents($this->dataSource);
 		if ($dataTmp === FALSE)
 			return;
+
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
+
 		$dataTmp = html_entity_decode($dataTmp);
 		$dataTmp = htmlentities($dataTmp);
 		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);

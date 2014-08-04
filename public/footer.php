@@ -12,17 +12,7 @@ if (IMPRESSUM_HREF)
 if (PRIVACY_INFO)
 	$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '">Datenschutz-Hinweis</a>';
 if (!isset($_GET['minimal'])) {
-	$url = '?minimal';
-	if (isset($dateOffset))
-		$url .= '&amp;date=' . date_from_offset($dateOffset);
-	if (isset($_GET['keyword']))
-		$url .= '&amp;keyword=' . $_GET['keyword'];
-	if (isset($_GET['food']))
-		$url .= '&amp;food=' . $_GET['food'];
-	if (isset($_GET['action']))
-		$url .= '&amp;action=' . $_GET['action'];
-	if (isset($_GET['html']) || isset($_GET['html/']))
-		$url .= '&amp;html';
+	$url = build_minimal_url();
 	$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an'>Minimal-Version</a>";
 }
 

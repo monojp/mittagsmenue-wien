@@ -49,7 +49,8 @@ class Woracziczky extends FoodGetterVenue {
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
 				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute', 'servieren euch', 'Bis gleich',
-				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch',
+				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch', 'freuen sich heute auf euch',
+				'freuen sich auf euch',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
@@ -94,6 +95,10 @@ class Woracziczky extends FoodGetterVenue {
 				array(
 					'regex' => '/.*(bekommt ihr heute von uns serviert)/',
 					'strip' => 'bekommt ihr heute von uns serviert',
+				),
+				array(
+					'regex' => '/.*(sollen euch heute die nötige Energie für)/',
+					'strip' => 'sollen euch heute die nötige Energie für'
 				),
 				array(
 					'regex' => '/(haben wir heute).*(für euch)/',
@@ -142,30 +147,36 @@ class Woracziczky extends FoodGetterVenue {
 
 				// strip array of strings
 				if (is_array($regex_data['strip'])) {
+					//error_log($matches[0]);
 					$matches[0] = isset($matches[0]) ? $matches[0] : null;
 					foreach ((array)$regex_data['strip'] as $strip_data) {
 						$matches[0] = mb_str_replace($strip_data, '', $matches[0]);
 					}
-					$matches[0] = array($matches[0]);
 
 					// nothing found or found stuff too short, skip
 					if (strlen($matches[0]) < 15)
 						continue;
+
+					$matches[0] = array($matches[0]);
 
 					break;
 				}
 				// string single string
 				else {
-					$matches[0] = isset($matches[0]) ? array(mb_str_replace($regex_data['strip'], '', $matches[0])) : null;
+					//error_log($matches[0]);
+					$matches[0] = isset($matches[0]) ? mb_str_replace($regex_data['strip'], '', $matches[0]) : null;
+					//error_log($matches[0]);
 
 					// nothing found or found stuff too short, skip
 					if (strlen($matches[0]) < 15)
 						continue;
 
+					$matches[0] = array($matches[0]);
+
 					break;
 				}
 			}
-			//error_log(print_r($matches[0], true));
+			//error_log(print_r($matches, true));
 			//break;
 
 			// still nothing found, skip
@@ -204,6 +215,7 @@ class Woracziczky extends FoodGetterVenue {
 				'gibt es heute für euch', 'Sonne und Schanigarten', 'als Hauptgericht', 'Heute gibt\'s bei uns', 'Wora', 'Essen',
 				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute', 'Sonnenschein', 'strahlender',
 				'gemütlichen', 'als wärmende Vorspeise', 'als köstliche Hauptspeise', 'als feine Hauptspeis', 'warten auf euch',
+				'als Hauptgang', 'freuen sich auf euch', 'freuen sich heute auf euch',
 			);
 			foreach ($unwanted_phrases as $phrase)
 				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);

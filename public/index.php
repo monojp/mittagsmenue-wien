@@ -6,6 +6,14 @@
 	if (isset($_GET['minimal']) && show_voting())
 		echo '<meta http-equiv="refresh" content="10" />';
 
+	// no js fallback to minimal site refresh
+	if (!isset($_GET['minimal'])) {
+		$url = build_minimal_url();
+		echo "<noscript>
+			<meta id='meta_no_js_fallback' http-equiv='refresh' content='0; url=$url' />
+		</noscript>";
+	}
+
 	echo '</head><body>';
 
 	if (!isset($_GET['minimal'])) {
@@ -26,7 +34,7 @@
 	// header text
 	$dayName = getGermanDayName();
 	$date = date_offsetted('Y-m-d');
-	$dayText = "$dayName <input type='date' id='date' title='' value='$date' />";
+	$dayText = "<label for='date'>$dayName</label> <input type='date' id='date' title='' value='$date' />";
 	echo "<span style='font-weight: bold; font-size: 2em'>Mittagsmenü Wien, $dayText</span><br />";
 
 	// show minimal (no JS) site notice
@@ -42,9 +50,6 @@
 	else {
 		// location and alt_venue_and_vote_setting opener
 		echo '<div class="dialog_opener_float">' . get_location_opener_html() . get_alt_venue_and_vote_setting_opener_html() . '</div>';
-		// weather info
-		if (show_weather())
-			echo get_temperature_info_html();
 		if (show_voting())
 			echo get_vote_div_html();
 	}
@@ -58,18 +63,12 @@
 		new AltesFassl(),
 		new HaasBeisl(),
 		new TasteOfIndia(),
-		//new Salzberg(),
 		new DeliciousMonster(),
 		new Ausklang(),
-		//new Kunsthallencafe(),
-		//new NamNamDeli(),
+		new NamNamDeli(),
 		new Waldviertlerhof(),
 		new MensaFreihaus(),
 		new MensaSchroedinger(),
-		//new Stoeger(),
-		//new tewa(),
-		//new Tschani(),
-		//new Martin(),
 		new Woracziczky(),
 	);
 	foreach ($venues as $venue) {

@@ -23,6 +23,9 @@ class Waldviertlerhof extends FoodGetterVenue {
 		//error_log($dataTmp);
 		//return;
 
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
+
 		// check if current week number matches
 		$week_number = date('W', $this->timestamp);
 		preg_match('/[0-9]{2}[\. ]+KW/', $dataTmp, $matches);

@@ -21,17 +21,13 @@ class Ausklang extends FoodGetterVenue {
 		$dataTmp = file_get_contents($this->dataSource);
 		if ($dataTmp === FALSE)
 			return;
-		//$dataTmp = pdftohtml($this->dataSource);
-		// remove unwanted stuff (fix broken htmlentities)
-		$dataTmp = html_entity_decode($dataTmp);
-		$dataTmp = htmlentities($dataTmp);
-		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);
-		$dataTmp = html_entity_decode($dataTmp);
+
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
 
 		$today = mb_strtolower(getGermanDayName()) . ', ' . date('d.', $this->timestamp) . ' ' . mb_strtolower(getGermanMonthName());
 		$posStart = strposAfter($dataTmp, $today);
-		if ($posStart === FALSE)
-		{
+		if ($posStart === FALSE) {
 			/*$today = date('j.n', $this->timestamp);
 			$posStart = striposAfter($dataTmp, $today);
 			if ($posStart === FALSE)

@@ -76,7 +76,7 @@ echo "Stichwort-Suche: <form action='$action' method='post'>
 if (!empty($datasetSize)) {
 	// loader for javascript
 	if (!isset($_GET['minimal']))
-		echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />';
+		echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />';
 
 	if (empty($foodKeyword))
 		echo '<h2>Häufigkeiten</h2>';
@@ -89,7 +89,7 @@ if (!empty($datasetSize)) {
 		echo '<table id="table_ingredients" class="stats">';
 	echo '<thead><tr style="text-align: left">
 		<th>Bestandteil</th>
-		<th>Daten</th>
+		<th data-dynatable-no-sort="data-dynatable-no-sort">Daten</th>
 		<th class="center">Anzahl</th>
 	</tr></thead><tbody>';
 	foreach ($foods as $food => $amount) {
@@ -119,7 +119,7 @@ if (!empty($datasetSize)) {
 		echo '<br /><table id="table_compositions" border="1" class="stats">';
 	echo '<thead><tr style="text-align: left">
 		<th>Kombination</th>
-		<th>Daten</th>
+		<th data-dynatable-no-sort="data-dynatable-no-sort">Daten</th>
 		<th class="center">Anzahl</th>
 	</tr></thead><tbody>';
 	foreach ($compositionsAbsolute as $food => $data) {
@@ -160,39 +160,9 @@ else {
 ?>
 <script type="text/javascript">
 	head.ready('scripts', function() {
-		$('#table_ingredients').dataTable({
-			'aaSorting': [[ 2, 'desc' ]],
-			"oLanguage": {
-				"sLengthMenu": "Zeige _MENU_ Einträge pro Seite an",
-				"sZeroRecords": "Leider nichts gefunden :(",
-				"sInfo": "Zeige _START_ bis _END_ von _TOTAL_ Einträgen an",
-				"sInfoEmpty": "Zeige 0 bis 0 von 0 Einträgen",
-				"sInfoFiltered": "(gefiltert von insgesamt _MAX_ Einträgen)",
-				"sSearch": "Filtere Einträge:",
-				"oPaginate": {
-					"sPrevious": "Vorherige Seite",
-					"sNext": "Nächste Seite"
-				}
-			}
-		});
+		$('#table_ingredients').dynatable();
 		$('#table_ingredients').show();
-		$('#table_ingredients').parent().find('input[type="text"]').attr('type', 'search');
-		$('#table_compositions').dataTable({
-			'aaSorting': [[ 2, 'desc' ]],
-			"oLanguage": {
-				"sLengthMenu": "Zeige _MENU_ Einträge pro Seite an",
-				"sZeroRecords": "Leider nichts gefunden :(",
-				"sInfo": "Zeige _START_ bis _END_ von _TOTAL_ Einträgen an",
-				"sInfoEmpty": "Zeige 0 bis 0 von 0 Einträgen",
-				"sInfoFiltered": "(gefiltert von insgesamt _MAX_ Einträgen)",
-				"sSearch": "Filter:",
-				"oPaginate": {
-					"sPrevious": "Vorherige Seite",
-					"sNext": "Nächste Seite"
-				}
-			}
-		});
-		$('#table_compositions').parent().find('input[type="text"]').attr('type', 'search');
+		$('#table_compositions').dynatable();
 		$('#table_compositions').show();
 
 		$('#loader_stats').hide();

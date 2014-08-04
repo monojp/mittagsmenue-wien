@@ -176,30 +176,27 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 
 		$names[$name] = true;
 
-		$lat  = str_replace(',', '.', trim($result['geometry']['location']['lat']));
-		$lng  = str_replace(',', '.', trim($result['geometry']['location']['lng']));
-		$rating = isset($result['rating']) ? $result['rating'] : null;
-		$id = isset($result['id']) ? $result['id'] : null;
-		$reference = isset($result['reference']) ? $result['reference'] : null;
-		$types = isset($result['types']) ? $result['types'] : null;
-		$price_level = isset($result['price_level']) ? $result['price_level'] : null;
-		$maps_href = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
+		$lat           = str_replace(',', '.', trim($result['geometry']['location']['lat']));
+		$lng           = str_replace(',', '.', trim($result['geometry']['location']['lng']));
+		$rating        = isset($result['rating']) ? $result['rating'] : null;
+		$id            = isset($result['id']) ? $result['id'] : null;
+		$reference     = isset($result['reference']) ? $result['reference'] : null;
+		$maps_href     = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
 		$name_url_safe = urlencode($name);
-		$name_escaped = htmlspecialchars($name, ENT_QUOTES);
-		$name_escaped = str_replace("'", '', $name_escaped);
-		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage' target='_blank'>$name_escaped</a>";
+		$name_escaped  = htmlspecialchars($name, ENT_QUOTES);
+		$name_escaped  = str_replace("'", '', $name_escaped);
+
+		$href    = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage' target='_blank'>$name_escaped</a>";
+		$actions = "<a href='$maps_href' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+		if (show_voting())
+			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"$name\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
+			          . "<a href='javascript:void(0)' onclick='vote_down(\"$name\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
 
 		$response[] = array(
-			'name'        => htmlspecialchars($name, ENT_QUOTES),
-			'lat'         => $lat,
-			'lng'         => $lng,
-			'href'        => $href,
-			'maps_href'   => $maps_href,
-			'rating'      => $rating,
-			'id'          => $id,
-			'reference'   => $reference,
-			'types'       => $types,
-			'price_level' => $price_level,
+			'name'        => $href,
+			'distanz'     => round(distance($lat_orig, $lng_orig, $lat, $lng, false) * 1000),
+			'rating'      => (!$rating) ? '-' : $rating,
+			'aktionen'     => $actions,
 		);
 	}
 

@@ -10,6 +10,26 @@ function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
 }
 
+function detectIE() {
+	var ua = window.navigator.userAgent;
+	var msie = ua.indexOf('MSIE ');
+	var trident = ua.indexOf('Trident/');
+
+	if (msie > 0) {
+		// IE 10 or older => return version number
+		return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+	}
+
+	if (trident > 0) {
+		// IE 11 (or newer) => return version number
+		var rv = ua.indexOf('rv:');
+		return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+	}
+
+	// other browser
+	return false;
+}
+
 // jquery keys extension for old IE
 $.extend({
 	keys: function(obj) {
@@ -479,74 +499,20 @@ function init_venues_alt() {
 	// get venues in 1000 - user distance radius
 	var results = new Array();
 	get_alt_venues(lat, lng, 1000, $('#distance').val(), function (results) {
-		// prepare data for table
-		data = new Array();
-		$(results).each(function(index, element) {
-			var distanceValue = distanceLatLng(lat, lng, element.lat, element.lng);
-			var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
-			var rating = '-';
-			if (element.rating)
-				rating = element.rating;
-
-			var action_data = "<a href='" + element.maps_href + "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
-			if ($('#show_voting').length) {
-				action_data += "<a href='javascript:void(0)' onclick='vote_up(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>\
-					<a href='javascript:void(0)' onclick='vote_down(\"" + element.name + "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
-			}
-
-			data[index] = new Array(
-				element.href,
-				distanceMetersRound,
-				rating,
-				action_data
-			);
+		$('#table_voting_alt').bind('dynatable:init', function(e, dynatable) {
+			// Clear any existing sorts
+			dynatable.sorts.clear();
+			dynatable.sorts.add('distanz', 1); // 1=ASCENDING, -1=DESCENDING
+			dynatable.process();
+			e.preventDefault();
 		});
-
-		var dataTable = $('#table_voting_alt').dataTable({
-			'aaData' : data,
-			'bSort': true,
-			/* make table replacable */
-			"bDestroy": true,
-			/* sort after distance, then after rating */
-			"aaSorting": [ [ 1, 'asc' ], [2, 'desc'] ],
-			'bLengthChange': false,
-			/* resize table to fit */
-			"bAutoWidth": true,
-			/* number of rows on one page */
-			'iDisplayLength': 8,
-			/* show all pages instead of just the next and before links */
-			"sPaginationType": "full_numbers",
-			/* no page x from y info and so on */
-			'bInfo' : false,
-			'aoColumns': [
-				{"sTitle": "Name"},
-				{"sTitle": "Distanz [m]", "sClass":" center"},
-				{"sTitle": "Rating", "sClass":" center"},
-				{"sTitle": "Aktionen", "sClass":" center"}
-			],
-			"oLanguage": {
-				"sProcessing":   "Bitte warten...",
-				"sLengthMenu":   "_MENU_ Einträge anzeigen",
-				"sZeroRecords":  "<p class='bold'>Leider nichts gefunden :(</p>",
-				"sInfo":         "_START_ bis _END_ von _TOTAL_ Einträgen",
-				"sInfoEmpty":    "0 bis 0 von 0 Einträgen",
-				"sInfoFiltered": "(gefiltert von _MAX_  Einträgen)",
-				"sInfoPostFix":  "",
-				"sSearch":       "Filter:",
-				"sUrl":          "",
-				"oPaginate": {
-					"sFirst":    "Anfang",
-					"sPrevious": "Zurück",
-					"sNext":     "Weiter",
-					"sLast":     "Ende"
-				}
+		$('#table_voting_alt').dynatable({
+			dataset: {
+				records: results
 			}
 		});
 		$('#div_voting_alt_loader').hide();
 		$('#table_voting_alt').show();
-		if (dataTable.length > 0)
-			dataTable.fnAdjustColumnSizing();
-		$('#table_voting_alt').parent().find('input[type="text"]').attr('type', 'search');
 		$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
 	}, 0);
 }
@@ -609,6 +575,12 @@ function setVoteSettingsDialog() {
 
 // INIT
 $(document).ready(function() {
+
+	// old ie warning (not supported by jquery 2.*)
+	var ie_version = detectIE();
+	if (ie_version && ie_version <= 8)
+		alert('Bitte neuere Internet Explorer Version verwenden!');
+
 	// location ready event
 	var locationReadyFired = false;
 	$(document).on('locationReady', function() {
