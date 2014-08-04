@@ -15,6 +15,7 @@ if (!isset($_GET['minimal'])) {
 	$url = build_minimal_url();
 	$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an'>Minimal-Version</a>";
 }
+$outputs[] = '<a href="https://code.google.com/p/mittagsmenue-wien/" target="_blank">Open Source</a>';
 
 echo implode(' | ', $outputs);
 
