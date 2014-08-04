@@ -6,9 +6,6 @@ body {
 	font-size: 0.9em;
 	margin: 5px;
 }
-.dataSource {
-	text-decoration: none ! important;
-}
 a {
 	text-decoration: none;
 	cursor: pointer;
@@ -83,9 +80,6 @@ a:visited:not(.ui-state-default):not(.menuData) {
 	color: darkorange;
 	text-decoration: line-through;
 }
-#weatherContainer {
-	/*margin-top: -5px*/
-}
 #date {
 	text-decoration: inherit;
 	font: inherit;
@@ -130,9 +124,6 @@ img {
 input {
 	background-color: inherit;
 }
-.ui-datepicker {
-	z-index: 2 ! important;
-}
 .locationMapLegend {
 	margin-top: 10px;
 	font-size: 0.9em;
@@ -146,25 +137,6 @@ input {
 }
 .bold {
 	font-weight: bold;
-}
-/* datatables fixes */
-.paginate_disabled_previous, .paginate_enabled_previous {
-	margin-right: 5px;
-	cursor: pointer;
-}
-.paginate_disabled_next, .paginate_enabled_next {
-	margin-left: 5px;
-	cursor: pointer;
-}
-.paginate_button, .paginate_active {
-	margin-right: 10px;
-	cursor: pointer;
-}
-.paginate_active {
-	font-weight: bold;
-}
-.dataTables_length {
-	margin: 5px 0px;
 }
 /* override jqueryui font-size in dialogs */
 .ui-dialog, .ui-widget {

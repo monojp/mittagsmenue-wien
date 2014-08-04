@@ -21,6 +21,9 @@ class TasteOfIndia extends FoodGetterVenue {
 		if ($dataTmp === FALSE)
 			return;
 
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
+
 		//$today = getGermanDayName();
 		$today = date_offsetted('d.m.y');
 		//$todayHotfix = date_offsetted('d.my');

@@ -21,6 +21,9 @@ class AltesFassl extends FoodGetterVenue {
 		if ($dataTmp === FALSE)
 			return;
 
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
+
 		$today = date('d.m.', $this->timestamp);
 		//$todayHotfix = '30.05.';
 		$todayHotfix = $today;

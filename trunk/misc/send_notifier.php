@@ -2,7 +2,6 @@
 
 	require_once(__DIR__ . '/../includes/includes.php');
 	require_once(__DIR__ . '/../includes/vote.inc.php');
-	require_once(__DIR__ . '/../includes/weather.inc.php');
 
 	$votes = getAllVotes();
 
@@ -15,7 +14,7 @@
 		exit("error, parameter action [remind|notify|dryrun] invalid!\n");
 
 	// build mail headers
-	$headers = array();
+	$headers   = array();
 	$headers[] = "From: " . SITE_FROM_MAIL;
 	$headers[] = "MIME-Version: 1.0";
 	$headers[] = "Content-type: text/html; charset=utf-8";
@@ -29,9 +28,9 @@
 	foreach ((array)$user_configs as $ip => $user_config) {
 		$user = ip_anonymize($ip);
 		// get user config values
-		$email = isset($user_config['email']) ? $user_config['email'] : '';
-		$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
-		$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
+		$email           = isset($user_config['email']) ? $user_config['email'] : '';
+		$vote_reminder   = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
+		$vote_reminder   = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
 		$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 		$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN);
 
@@ -52,12 +51,9 @@
 		// notify, votes exist and valid
 		if ($action == 'notify' && $votes && !empty($votes['venue'])) {
 			// build html
-			$html = vote_summary_html($votes, true);
-			$html .= '<div style="margin: 10px">' .
-				getTemperatureString(false, false) .
-			'</div>';
-			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
-			$html = html_compress($html);
+			$html  = vote_summary_html($votes, true);
+			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
+			$html  = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 			if (!$success)
@@ -66,9 +62,9 @@
 		// remind
 		else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$user])) {
 			// build html
-			$html = "<div style='margin: 10px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
-			$html .= "<div style='margin: 0px 10px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
-			$html = html_compress($html);
+			$html  = "<div style='margin: 5px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
+			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
+			$html  = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 			if (!$success)

@@ -21,8 +21,10 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 		if ($dataTmp === FALSE)
 			return;*/
 		$dataTmp = pdftohtml($this->dataSource);
-		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
 		//var_export($dataTmp);
+
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
 
 		$today = getGermanDayName() . ' ' . date('j.n.', $this->timestamp);
 		$tomorrow = getGermanDayName(1);

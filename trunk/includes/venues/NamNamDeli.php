@@ -5,47 +5,44 @@ class NamNamDeli extends FoodGetterVenue {
 	function __construct() {
 		$this->title = 'Nam Nam Deli';
 		$this->title_notifier = 'NEU';
-		$this->address = 'Arbeitergasse 8, 1050 Wien';
-		$this->addressLat = '48.186882';
-		$this->addressLng = '16.353999';
-		$this->url = 'http://www.nam-nam.at/';
-		$this->dataSource = 'http://www.nam-nam.at/media/deli_Wochenkarte/wochenkarte_deli.pdf';
+		$this->address = 'Webgasse 3, 1060 Wien';
+		$this->addressLat = '48.192375';
+		$this->addressLng = '16.348016';
+		$this->url = 'http://www.nam-nam.at/restaurant/';
+		$this->dataSource = 'http://www.nam-nam.at/restaurant/wochenkarte/';
 		$this->statisticsKeyword = 'nam-nam';
-		$this->no_menu_days = array(0, 6);
+		$this->no_menu_days = array(0, 1, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
 
 	protected function parseDataSource() {
-		$dataTmp = pdftohtml($this->dataSource);
-		// remove unwanted stuff (fix broken htmlentities)
-		$dataTmp = html_entity_decode($dataTmp);
-		$dataTmp = htmlentities($dataTmp);
-		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);
-		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
-		$dataTmp = html_entity_decode($dataTmp);
-		//var_export($dataTmp);
-		//return;
+		$dataTmp = file_get_contents($this->dataSource);
+		if ($dataTmp === FALSE)
+			return;
+		//return error_log($dataTmp);
+
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
 
 		// date without trailing zeros
-		$today = getGermanDayName() . ', ' . date('j.n.', $this->timestamp);
+		$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
 		$posStart = striposAfter($dataTmp, $today);
 		// date with trailing zeros
 		if ($posStart === false) {
-			$today = getGermanDayName() . ', ' . date('d.m.', $this->timestamp);
+			$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
 			$posStart = striposAfter($dataTmp, $today);
 			if ($posStart === false)
 				return;
 		}
 		$weekday = date('w', $this->timestamp);
-		if ($weekday == 3) // wednesday
-			$posEnd = stripos($dataTmp, 'Wochenkarte', $posStart);
-		else if ($weekday == 5) // friday
-			$posEnd = stripos($dataTmp, 'Pikant bis sehr scharf', $posStart);
+		if ($weekday == 5) // friday
+			$posEnd = mb_stripos($dataTmp, 'Daily Menu Specials', $posStart);
 		else
-			$posEnd = stripos($dataTmp, getGermanDayName(1), $posStart);
-		$data = substr($dataTmp, $posStart, $posEnd-$posStart);
+			$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
+		//return error_log($data);
 		$data = strip_tags($data, '<br>');
 		// remove unwanted stuff
 		$data = str_replace(array('&nbsp;'), '', $data);
@@ -55,8 +52,7 @@ class NamNamDeli extends FoodGetterVenue {
 		$data = trim($data);
 		// split per new line
 		$foods = explode("\n", $data);
-		//var_export($foods);
-		//return;
+		//return error_log(print_r($foods, true));
 
 		$data = null;
 		$food_info_counter = 0; // 0 for title, 1 for first description, 2 for second, ..
@@ -64,8 +60,12 @@ class NamNamDeli extends FoodGetterVenue {
 		foreach ($foods as $food) {
 			$food = cleanText($food);
 			if (!empty($food)) {
+				// data empty, soup
+				if (empty($data)) {
+					$data = "$food\n";
+				}
 				// found new food, jump to new line
-				if ($food == 'oder') {
+				else if ($food == 'oder') {
 					$data .= "\n";
 					$food_info_counter = 0;
 					$food_counter++;
@@ -82,8 +82,7 @@ class NamNamDeli extends FoodGetterVenue {
 				}
 			}
 		}
-		//var_export($data);
-		//return;
+		//return error_log($data);
 		$data = str_replace("\n", "<br />", $data);
 		$this->data = $data;
 
@@ -93,7 +92,6 @@ class NamNamDeli extends FoodGetterVenue {
 		// set price
 		$this->price = array('7,50');
 
-		//var_export($data);
 		return $this->data;
 	}
 
@@ -103,8 +101,8 @@ class NamNamDeli extends FoodGetterVenue {
 	public function isDataUpToDate() {
 		//return false;
 		if (
-			$this->date == getGermanDayName() . ', ' . date('j.n.', $this->timestamp) ||
-			$this->date == getGermanDayName() . ', ' . date('d.m.', $this->timestamp)
+			$this->date == getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName() ||
+			$this->date == getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName()
 		)
 			return true;
 		else

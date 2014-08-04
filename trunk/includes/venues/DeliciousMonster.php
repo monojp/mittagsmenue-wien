@@ -21,24 +21,31 @@ class DeliciousMonster extends FoodGetterVenue {
 		if ($dataTmp === FALSE)
 			return;*/
 		$dataTmp = pdftohtml($this->dataSource);
-		//var_export($dataTmp);
+		//return error_log($dataTmp);
+
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
 
 		$today = date('j.n.', $this->timestamp);
 		$today = mb_strtoupper(getGermanDayName()) . " $today";
 		$posStart = strposAfter($dataTmp, $today);
-		if ($posStart === FALSE)
-		{
+		if ($posStart === false) {
 			$today = date('j.n', $this->timestamp);
 			$posStart = striposAfter($dataTmp, $today);
-			if ($posStart === FALSE)
-				return;
 		}
+		if ($posStart === false)
+			return;
+		//return error_log($posStart);
 		$posEnd = mb_stripos($dataTmp, '*', $posStart);
 		// last day of the week
-		if (!$posEnd)
-			$posEnd = mb_strpos($dataTmp, 'Alle', $posStart);
+		if ($posEnd === false)
+			$posEnd = mb_stripos($dataTmp, 'Alle', $posStart);
+		if ($posEnd === false)
+			$posEnd = mb_stripos($dataTmp, 'Al e', $posStart);
+		//return error_log($posEnd);
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = strip_tags($data);
+		//return error_log($data);
 		// split per new line
 		$foods = explode("\n", $data);
 
@@ -58,6 +65,7 @@ class DeliciousMonster extends FoodGetterVenue {
 
 		$data = mb_str_replace("\n", "<br />", $data);
 		$this->data = $data;
+		//return error_log($data);
 
 		// set date
 		$this->date = $today;

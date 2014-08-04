@@ -21,12 +21,6 @@ class HaasBeisl extends FoodGetterVenue {
 		if ($dataTmp === FALSE)
 			return;*/
 		$dataTmp = pdftohtml($this->dataSource);
-		// remove unwanted stuff (fix broken htmlentities)
-		$dataTmp = html_entity_decode($dataTmp);
-		$dataTmp = htmlentities($dataTmp);
-		$dataTmp = str_replace(array('&nbsp;'), ' ', $dataTmp);
-		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
-		$dataTmp = html_entity_decode($dataTmp);
 
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);

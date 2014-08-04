@@ -22,7 +22,7 @@ abstract class FoodGetterVenue {
 	protected $date = null;
 	protected $price = null;
 	protected $statisticsKeyword = null;
-	protected $no_menu_days = array(); // 0 sunday - 7 saturday
+	protected $no_menu_days = array(); // 0 sunday - 6 saturday
 	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
 	protected $price_nested_info = null;
@@ -217,7 +217,6 @@ abstract class FoodGetterVenue {
 			if ($dayNr == $day) {
 				$dayName = getGermanDayName();
 				$string .= "<br /><span class='error'>Leider kein Mittagsmenü am $dayName :(</span><br />";
-				$string .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
 				$no_menu_day = true;
 				break;
 			}
@@ -231,38 +230,37 @@ abstract class FoodGetterVenue {
 			else
 				$string .= '
 					<span id="' . $CSSid . '_data">
-						<br />
-						<img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
+						<script type="text/javascript">
+							head.ready("scripts", function() {
+								if (jQuery.inArray("' . get_class($this) . '", venues_ajax_query) == -1) {
+									venues_ajax_query.push("' . get_class($this) . '");
+									$.ajax({
+										type: "POST",
+										url:  "venue.php",
+										data: {
+											"classname": "' . get_class($this) . '",
+											"timestamp": "' . $this->timestamp . '",
+											"dateOffset": "' . $this->dateOffset . '",
+											"date": "'. $date_GET . '"
+										},
+										dataType: "json",
+										success: function(result) {
+											$("#' . $CSSid . '_data").html(result);
+										},
+										error: function() {
+											var errMsg = $(document.createElement("span"));
+											errMsg.attr("class", "error");
+											errMsg.html("Fehler beim Abfragen der Daten :(");
+											errMsg.prepend($(document.createElement("br")));
+											$("#' . $CSSid . '_data").empty();
+											$("#' . $CSSid . '_data").append(errMsg);
+										}
+									});
+								}
+							});
+						</script>
+						<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />
 					</span>
-					<script type="text/javascript">
-						head.ready("scripts", function() {
-							if (jQuery.inArray("' . get_class($this) . '", venues_ajax_query) == -1) {
-								venues_ajax_query.push("' . get_class($this) . '");
-								$.ajax({
-									type: "POST",
-									url:  "venue.php",
-									data: {
-										"classname": "' . get_class($this) . '",
-										"timestamp": "' . $this->timestamp . '",
-										"dateOffset": "' . $this->dateOffset . '",
-										"date": "'. $date_GET . '"
-									},
-									dataType: "json",
-									success: function(result) {
-										$("#' . $CSSid . '_data").html(result);
-									},
-									error: function() {
-										var errMsg = $(document.createElement("span"));
-										errMsg.attr("class", "error");
-										errMsg.html("Fehler beim Abfragen der Daten :(");
-										errMsg.prepend($(document.createElement("br")));
-										$("#' . $CSSid . '_data").empty();
-										$("#' . $CSSid . '_data").append(errMsg);
-									}
-								});
-							}
-						});
-					</script>
 				';
 		}
 		$string .= '</div>';

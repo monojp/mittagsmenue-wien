@@ -12,37 +12,6 @@ $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
 
-function get_temperature_info_html() {
-	return "
-		<a href='http://www.zamg.ac.at/cms/de/wetter/wetterwerte-analysen/wien' target='_blank'>
-			<div id='weatherContainer' class='dialog_opener_float'></div>
-		</a>
-		<script type='text/javascript'>
-			head.ready('scripts', function() {
-				$.ajax({
-					type: 'POST',
-					url:  'weather.php',
-					data: { 'action': 'getString' },
-					dataType: 'json',
-					success: function(result) {
-						$(document).ready(function() {
-							$('#weatherContainer').html(result);
-							$('a').tooltip();
-						});
-					},
-					error: function() {
-						var errMsg = $(document.createElement('span'));
-						errMsg.attr('class', 'error');
-						errMsg.html('Fehler beim Abfragen der Wetter-Daten :(');
-						$('#weatherContainer').empty();
-						$('#weatherContainer').append(errMsg);
-					}
-				});
-			});
-		</script>
-	";
-}
-
 function get_location_opener_html() {
 	global $city;
 
@@ -65,7 +34,7 @@ function get_location_dialog_html() {
 		<div id="setLocationDialog" class="hidden">
 			<form id="locationForm" action="index.php">
 				<fieldset>
-					<label>Adresse</label>
+					<label for="locationInput">Adresse</label>
 					<br />
 					<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%" />
 					<br />
@@ -150,7 +119,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 		$custom_userid_gui_output = '
 			<br />
 			<fieldset>
-				<label for="email">Externe Zugriffs-URL</label>
+				<label>Externe Zugriffs-URL</label>
 				<p id="custom_userid_url">
 				' . $custom_userid_url . '
 				</p>
@@ -164,10 +133,19 @@ function get_alt_venue_and_vote_setting_dialog() {
 		<div id="setAlternativeVenuesDialog" class="hidden">
 			<fieldset>
 				<p id="div_voting_alt_loader">
-					Lade Restaurants in der Umgebung <br /><img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" />
+					Lade Restaurants in der Umgebung <br /><img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />
 				</p>
 				<br />
-				<table id="table_voting_alt" style="width: 100% ! important"><tr><td></td></tr></table>
+				<table id="table_voting_alt" style="width: 100% ! important">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Distanz</th>
+							<th>Rating</th>
+							<th data-dynatable-no-sort="data-dynatable-no-sort">Aktionen</th>
+						</tr>
+					</thead>
+				</table>
 			</fieldset>
 		</div>
 		<div id="setVoteSettingsDialog" class="hidden">
@@ -187,11 +165,11 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<p>
 					<input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
-				<label title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
+				<label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
 				</label>
 				<br />
-				<label title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
+				<label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
 					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Email(s) nur versenden, wenn selbst gevoted
 				</label>
 			</fieldset>
@@ -212,7 +190,7 @@ function get_vote_div_html() {
 		$vote_loader = '
 		<div style="margin: 0px 5px">
 			Warte auf weitere Stimmen
-			<img src="imagesCommon/loader_small.gif" width="100" height="15" alt="ladebalken" style="vertical-align: middle" />
+			<img src="imagesCommon/loader_small.gif" width="100" height="15" alt="" style="vertical-align: middle" />
 		</div>
 		';
 		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time_print!";
@@ -244,7 +222,7 @@ function get_noscript_html() {
 
 function get_loading_container_html() {
 	return '
-		<div id="loadingContainer"><img src="imagesCommon/loader.gif" width="160" height="24" alt="ladebalken" style="vertical-align: middle" /></div>
+		<div id="loadingContainer"><img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" /></div>
 	';
 }
 

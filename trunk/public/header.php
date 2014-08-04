@@ -5,7 +5,7 @@
 	ob_start('html_compress');
 
 	echo '<!DOCTYPE html>';
-	echo '<html xmlns="http://www.w3.org/1999/xhtml">';
+	echo '<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">';
 	echo '<head>';
 	echo '<title>' . META_KEYWORDS . '</title>';
 	echo '<meta charset="UTF-8" />';
