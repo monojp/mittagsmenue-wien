@@ -33,7 +33,7 @@ define('PRIVACY_INFO', '<text>');
 
 define('ADMIN_EMAIL', '<email>');
 
-$locales = array('de_AT.UTF-8', 'de_AT.UTF-8');
+$locales = array('de_AT.UTF-8', 'de_DE.UTF-8');
 $locale_new = setlocale(LC_ALL, $locales);
 if (!in_array($locale_new, $locales))
 	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
