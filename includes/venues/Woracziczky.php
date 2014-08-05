@@ -101,6 +101,10 @@ class Woracziczky extends FoodGetterVenue {
 					'strip' => 'sollen euch heute die nötige Energie für'
 				),
 				array(
+					'regex' => '/.*[\r\n]*(stärken euch heute in der Mittagspause)/',
+					'strip' => 'stärken euch heute in der Mittagspause',
+				),
+				array(
 					'regex' => '/(haben wir heute).*(für euch)/',
 					'strip' => array('haben wir heute', 'für euch'),
 				),
