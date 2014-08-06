@@ -60,7 +60,7 @@
 				echo "error sending email to $email";
 		}
 		// remind
-		else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$user])) {
+		else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$ip])) {
 			// build html
 			$html  = "<div style='margin: 5px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
@@ -71,7 +71,10 @@
 				echo "error sending email to $email";
 		}
 		else if ($action == 'dryrun') {
-			echo "would send an email to $email\n";
+			if ($vote_reminder && !isset($votes['venue'][$ip]))
+				echo "would send a remind email to $email\n";
+			else if ($votes && !empty($votes['venue']))
+				echo "would send a notify email to $email\n";
 		}
 	}
 
