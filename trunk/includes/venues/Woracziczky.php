@@ -32,11 +32,11 @@ class Woracziczky extends FoodGetterVenue {
 				continue;
 
 			// get wanted data out of post
-			$message = $post['message'];
+			$message      = $post['message'];
 			$created_time = $post['created_time'];
 
 			// clean/adapt data
-			$message = trim($message, "\n ");
+			$message      = trim($message, "\n ");
 			$created_time = strtotime($created_time);
 
 			// not from today, skip
@@ -50,7 +50,7 @@ class Woracziczky extends FoodGetterVenue {
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
 				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute', 'servieren euch', 'Bis gleich',
 				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch', 'freuen sich heute auf euch',
-				'freuen sich auf euch',
+				'freuen sich auf euch', 'erwarten euch',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;
@@ -99,6 +99,10 @@ class Woracziczky extends FoodGetterVenue {
 				array(
 					'regex' => '/.*(sollen euch heute die nötige Energie für)/',
 					'strip' => 'sollen euch heute die nötige Energie für'
+				),
+				array(
+					'regex' => '/.*(erwarten euch heute)/',
+					'strip' => 'erwarten euch heute',
 				),
 				array(
 					'regex' => '/.*[\r\n]*(stärken euch heute in der Mittagspause)/',
@@ -219,7 +223,7 @@ class Woracziczky extends FoodGetterVenue {
 				'gibt es heute für euch', 'Sonne und Schanigarten', 'als Hauptgericht', 'Heute gibt\'s bei uns', 'Wora', 'Essen',
 				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute', 'Sonnenschein', 'strahlender',
 				'gemütlichen', 'als wärmende Vorspeise', 'als köstliche Hauptspeise', 'als feine Hauptspeis', 'warten auf euch',
-				'als Hauptgang', 'freuen sich auf euch', 'freuen sich heute auf euch',
+				'als Hauptgang', 'freuen sich auf euch', 'freuen sich heute auf euch', 'erwarten euch',
 			);
 			foreach ($unwanted_phrases as $phrase)
 				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);
@@ -272,6 +276,10 @@ class Woracziczky extends FoodGetterVenue {
 			$data = $mittagsmenue;
 			$today = getGermanDayName();
 		}
+
+		// all posts scanned, nothing found, but relevant string in a posts => maybe vacation!
+		if (empty($data) && mb_stripos(print_r($all_posts, true), 'urlaub') !== false)
+			$data = VenueStateSpecial::UrlaubMaybe;
 
 		$this->data = $data;
 
