@@ -164,7 +164,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
 			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis', 'Fleischboutique', 'Celeste Cafe', 'Spar-supermarkt',
 			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner', 'NIPPON YA Handels',
-			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler',
+			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler', 'pentahotel Vienna',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
