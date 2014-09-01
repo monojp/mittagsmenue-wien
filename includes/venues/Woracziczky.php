@@ -121,6 +121,10 @@ class Woracziczky extends FoodGetterVenue {
 					'strip' => 'trotzen den Wolken',
 				),
 				array(
+					'regex' => '/(unser heutiges Mittagsmenü:\n).*(\.)/',
+					'strip' => 'unser heutiges Mittagsmenü:',
+				),
+				array(
 					'regex' => '/.*(als Hauptspeise)/',
 					'strip' => 'als Hauptspeise',
 				),

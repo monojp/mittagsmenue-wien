@@ -3,13 +3,21 @@
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_NOTE_MAX_LENGTH', 128);
 
+function ip_username_sort($a, $b) {
+	$a_real = ip_anonymize($a);
+	$b_real = ip_anonymize($b);
+	if ($a_real == $b_real)
+		return 0;
+	return ($a_real < $b_real) ? -1 : 1;
+}
+
 function returnVotes($votes) {
 	global $voting_over_time;
 	$html_return = (get_var('html') !== null) | (get_var('html/') !== null);
 
 	if (isset($votes['venue']) && !empty($votes['venue'])) {
 		if (is_array($votes['venue']))
-			ksort($votes['venue']);
+			uksort($votes['venue'], 'ip_username_sort');
 
 		if ($html_return) {
 			require_once('guihelper.php');
@@ -142,7 +150,7 @@ function vote_summary_html($votes, $include_head_body_tags) {
 		//$venue_rating_final = array_slice($venue_rating_final, 0, 3, true);
 
 		// table with details
-		ksort($votes['venue']);
+		uksort($votes['venue'], 'ip_username_sort');
 		// note: use inline style here for email
 		$html .= '<table style="border-spacing: 5px"><tr>
 			<th style="text-align: center"><b>Benutzer</b></th>
