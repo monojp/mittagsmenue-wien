@@ -121,6 +121,10 @@ class Woracziczky extends FoodGetterVenue {
 					'strip' => 'trotzen den Wolken',
 				),
 				array(
+					'regex' => '/(gibts).*/',
+					'strip' => 'gibts',
+				),
+				array(
 					'regex' => '/(unser heutiges Mittagsmenü:\n).*(\.)/',
 					'strip' => 'unser heutiges Mittagsmenü:',
 				),
@@ -227,7 +231,8 @@ class Woracziczky extends FoodGetterVenue {
 				'gibt es heute für euch', 'Sonne und Schanigarten', 'als Hauptgericht', 'Heute gibt\'s bei uns', 'Wora', 'Essen',
 				'als Vorspeise', 'als Hauptspeise', 'Sonne pur', 'Schanigarten', 'bieten euch heute', 'Sonnenschein', 'strahlender',
 				'gemütlichen', 'als wärmende Vorspeise', 'als köstliche Hauptspeise', 'als feine Hauptspeis', 'warten auf euch',
-				'als Hauptgang', 'freuen sich auf euch', 'freuen sich heute auf euch', 'erwarten euch',
+				'als Hauptgang', 'freuen sich auf euch', 'freuen sich heute auf euch', 'erwarten euch', 'bis gleich',
+				'lasst es euch schmecken',
 			);
 			foreach ($unwanted_phrases as $phrase)
 				$mittagsmenue = mb_str_replace($phrase, '', $mittagsmenue);
