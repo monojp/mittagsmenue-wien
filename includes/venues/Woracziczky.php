@@ -248,7 +248,7 @@ class Woracziczky extends FoodGetterVenue {
 
 			// strip unwanted words from the beginning or end
 			$unwanted_words_beginning = array(
-				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir', 'und', 'ihr', 'könnt', 'heute',
+				'ein', 'eine', 'einer', 'einen', 'mit', 'im', 'wir', 'und', 'ihr', 'könnt', 'heute', 'bei', 'uns', 'gibt', 'es',
 			);
 			// longer strings first
 			usort($unwanted_words_beginning, function($a,$b) {
