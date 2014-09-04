@@ -214,9 +214,18 @@ function vote_summary_html($votes, $include_head_body_tags) {
 		$html .= '<table style="border-spacing: 5px">';
 		$html .= '<tr><td><b>Ranking:</b></td></tr>';
 		$cnt = 1;
+		// get all sane rating count
+		$all_sane_rating_cnt = 0;
 		foreach ($venue_rating_final as $rating => $venues) {
-			sort($venues);
-			$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+			$all_sane_rating_cnt += $rating;
+		}
+		foreach ($venue_rating_final as $rating => $venues) {
+			// mark venues which got >= 50% sane ratings
+			// but only if there are multiple venues
+			if (count($venue_rating_final) > 1 && ($rating / $all_sane_rating_cnt) >= 0.5)
+				$html .= "<tr><td class='bold' title='Votes >= 50%'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+			else
+				$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
 			$cnt++;
 		}
 		if (empty($venue_rating_final))
