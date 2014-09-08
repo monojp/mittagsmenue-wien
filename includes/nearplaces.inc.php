@@ -186,8 +186,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$name_escaped  = htmlspecialchars($name, ENT_QUOTES);
 		$name_escaped  = str_replace("'", '', $name_escaped);
 
-		$href    = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage' target='_blank'>$name_escaped</a>";
-		$actions = "<a href='$maps_href' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+		$href    = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage'>$name_escaped</a>";
+		$actions = "<a href='$maps_href'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		if (show_voting())
 			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"$name\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
 			          . "<a href='javascript:void(0)' onclick='vote_down(\"$name\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
