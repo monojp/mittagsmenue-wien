@@ -1,9 +1,21 @@
 <?php
 
-define('DB_SERVER', '<server>');
-define('DB_NAME', '<database>');
-define('DB_USER', '<username>');
-define('DB_PASSWORD', '<password>');
+$DB_CONFIGS = array(
+	// live db
+	array(
+		'DB_SERVER'   => '<server>',
+		'DB_NAME'     => '<database>',
+		'DB_USER'     => '<username>',
+		'DB_PASSWORD' => '<password>',
+	),
+	// test db as backup
+	array(
+		'DB_SERVER'   => '<server>',
+		'DB_NAME'     => '<database>',
+		'DB_USER'     => '<username>',
+		'DB_PASSWORD' => '<password>',
+	),
+);
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('USERS_FILE', TMP_PATH . 'users.json');
