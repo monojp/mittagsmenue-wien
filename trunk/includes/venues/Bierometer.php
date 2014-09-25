@@ -119,8 +119,13 @@ class Bierometer extends FoodGetterVenue {
 		// parse dates to timestamps
 		$date_start = strtotime($date_start);
 		$date_end   = strtotime($date_end);
-		//error_log(date('Y-m-d', $date_start));
-		//error_log(date('Y-m-d', $date_end));
+		$date_end   = strtotime('+1 day', $date_end); // php uses current day 00:00:00, fix range check by +1 day
+		//error_log($this->timestamp);
+		//error_log($date_start);
+		//error_log($date_end);
+		//error_log(date('r', $this->timestamp));
+		//error_log(date('r', $date_start));
+		//error_log(date('r', $date_end));
 		if ($date_start > $this->timestamp || $date_end < $this->timestamp)
 			return;
 
