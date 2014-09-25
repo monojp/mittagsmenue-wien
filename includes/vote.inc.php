@@ -25,20 +25,20 @@ function returnVotes($votes) {
 			if (show_voting() && isset($_GET['minimal'])) {
 				echo '<meta http-equiv="refresh" content="10" />';
 				echo get_minimal_site_notice_html();
-				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
+				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes) . '</div>';
 			}
 			else if (show_voting()) {
 				echo '<div style="display: none" id="show_voting"></div>';
 				echo get_vote_div_html();
 				echo get_noscript_html();
 			}
-			//echo vote_summary_html($votes, false);
+			//echo vote_summary_html($votes);
 			require_once('footer.php');
 		}
 		else
 			echo json_encode(array(
 				'voting_over' => (time() >= $voting_over_time),
-				'html'        => vote_summary_html($votes, false),
+				'html'        => vote_summary_html($votes),
 			));
 	}
 	// no voting data
@@ -49,7 +49,7 @@ function returnVotes($votes) {
 			if (show_voting() && isset($_GET['minimal'])) {
 				echo '<meta http-equiv="refresh" content="10" />';
 				echo get_minimal_site_notice_html();
-				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
+				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes) . '</div>';
 			}
 			else if (show_voting()) {
 				echo '<div style="display: none" id="show_voting"></div>';
@@ -103,10 +103,8 @@ function getAllVotes() {
 	return $votes;
 }
 
-function vote_summary_html($votes, $include_head_body_tags) {
+function vote_summary_html($votes) {
 	$html = '';
-	if ($include_head_body_tags)
-		$html .= '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Voting</title></head><body>';
 
 	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
 		// get venue ratings
@@ -232,9 +230,6 @@ function vote_summary_html($votes, $include_head_body_tags) {
 			$html .= '<tr><td>Kein Ergebnis</td></tr>';
 		$html .= '</table>';
 	}
-
-	if ($include_head_body_tags)
-		$html .= '</body></html>';
 
 	return html_compress($html);
 }

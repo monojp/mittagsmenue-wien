@@ -10,6 +10,16 @@ function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
 }
 
+function checkDateInput() {
+	var input = document.createElement('input');
+	input.setAttribute('type','date');
+
+	var notADateValue = 'not-a-date';
+	input.setAttribute('value', notADateValue);
+
+	return !(input.value === notADateValue);
+}
+
 function detectIE() {
 	var ua = window.navigator.userAgent;
 	var msie = ua.indexOf('MSIE ');
@@ -314,8 +324,6 @@ function setLocationDialog(el) {
 		},
 		width: 'auto'
 	});
-	// close shown tooltip
-	$(el).tooltip("close");
 }
 function setDistance(distance) {
 	if (typeof distance != 'undefined') {
@@ -360,9 +368,6 @@ function showLocation(el) {
 	var data = '<img width="400" height="300" src="' + img_url + '"></img>';
 	data += '<br />' + '<div class="locationMapLegend" style="">' + key + '</div>';
 	alert(data, $('#location').html(), false, 425);
-
-	// close shown tooltip
-	$(el).tooltip("close");
 }
 function get_venues_distance() {
 	// current location
@@ -514,6 +519,7 @@ function init_venues_alt() {
 		$('#div_voting_alt_loader').hide();
 		$('#table_voting_alt').show();
 		$("#setAlternativeVenuesDialog").dialog("option", "position", "center");
+		$('#setAlternativeVenuesDialog').dialog('widget').position({my:"center", at:"center", of:window})
 	}, 0);
 }
 
@@ -581,6 +587,13 @@ $(document).ready(function() {
 	if (ie_version && ie_version <= 8)
 		alert('Bitte neuere Internet Explorer Version verwenden!');
 
+	// replace native datepicker with jqueryui one on demand
+	if (!checkDateInput()) {
+		$('#date').datepicker({
+			dateFormat: 'yy-mm-dd'
+		});
+	}
+
 	// location ready event
 	var locationReadyFired = false;
 	$(document).on('locationReady', function() {
@@ -618,12 +631,6 @@ $(document).ready(function() {
 			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
 			$(this).prop('href', href);
 		});
-
-		// enable nice tooltips for some tags
-		$('a').tooltip();
-		$('span').tooltip();
-		$('div').tooltip();
-		$('input').tooltip();
 	});
 
 	// start location stuff

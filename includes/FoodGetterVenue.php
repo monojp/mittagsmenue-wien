@@ -4,6 +4,8 @@ require_once('includes.php');
 //require_once('CacheHandler_File.php');
 require_once('CacheHandler_MySql.php');
 
+define('DIRECT_SHOW_MAX_LENGTH', 256);
+
 abstract class VenueStateSpecial {
 	const Urlaub      = 100;
 	const UrlaubMaybe = 101;
@@ -101,14 +103,28 @@ abstract class FoodGetterVenue {
 		/*if (stringsExist($data, $cacheDataDelete))
 			$data = null;*/
 
+		$data = $this->data;
+
 		// special state urlaub
-		if ($this->data == VenueStateSpecial::Urlaub)
+		if ($data == VenueStateSpecial::Urlaub)
 			return '<br /><span class="error">Zurzeit geschlossen wegen Urlaub</span><br />';
-		else if ($this->data == VenueStateSpecial::UrlaubMaybe)
+		else if ($data == VenueStateSpecial::UrlaubMaybe)
 			return '<br /><span class="error">Vermutlich zurzeit geschlossen wegen Urlaub</span><br />';
 
+		// break too long data via js helper
+		if (!isset($_GET['minimal']) && strlen($data) > DIRECT_SHOW_MAX_LENGTH) {
+			// get break position (next whitespace)
+			$break_pos = mb_strpos($data, ' ', DIRECT_SHOW_MAX_LENGTH) + 1;
+			$data_show = mb_substr($data, 0, $break_pos);
+			$data_hide = mb_substr($data, $break_pos);
+			// add hidden part with js code
+			$placeholder_id = uniqid();
+			$data_hide = "<span class='$placeholder_id'>... </span><a href='javascript:void(0)' onclick='$(\".$placeholder_id\").toggle(); $(this).hide()' class='bold'>alles anzeigen</a><span class='$placeholder_id' style='display: none'>$data_hide</span>";
+			$data = $data_show . $data_hide;
+		}
 		// mark each ingredient by an href linking to search
-		$data = create_ingredient_hrefs($this->data, $this->statisticsKeyword, 'menuData');
+		else
+			$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData');
 
 		// run filter
 		if ($data) {
@@ -128,10 +144,10 @@ abstract class FoodGetterVenue {
 		// old data and nothing found => don't display anything
 		$currentWeek = date('W');
 		$wantedWeek = date('W', $this->timestamp);
-		if ($currentWeek > $wantedWeek && !$data)
+		if ($currentWeek > $wantedWeek && !$this->data) // TODO DATE REPLACE
 			$data = null;
 
-		if (!empty($data) && $this->isDataUpToDate()) {
+		if (!empty($this->data) && $this->isDataUpToDate()) {
 			// not from cache? => write back
 			if (!$this->dataFromCache)
 				$this->cacheWrite();
@@ -143,7 +159,7 @@ abstract class FoodGetterVenue {
 			$angebot_link = '<a class="menuData dataSource" href="' . $this->dataSource . '" target="_blank" title="Datenquelle">Angebot:</a>';
 			$return .= "<div class='menu'>$angebot_link <span class='menuData'>" . $data . "</span></div>";
 
-			if ($this->price && strpos($data, '€') === FALSE) {
+			if ($this->price && strpos($this->data, '€') === FALSE) {
 				if (!is_array($this->price)) {
 					$this->price = array($this->price);
 				}
@@ -160,7 +176,7 @@ abstract class FoodGetterVenue {
 							$p = money_format('%.2n', $p);
 						}
 						if (count($price) > 1)
-							$price = '<span title="' . $this->price_nested_info . '">(' . implode(' / ', $price) . ')</span>';
+							$price = '<span title="' . $this->price_nested_info . '">(' . implode(' / ', $price) . ')<span class="raised">i</span></span>';
 						else
 							$price = '<span>' . reset($price) . '</span>';
 					}
@@ -262,6 +278,7 @@ abstract class FoodGetterVenue {
 								}
 							});
 						</script>
+						<br />
 						<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />
 					</span>
 				';

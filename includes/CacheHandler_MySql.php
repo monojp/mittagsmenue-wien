@@ -12,12 +12,21 @@ class CacheHandler_MySql extends CacheHandler {
 		// open db connection, try different configs after each other if connection fails
 		global $DB_CONFIGS;
 		$this->db = mysqli_init();
-		$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3);
+		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3)) {
+			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+		}
+		$db_connect_ok = false;
 		foreach ($DB_CONFIGS as $db_config) {
 			if (!$this->db->real_connect($db_config['DB_SERVER'], $db_config['DB_USER'], $db_config['DB_PASSWORD'], $db_config['DB_NAME']))
 				error_log('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
-			else
+			else {
+				$db_connect_ok = true;
 				break;
+			}
+		}
+		if (!$db_connect_ok) {
+			$this->db = null;
+			return;
 		}
 		$this->db->query("SET NAMES 'utf8'");
 	}

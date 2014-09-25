@@ -15,7 +15,8 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	'gegrilltes', 'gegrillte', 'hausgemachter', 'hausgemachten', 'hausgemachtes', 'hausgemachte', 'saftiges', 'buntes',
 	'gebackenen', 'gebackener', 'gebackenes', 'gebackene', 'gebacken', 'gezogener', 'gemischtes', 'pikanter', 'pikantes', 'pikante', 'geröstetem', 'geröstetes',
 	'gerösteten', 'gerösteter', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtem', 'gekochtes', 'gekochter', 'gekocht',
-	'ofenwarmer', 'wiener', ' mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von',
+	'ofenwarmer', 'wiener', 'mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von',
+	'das', 'des', 'heutige', 'bis', 'gleich', 'lasst', 'es', 'euch', 'schmecken', 'duo', 'mittagsmenü', 'woracziczky', 'wora',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.');
 
