@@ -4,7 +4,7 @@ class NamNamDeli extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Nam Nam Deli';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Webgasse 3, 1060 Wien';
 		$this->addressLat = '48.192375';
 		$this->addressLng = '16.348016';

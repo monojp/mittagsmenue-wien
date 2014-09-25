@@ -1,7 +1,7 @@
 @charset "UTF-8";
 
 body {
-	font-family: verdana, sans, sans-serif;
+	font-family: sans-serif;
 	/*line-height: 1.28;*/
 	font-size: 0.9em;
 	margin: 5px;
@@ -137,6 +137,10 @@ input {
 }
 .bold {
 	font-weight: bold;
+}
+.raised {
+	vertical-align: top;
+	font-size: 0.8em;
 }
 /* override jqueryui font-size in dialogs */
 .ui-dialog, .ui-widget {
