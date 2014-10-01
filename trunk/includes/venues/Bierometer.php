@@ -4,7 +4,7 @@ class Bierometer extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Bierometer';
-		$this->title_notifier = 'UPDATE';
+		//$this->title_notifier = 'UPDATE';
 		$this->address = 'Margaretenplatz 9, 1050 Wien';
 		$this->addressLat = '48.192031';
 		$this->addressLng = '16.358819';

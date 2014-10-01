@@ -7,7 +7,7 @@ class Woracziczky extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Gasthaus Woracziczky';
-		$this->title_notifier = 'UPDATE';
+		//$this->title_notifier = 'UPDATE';
 		$this->address = 'Spengergasse 52, 1050 Wien';
 		$this->addressLat = '48.189343';
 		$this->addressLng = '16.352982';
