@@ -61,7 +61,10 @@ function returnVotes($votes) {
 			require_once('footer.php');
 		}
 		else
-			echo json_encode('');
+			echo json_encode(array(
+				'voting_over' => (time() >= $voting_over_time),
+				'html'        => vote_summary_html($votes),
+			));
 	}
 }
 
@@ -302,6 +305,8 @@ function vote_summary_html($votes, $display_menus = false) {
 			}
 		}
 	}
+	else
+		$html = "<div style='margin: 5px'>Noch keine Daten vorhanden</div>";
 
 	return html_compress($html);
 }

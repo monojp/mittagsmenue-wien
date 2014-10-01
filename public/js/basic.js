@@ -539,7 +539,10 @@ function setAlternativeVenuesDialog() {
 // updates the gui on user changes
 function updateVoteSettingsDialog() {
 	// disable reminder checkbox if "send mail only if already voted" checkbox is checked
-	$('#vote_reminder').attr('disabled', $('#voted_mail_only').is(':checked'));
+	if ($('#voted_mail_only').is(':checked'))
+		$('#vote_reminder').attr('disabled', true);
+	else
+		$('#vote_reminder').removeAttr('disabled');
 }
 function setVoteSettingsDialog() {
 	// show dialog
