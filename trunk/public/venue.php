@@ -12,11 +12,13 @@
 		$dateOffset = get_var('dateOffset');
 		$timestamp = get_var('timestamp');
 
-		$venue = new $classname;
+		if (class_exists($classname))
+			$venue = new $classname;
+		else
+			echo json_encode(array('alert' => js_message_prepare('Classname invalid')));
 		echo json_encode(html_compress($venue->getMenuData()));
 	}
-	else {
+	else
 		echo json_encode(array('alert' => js_message_prepare('No classname set')));
-	}
 
 ?>

@@ -65,13 +65,15 @@ function get_location_dialog_html() {
 }
 
 function get_note_dialog_html() {
+	$vote = getUserVote();
+	$note = isset($vote['special']) ? $vote['special'] : '';
 	return '
 		<div id="setNoteDialog" class="hidden">
 			<form id="noteForm" action="index.php">
 				<fieldset>
 					<label for="noteInput">Notiz</label>
 					<br />
-					<input type="text" name="note" id="noteInput" value="" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+					<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
 				</fieldset>
 			</form>
 		</div>

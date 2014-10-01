@@ -138,6 +138,7 @@ function vote_down(identifier) {
 }
 // vote special
 function vote_special(identifier) {
+	$('#noteInput').val(identifier);
 	vote_helper('vote_special', identifier, null, 0);
 }
 // set note
@@ -150,10 +151,13 @@ function vote_get() {
 }
 // delete vote
 function vote_delete() {
+	$('#noteInput').val('');
 	vote_helper('vote_delete', null, null, 0);
 }
 // delete vote part
 function vote_delete_part(identifier) {
+	if (identifier == 'special')
+		$('#noteInput').val('');
 	vote_helper('vote_delete_part', identifier, null, 0);
 }
 // got (lat / long) location => get address from it

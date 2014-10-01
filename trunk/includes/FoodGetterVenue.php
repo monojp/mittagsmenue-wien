@@ -15,7 +15,7 @@ abstract class VenueStateSpecial {
  * Venue Class
  */
 abstract class FoodGetterVenue {
-	protected $title = null;
+	public $title = null;
 	protected $title_notifier = null; // presented small highlighted next to the title
 	protected $addressLat = null;
 	protected $addressLng = null;
@@ -171,8 +171,8 @@ abstract class FoodGetterVenue {
 			// can't use htmlspecialchars here, because we need those ">" and "<"
 			$data = str_replace("&", "&amp;", $data);
 
-			$angebot_link = '<a class="menuData dataSource" href="' . $this->dataSource . '" target="_blank" title="Datenquelle">Angebot:</a>';
-			$return .= "<div class='menu'>$angebot_link <span class='menuData'>" . $data . "</span></div>";
+			$angebot_link = "<a class='menuData dataSource' href='{$this->dataSource}' target='_blank' title='Datenquelle'>Angebot:</a>";
+			$return .= "<div class='menu'>{$angebot_link} <span class='menuData'>{$data}</span></div>";
 
 			if ($this->price && strpos($this->data, '€') === FALSE) {
 				if (!is_array($this->price)) {
@@ -191,18 +191,18 @@ abstract class FoodGetterVenue {
 							$p = money_format('%.2n', $p);
 						}
 						if (count($price) > 1)
-							$price = '<span title="' . $this->price_nested_info . '">(' . implode(' / ', $price) . ')<span class="raised">i</span></span>';
+							$price = "<span title='{$this->price_nested_info}'>(" . implode(' / ', $price) . ')<span class="raised">i</span></span>';
 						else
 							$price = '<span>' . reset($price) . '</span>';
 					}
 				}
 				$price = implode(' / ', $this->price);
-				$return .= "Preis: <b>$price</b>";
+				$return .= "Preis: <b>{$price}</b>";
 			}
 		}
 		else {
 			$return .= '<br /><span class="error">Leider nichts gefunden :(</span><br />';
-			$return .= "Speisekarte: <a href='$this->dataSource' target='_blank'>Link</a>";
+			$return .= "Speisekarte: <a href='{$this->dataSource}' target='_blank'>Link</a>";
 		}
 
 		return $return;
@@ -222,26 +222,25 @@ abstract class FoodGetterVenue {
 		else
 			$attributeStyle = '';
 
-		$string .= "<div id='$CSSid' class='venueDiv' style='$attributeStyle'>";
+		$string .= "<div id='{$CSSid}' class='venueDiv' style='{$attributeStyle}'>";
 		// hidden lat/lng spans
 		if (!isset($_GET['minimal'])) {
-			$string .= '<span class="hidden lat">' . $this->addressLat . '</span>';
-			$string .= '<span class="hidden lng">' . $this->addressLng . '</span>';
+			$string .= "<span class='hidden lat'>{$this->addressLat}</span>";
+			$string .= "<span class='hidden lng'>{$this->addressLng}</span>";
 		}
 
 		// title
-		$string .= "<span class='title' title='Homepage'><a href='$this->url' target='_blank'>$this->title</a></span>";
+		$string .= "<span class='title' title='Homepage'><a href='{$this->url}' target='_blank'>{$this->title}</a></span>";
 		if ($this->title_notifier)
-			$string .= "<span class='title_notifier'>$this->title_notifier</span>";
+			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
 			$string .= "<a class='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {
-			$voteString = addslashes($this->title);
-			$string .= '<a href="javascript:void(0)" onclick="vote_up(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_pro" title="Vote Up"></span></a>';
-			$string .= '<a href="javascript:void(0)" onclick="vote_down(\'' . $voteString . '\')"><span class="icon sprite sprite-icon_hand_contra" title="Vote Down"></span></a>';
+			$string .= "<a href='javascript:void(0)' onclick='vote_up(\"" . get_class($this) . "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>";
+			$string .= "<a href='javascript:void(0)' onclick='vote_down(\"" . get_class($this) . "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
 		}
 
 		// check no menu days
@@ -250,7 +249,7 @@ abstract class FoodGetterVenue {
 		foreach ((array)$this->no_menu_days as $day) {
 			if ($dayNr == $day) {
 				$dayName = getGermanDayName();
-				$string .= "<br /><span class='error'>Leider kein Mittagsmenü am $dayName :(</span><br />";
+				$string .= "<br /><span class='error'>Leider kein Mittagsmenü am {$dayName} :(</span><br />";
 				$no_menu_day = true;
 				break;
 			}
