@@ -52,7 +52,7 @@
 		if ($action == 'notify' && $votes && !empty($votes['venue'])) {
 			// build html
 			$html  = '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head><title>Voting</title><meta charset="UTF-8"/></head><body>';
-			$html .= vote_summary_html($votes);
+			$html .= vote_summary_html($votes, true);
 			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
 			$html .= '</body></html>';
 			$html  = html_compress($html);

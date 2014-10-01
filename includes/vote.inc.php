@@ -1,5 +1,7 @@
 <?php
 
+require_once( __DIR__ . '/venues.php');
+
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_NOTE_MAX_LENGTH', 128);
 
@@ -103,7 +105,13 @@ function getAllVotes() {
 	return $votes;
 }
 
-function vote_summary_html($votes) {
+// gets the vote of the user
+function getUserVote() {
+	$votes = getAllVotes();
+	return isset($votes['venue'][get_identifier_ip()]) ? $votes['venue'][get_identifier_ip()] : null;
+}
+
+function vote_summary_html($votes, $display_menus = false) {
 	$html = '';
 
 	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
@@ -172,18 +180,44 @@ function vote_summary_html($votes) {
 			else
 				$row_style = '';
 
-			// cleanup data for output
-			array_walk($upVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
-			array_walk($downVotes, function (&$v, $k) { $v = htmlspecialchars($v); });
-			$specialVote = htmlspecialchars($specialVote);
+			// replace classnames with real venue titles
+			foreach ($upVotes as &$venue_class) {
+				if (class_exists($venue_class)) {
+					$venueTmp = new $venue_class;
+					$venue_title = htmlspecialchars($venueTmp->title);
+				}
+				else {
+					$venue_title = htmlspecialchars($venue_class);
+				}
+				// current user => add delete functionality
+				if ($user == get_identifier_ip())
+					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+				$venue_class = $venue_title;
+			}
+			unset($venue_class);
 
+			// replace classnames with real venue titles
+			foreach ($downVotes as &$venue_class) {
+				if (class_exists($venue_class)) {
+					$venueTmp = new $venue_class;
+					$venue_title = htmlspecialchars($venueTmp->title);
+				}
+				else {
+					$venue_title = htmlspecialchars($venue_class);
+				}
+				// current user => add delete functionality
+				if ($user == get_identifier_ip())
+					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+				$venue_class = $venue_title;
+			}
+			unset($venue_class);
+
+			// cleanup other data for output
+			$specialVote = htmlspecialchars($specialVote);
 			// replace urls with an a tag
 			$specialVote = preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank">$1</a>', $specialVote);
-
 			// current user => add delete functionality
 			if ($user == get_identifier_ip()) {
-				array_walk($upVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
-				array_walk($downVotes, function (&$v, $k) { $v .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'' . $v . '\')" style="color: red ! important">x</a></sup>'; });
 				if (!empty($specialVote))
 					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
 				else
@@ -218,6 +252,18 @@ function vote_summary_html($votes) {
 			$all_sane_rating_cnt += $rating;
 		}
 		foreach ($venue_rating_final as $rating => $venues) {
+			// resolve class names to venue titles
+			foreach ($venues as &$venue_class) {
+				if (class_exists($venue_class)) {
+					$venueTmp = new $venue_class;
+					$venue_title = htmlspecialchars($venueTmp->title);
+				}
+				else
+					$venue_title = htmlspecialchars($venue_class);
+				$venue_class = $venue_title;
+			}
+			unset($venue_class);
+
 			// mark venues which got >= 50% sane ratings
 			// but only if there are multiple venues
 			if (count($venue_rating_final) > 1 && ($rating / $all_sane_rating_cnt) >= 0.5)
@@ -229,6 +275,23 @@ function vote_summary_html($votes) {
 		if (empty($venue_rating_final))
 			$html .= '<tr><td>Kein Ergebnis</td></tr>';
 		$html .= '</table>';
+
+		// print menu of rated venues (for email notifier)
+		if ($display_menus) {
+			$html_menu = '';
+			foreach ((array)$venue_rating_final as $venues) {
+				foreach ((array)$venues as $venue_class) {
+					if (class_exists($venue_class)) {
+						$venueTmp = new $venue_class;
+						$html_menu .= "<div style='margin: 5px'><span style='font-weight: bold'>{$venueTmp->title}</span>{$venueTmp->getMenuData()}</div>";
+					}
+				}
+			}
+			if (isset($html_menu)) {
+				$html .= '<div style="margin: 5px; font-weight: bold">Menüs:</div>';
+				$html .= $html_menu;
+			}
+		}
 	}
 
 	return html_compress($html);
