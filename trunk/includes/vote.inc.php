@@ -192,6 +192,9 @@ function vote_summary_html($votes, $display_menus = false) {
 				// current user => add delete functionality
 				if ($user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+				// otherwise => add "me too" functionality
+				else
+					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
 			unset($venue_class);
@@ -208,6 +211,9 @@ function vote_summary_html($votes, $display_menus = false) {
 				// current user => add delete functionality
 				if ($user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+				// otherwise => add "me too" functionality
+				else
+					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
 			unset($venue_class);
@@ -223,6 +229,9 @@ function vote_summary_html($votes, $display_menus = false) {
 				else
 					$specialVote = '<a href="javascript:void(0)" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
 			}
+			// otherwise => add "me too" functionality
+			else
+				$specialVote .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_special(\"{$specialVote}\")' style='color: red ! important'>+1</a></sup>";
 
 			// prepare data for output
 			$upVotes     = empty($upVotes)     ? '-' : implode(', ', $upVotes);
