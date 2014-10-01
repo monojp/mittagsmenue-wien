@@ -7,12 +7,8 @@
 		echo '<meta http-equiv="refresh" content="10" />';
 
 	// no js fallback to minimal site refresh
-	if (!isset($_GET['minimal'])) {
+	if (!isset($_GET['minimal']))
 		$url = build_minimal_url();
-		echo "<noscript>
-			<meta id='meta_no_js_fallback' http-equiv='refresh' content='0; url=$url' />
-		</noscript>";
-	}
 
 	echo '</head><body>';
 
@@ -78,10 +74,6 @@
 	echo '</div>';
 
 	echo '<div style="clear: both"></div>';
-
-	// no javascript => notice + redirect to minimal site
-	if (!isset($_GET['minimal']))
-		echo get_noscript_html();
 
 	// loading container because venues are shown via JS when dom ready
 	if (!isset($_GET['minimal']))

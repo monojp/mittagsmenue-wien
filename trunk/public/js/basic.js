@@ -504,17 +504,10 @@ function init_venues_alt() {
 	// get venues in 1000 - user distance radius
 	var results = new Array();
 	get_alt_venues(lat, lng, 1000, $('#distance').val(), function (results) {
-		$('#table_voting_alt').bind('dynatable:init', function(e, dynatable) {
-			// Clear any existing sorts
-			dynatable.sorts.clear();
-			dynatable.sorts.add('distanz', 1); // 1=ASCENDING, -1=DESCENDING
-			dynatable.process();
-			e.preventDefault();
-		});
-		$('#table_voting_alt').dynatable({
-			dataset: {
-				records: results
-			}
+		$('#table_voting_alt').dataTable().fnDestroy();
+		$('#table_voting_alt').dataTable({
+			data: results,
+			"order": [[ 1, "asc" ]]
 		});
 		$('#div_voting_alt_loader').hide();
 		$('#table_voting_alt').show();
