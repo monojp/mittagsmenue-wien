@@ -48,9 +48,9 @@ class Woracziczky extends FoodGetterVenue {
 			// nothing mittags-relevantes found
 			$words_relevant = array(
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'haben heute', 'servieren euch', 'Bis gleich',
-				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch', 'freuen sich heute auf euch',
-				'freuen sich auf euch', 'erwarten euch',
+				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'servieren euch', 'Bis gleich',
+				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch',
+				'freuen sich auf euch', 'erwarten euch', 'suppe', 'Suppe', 'heute',
 			);
 			if (!stringsExist($message, $words_relevant))
 				continue;

@@ -4,6 +4,7 @@
 	// start output buffering with custom html compress handler
 	ob_start('html_compress');
 
+	echo '<?xml version="1.0" encoding="UTF-8"?>';
 	echo '<!DOCTYPE html>';
 	echo '<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">';
 	echo '<head>';

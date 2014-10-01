@@ -15,8 +15,8 @@ session_set_cookie_params(3 * 60, '/', $server_name, false, true);
 session_start();
 
 header("Vary: Accept-Encoding");
-//header("Content-Type: application/xhtml+xml; charset=UTF-8");
-header("Content-Type: text/html; charset=UTF-8");
+header("Content-Type: application/xhtml+xml; charset=UTF-8");
+//header("Content-Type: text/html; charset=UTF-8");
 
 
 // cache 3 hours

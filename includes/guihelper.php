@@ -211,15 +211,6 @@ function get_vote_div_html() {
 	';
 }
 
-function get_noscript_html() {
-	return '
-		<noscript>
-			Diese Seite benötigt JavaScript!
-			Bitte aktivieren Sie JavaScript oder verwenden Sie die Minimal-Version.
-		</noscript>
-	';
-}
-
 function get_loading_container_html() {
 	return '
 		<div id="loadingContainer"><img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" /></div>

@@ -126,7 +126,7 @@ class Bierometer extends FoodGetterVenue {
 		//error_log(date('r', $this->timestamp));
 		//error_log(date('r', $date_start));
 		//error_log(date('r', $date_end));
-		if ($date_start > $this->timestamp || $date_end < $this->timestamp)
+		if (($date_start > $this->timestamp || $date_end < $this->timestamp) && strpos($dataTmp, date('d.m.', $this->timestamp)) === false)
 			return;
 
 		// multi parser
