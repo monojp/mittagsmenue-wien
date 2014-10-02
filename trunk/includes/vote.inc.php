@@ -114,7 +114,7 @@ function getUserVote() {
 	return isset($votes['venue'][get_identifier_ip()]) ? $votes['venue'][get_identifier_ip()] : null;
 }
 
-function vote_summary_html($votes, $display_menus = false) {
+function vote_summary_html($votes, $display_menus = false, $show_js_actions = true) {
 	$html = '';
 
 	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
@@ -189,14 +189,13 @@ function vote_summary_html($votes, $display_menus = false) {
 					$venueTmp = new $venue_class;
 					$venue_title = htmlspecialchars($venueTmp->title);
 				}
-				else {
+				else
 					$venue_title = htmlspecialchars($venue_class);
-				}
 				// current user => add delete functionality
-				if ($user == get_identifier_ip())
+				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
 				// otherwise => add "me too" functionality
-				else
+				else if ($show_js_actions)
 					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
@@ -208,14 +207,13 @@ function vote_summary_html($votes, $display_menus = false) {
 					$venueTmp = new $venue_class;
 					$venue_title = htmlspecialchars($venueTmp->title);
 				}
-				else {
+				else
 					$venue_title = htmlspecialchars($venue_class);
-				}
 				// current user => add delete functionality
-				if ($user == get_identifier_ip())
+				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
 				// otherwise => add "me too" functionality
-				else
+				else if ($show_js_actions)
 					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
@@ -226,14 +224,14 @@ function vote_summary_html($votes, $display_menus = false) {
 			// replace urls with an a tag
 			$specialVote = preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank">$1</a>', $specialVote);
 			// current user => add delete functionality
-			if ($user == get_identifier_ip()) {
+			if ($show_js_actions && $user == get_identifier_ip()) {
 				if (!empty($specialVote))
 					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
 				else
 					$specialVote = '<a href="javascript:void(0)" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
 			}
 			// otherwise => add "me too" functionality
-			else
+			else if ($show_js_actions && !empty($specialVote))
 				$specialVote .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_special(\"{$specialVote}\")' style='color: red ! important'>+1</a></sup>";
 
 			// prepare data for output
@@ -247,9 +245,9 @@ function vote_summary_html($votes, $display_menus = false) {
 
 			$html .= "<tr style='$row_style'>
 				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>
-				<td style='$upVotes_style'>" . $upVotes . "</td>
-				<td style='$downVotes_style'>" . $downVotes . "</td>
-				<td style='$specialVote_style'>" . $specialVote . "</td>
+				<td style='$upVotes_style'>{$upVotes}</td>
+				<td style='$downVotes_style'>{$downVotes}</td>
+				<td style='$specialVote_style'>{$specialVote}</td>
 			</tr>";
 		}
 		$html .= '</table>';
