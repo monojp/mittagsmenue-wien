@@ -16,10 +16,10 @@ abstract class VenueStateSpecial {
  */
 abstract class FoodGetterVenue {
 	public $title = null;
+	public $url = null;
 	protected $title_notifier = null; // presented small highlighted next to the title
 	protected $addressLat = null;
 	protected $addressLng = null;
-	protected $url = null;
 	protected $dataSource = null;
 	protected $data = null;
 	protected $date = null;

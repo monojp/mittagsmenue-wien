@@ -1,6 +1,7 @@
 <?php
 
 require_once( __DIR__ . '/venues.php');
+require_once( __DIR__ . '/nearplaces.inc.php');
 
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_NOTE_MAX_LENGTH', 128);
@@ -187,13 +188,13 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			foreach ($upVotes as &$venue_class) {
 				if (class_exists($venue_class)) {
 					$venueTmp = new $venue_class;
-					$venue_title = htmlspecialchars($venueTmp->title);
+					$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venueTmp->title) . '</a>';
 				}
 				else
-					$venue_title = htmlspecialchars($venue_class);
+					$venue_title = '<a href="' . nearplace_cache_search($venue_class)['website'] . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
-					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
 				// otherwise => add "me too" functionality
 				else if ($show_js_actions)
 					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
@@ -205,10 +206,10 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			foreach ($downVotes as &$venue_class) {
 				if (class_exists($venue_class)) {
 					$venueTmp = new $venue_class;
-					$venue_title = htmlspecialchars($venueTmp->title);
+					$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venueTmp->title) . '</a>';
 				}
 				else
-					$venue_title = htmlspecialchars($venue_class);
+					$venue_title = '<a href="' . nearplace_cache_search($venue_class)['website'] . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";

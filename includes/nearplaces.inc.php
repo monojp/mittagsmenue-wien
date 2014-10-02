@@ -7,8 +7,11 @@ define('DETAILS_CACHE', TMP_PATH . 'details_cache.json');
 define('LOG_API_REQUESTS', true);
 
 // imitate google api data for custom venues
+// use negative ids to distinguish between google nearplace
+// and custom nearplace venue entries
 $custom_venues = array(
 	array(
+		'id' => -1,
 		'geometry' => array(
 			'location' => array(
 				'lat' => 48.192134,
@@ -16,9 +19,11 @@ $custom_venues = array(
 			),
 		),
 		'name' => 'le Pho',
-		'href' => 'http://www.le-pho.at/',
+		'website' => 'http://www.le-pho.at/',
+		'reference' => -1,
 	),
 	array(
+		'id' => -2,
 		'geometry' => array(
 			'location' => array(
 				'lat' => 48.191429,
@@ -26,9 +31,11 @@ $custom_venues = array(
 			),
 		),
 		'name' => 'Disco Volante',
-		'href' => 'http://www.disco-volante.at/',
+		'website' => 'http://www.disco-volante.at/',
+		'reference' => -1,
 	),
 	array(
+		'id' => -3,
 		'geometry' => array(
 			'location' => array(
 				'lat' => 48.197427,
@@ -36,9 +43,11 @@ $custom_venues = array(
 			),
 		),
 		'name' => 'Kuishimbo',
-		'href' => 'https://www.facebook.com/pages/Kuishimbo/67343688168',
+		'website' => 'https://www.facebook.com/pages/Kuishimbo/67343688168',
+		'reference' => -1,
 	),
 	array(
+		'id' => -4,
 		'geometry' => array(
 			'location' => array(
 				'lat' => 48.198927,
@@ -46,9 +55,23 @@ $custom_venues = array(
 			),
 		),
 		'name' => 'Kojiro - Sushi-Bar',
-		'href' => 'https://plus.google.com/106777516565797933298/about',
+		'website' => 'https://plus.google.com/106777516565797933298/about',
+		'reference' => -1,
 	),
 );
+
+// searches for venue data in the nearplaces cache
+// returns null if nothing found
+function nearplace_cache_search($name) {
+	$data = nearplace_cache_read(null, null, null);
+	foreach ((array)$data as $dataset) {
+		foreach ((array)$dataset as $venue) {
+			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false)
+				return $venue;
+		}
+	}
+	return null;
+}
 
 /*
  * reads an entry from the details cache
@@ -64,6 +87,10 @@ function details_cache_read($id, $reference) {
 		if ($data === null)
 			return null;
 	}
+
+	// if id and reference are null, return all data
+	if ($id === null && $reference === null)
+		return $data;
 
 	// if younger than 1 week, same id OR reference => cache-hit
 	foreach ((array)$data as $cache_key => $cache_entry) {
@@ -118,6 +145,10 @@ function nearplace_cache_read($lat, $lng, $radius) {
 		if ($data === null)
 			return null;
 	}
+
+	// if parameters are null, return all
+	if ($lat === null && $lng === null && $radius === null)
+		return $data;
 
 	// if younger than 1 week, radius +- 100 m and lat/lng distance +- 100 m, return cache entry
 	foreach ((array)$data as $cache_key => $cache_entry) {
@@ -226,17 +257,13 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$lng           = str_replace(',', '.', trim($result['geometry']['location']['lng']));
 		$rating        = isset($result['rating']) ? $result['rating'] : null;
 		$id            = isset($result['id']) ? $result['id'] : null;
-		$href          = isset($result['href']) ? $result['href'] : null;
 		$reference     = isset($result['reference']) ? $result['reference'] : null;
 		$maps_href     = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
 		$name_url_safe = urlencode($name);
 		$name_escaped  = htmlspecialchars($name, ENT_QUOTES);
 		$name_escaped  = str_replace("'", '', $name_escaped);
 
-		if ($href)
-			$href = "<a href='${href}' target='_blank' title='Homepage'>{$name_escaped}</a>";
-		else
-			$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
+		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
 		$actions = "<a href='$maps_href' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		if (show_voting())
 			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"{$name_escaped}\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
@@ -335,20 +362,32 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 }
 
 function details($id, $reference, $sensor) {
-	global $GOOGLE_API_KEYS;
+	global $GOOGLE_API_KEYS, $custom_venues;
 
-	shuffle($GOOGLE_API_KEYS);
-
+	// negative id => custom nearplace venue
+	if ($id < 0) {
+		$api_response = null;
+		foreach ((array)$custom_venues as $venue) {
+			if ($venue['id'] == $id && $reference == -1) {
+				$api_response['result'] = $venue;
+				$api_response['status'] = 'OK';
+				break;
+			}
+		}
+	}
 	// query api
-	foreach ($GOOGLE_API_KEYS as $api_key) {
-		if (LOG_API_REQUESTS)
-			error_log("@details: query api with key $api_key");
-		$api_url = "https://maps.googleapis.com/maps/api/place/details/json?key=$api_key&reference=$reference&sensor=$sensor&language=de";
-		$api_response = @file_get_contents($api_url);
-		if ($api_response === false)
-			continue;
-		$api_response = json_decode($api_response, true);
-		break;
+	else {
+		shuffle($GOOGLE_API_KEYS);
+		foreach ($GOOGLE_API_KEYS as $api_key) {
+			if (LOG_API_REQUESTS)
+				error_log("@details: query api with key $api_key");
+			$api_url = "https://maps.googleapis.com/maps/api/place/details/json?key=$api_key&reference=$reference&sensor=$sensor&language=de";
+			$api_response = @file_get_contents($api_url);
+			if ($api_response === false)
+				continue;
+			$api_response = json_decode($api_response, true);
+			break;
+		}
 	}
 
 	return handle_api_response($api_response);
