@@ -6,6 +6,50 @@ define('NEARPLACES_CACHE', TMP_PATH . 'nearplaces_cache.json');
 define('DETAILS_CACHE', TMP_PATH . 'details_cache.json');
 define('LOG_API_REQUESTS', true);
 
+// imitate google api data for custom venues
+$custom_venues = array(
+	array(
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.192134,
+				'lng' => 16.348653,
+			),
+		),
+		'name' => 'le Pho',
+		'href' => 'http://www.le-pho.at/',
+	),
+	array(
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.191429,
+				'lng' => 16.347603,
+			),
+		),
+		'name' => 'Disco Volante',
+		'href' => 'http://www.disco-volante.at/',
+	),
+	array(
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.197427,
+				'lng' => 16.359181,
+			),
+		),
+		'name' => 'Kuishimbo',
+		'href' => 'https://www.facebook.com/pages/Kuishimbo/67343688168',
+	),
+	array(
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.198927,
+				'lng' => 16.364725,
+			),
+		),
+		'name' => 'Kojiro - Sushi-Bar',
+		'href' => 'https://plus.google.com/106777516565797933298/about',
+	),
+);
+
 /*
  * reads an entry from the details cache
  */
@@ -164,7 +208,9 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
 			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis', 'Fleischboutique', 'Celeste Cafe', 'Spar-supermarkt',
 			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner', 'NIPPON YA Handels',
-			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler', 'pentahotel Vienna',
+			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler', 'pentahotel Vienna', 'Rudi\'s Beisl',
+			'Café Rüdigerhof', 'Cafe Siebenbrunnen', 'Café Wortner Kaffeehaus', 'Wieden Bräu', 'Cafe Savoy', 'Frascati Pizzeria Gelateria', 'Café Ritter',
+			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -180,17 +226,21 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$lng           = str_replace(',', '.', trim($result['geometry']['location']['lng']));
 		$rating        = isset($result['rating']) ? $result['rating'] : null;
 		$id            = isset($result['id']) ? $result['id'] : null;
+		$href          = isset($result['href']) ? $result['href'] : null;
 		$reference     = isset($result['reference']) ? $result['reference'] : null;
 		$maps_href     = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
 		$name_url_safe = urlencode($name);
 		$name_escaped  = htmlspecialchars($name, ENT_QUOTES);
 		$name_escaped  = str_replace("'", '', $name_escaped);
 
-		$href    = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"$id\", \"$reference\", \"$name_url_safe\", 0)' title='Homepage'>$name_escaped</a>";
-		$actions = "<a href='$maps_href'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+		if ($href)
+			$href = "<a href='${href}' target='_blank' title='Homepage'>{$name_escaped}</a>";
+		else
+			$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
+		$actions = "<a href='$maps_href' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
 		if (show_voting())
-			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"$name_escaped\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
-			          . "<a href='javascript:void(0)' onclick='vote_down(\"$name_escaped\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"{$name_escaped}\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
+			          . "<a href='javascript:void(0)' onclick='vote_down(\"{$name_escaped}\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
 
 		$response[] = array(
 			'name' => $name,
@@ -253,7 +303,7 @@ function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=n
 }
 
 function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null) {
-	global $GOOGLE_API_KEYS;
+	global $GOOGLE_API_KEYS, $custom_venues;
 
 	shuffle($GOOGLE_API_KEYS);
 
@@ -269,6 +319,16 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 			continue;
 		$api_response = json_decode($api_response, true);
 		break;
+	}
+
+	// add custom venues that are in reach
+	if (isset($api_response['results'])) {
+		foreach ((array)$custom_venues as $venue) {
+			$lat_venue = isset($venue['geometry']['location']['lat']) ? $venue['geometry']['location']['lat'] : null;
+			$lng_venue = isset($venue['geometry']['location']['lng']) ? $venue['geometry']['location']['lng'] : null;
+			if (distance($lat_venue, $lng_venue, $lat, $lng, false) <= $radius)
+				$api_response['results'][] = $venue;
+		}
 	}
 
 	return handle_api_response($api_response);
