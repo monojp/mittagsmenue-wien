@@ -139,7 +139,7 @@ abstract class FoodGetterVenue {
 		}
 		// mark each ingredient by an href linking to search
 		else*/
-			$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData');
+			$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 
 		// run filter
 		if ($data) {
