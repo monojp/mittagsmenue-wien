@@ -1,6 +1,6 @@
 <?php
 
-require_once('../includes/includes.php');
+require_once(__DIR__ . '/includes.php');
 
 define('NEARPLACES_CACHE', TMP_PATH . 'nearplaces_cache.json');
 define('DETAILS_CACHE', TMP_PATH . 'details_cache.json');
