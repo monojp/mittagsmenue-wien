@@ -1,6 +1,6 @@
 <?php
 
-	require_once(dirname(__FILE__) . '/../includes/includes.php');
+	require_once(__DIR__ . '/includes.php');
 
 	define('CUSTOM_USERID_CACHE_FILE', TMP_PATH . 'custom_userid_cache.json');
 

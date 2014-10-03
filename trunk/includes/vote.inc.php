@@ -1,7 +1,7 @@
 <?php
 
-require_once( __DIR__ . '/venues.php');
-require_once( __DIR__ . '/nearplaces.inc.php');
+require_once(__DIR__ . '/venues.php');
+require_once(__DIR__ . '/nearplaces.inc.php');
 
 define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_NOTE_MAX_LENGTH', 128);

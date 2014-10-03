@@ -53,32 +53,32 @@
 			// build html
 			$html  = '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head><title>Voting</title><meta charset="UTF-8"/></head><body>';
 			$html .= vote_summary_html($votes, true, false);
-			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
+			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}'>{$custom_userid_access_url}</a></div>";
 			$html .= '</body></html>';
 			$html  = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 			if (!$success)
-				echo "error sending email to $email";
+				echo "error sending email to {$email}";
 		}
 		// remind
 		else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$ip])) {
 			// build html
 			$html  = '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head><title>Voting</title><meta charset="UTF-8"/></head><body>';
-			$html .= "<div style='margin: 5px'>Das Voting endet um <b>$voting_over_time_print</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
-			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='$custom_userid_access_url'>$custom_userid_access_url</a></div>";
+			$html .= "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
+			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}'>{$custom_userid_access_url}</a></div>";
 			$html .= '</body></html>';
 			$html  = html_compress($html);
 
 			$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 			if (!$success)
-				echo "error sending email to $email";
+				echo "error sending email to {$email}";
 		}
 		else if ($action == 'dryrun') {
 			if ($vote_reminder && !isset($votes['venue'][$ip]))
-				echo "would send a remind email to $email\n";
+				echo "would send a remind email to {$email}\n";
 			else if ($votes && !empty($votes['venue']))
-				echo "would send a notify email to $email\n";
+				echo "would send a notify email to {$email}\n";
 		}
 	}
 

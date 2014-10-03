@@ -1,6 +1,6 @@
 <?php
 
-require_once('CacheHandler.php');
+require_once(__DIR__ . '/CacheHandler.php');
 
 class CacheHandler_MySql extends CacheHandler {
 	protected $db = null;

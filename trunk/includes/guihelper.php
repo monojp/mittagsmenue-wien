@@ -1,8 +1,8 @@
 <?php
 
-require_once(__DIR__ . '/../includes/includes.php');
-require_once(__DIR__ . '/../includes/vote.inc.php');
-require_once(__DIR__ . '/../includes/customuserid.inc.php');
+require_once(__DIR__ . '/includes.php');
+require_once(__DIR__ . '/vote.inc.php');
+require_once(__DIR__ . '/customuserid.inc.php');
 
 // default location for JS
 $city = LOCATION_FALLBACK;

@@ -1,11 +1,11 @@
 <?php
 
-require_once('dependencycheck.php');
-require_once('config.php');
-require_once('textfixes.php');
-require_once('CacheHandler_MySql.php');
-require_once('customuserid.inc.php');
-require_once('users.inc.php');
+require_once(__DIR__ . '/dependencycheck.php');
+require_once(__DIR__ . '/config.php');
+require_once(__DIR__ . '/textfixes.php');
+require_once(__DIR__ . '/CacheHandler_MySql.php');
+require_once(__DIR__ . '/customuserid.inc.php');
+require_once(__DIR__ . '/users.inc.php');
 
 mb_internal_encoding('UTF-8');
 

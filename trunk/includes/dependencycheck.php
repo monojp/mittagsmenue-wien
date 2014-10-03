@@ -1,6 +1,6 @@
 <?php
 
-if (!file_exists(dirname(__FILE__) . '/config.php'))
+if (!file_exists(__DIR__ . '/config.php'))
 	die('config file not existing');
 
 $commands_to_check = array('pdftohtml', 'antiword', 'convert');

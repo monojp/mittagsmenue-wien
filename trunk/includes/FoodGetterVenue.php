@@ -1,8 +1,8 @@
 <?php
 
-require_once('includes.php');
-//require_once('CacheHandler_File.php');
-require_once('CacheHandler_MySql.php');
+require_once(__DIR__ . '/includes.php');
+//require_once(__DIR__ . '/CacheHandler_File.php');
+require_once(__DIR__ . '/CacheHandler_MySql.php');
 
 define('DIRECT_SHOW_MAX_LENGTH', 256);
 

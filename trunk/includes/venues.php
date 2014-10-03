@@ -1,6 +1,6 @@
 <?php
 
-require_once('FoodGetterVenue.php');
+require_once(__DIR__ . '/FoodGetterVenue.php');
 
 /*
  * loads all venue classes from the venues dir
