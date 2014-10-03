@@ -567,7 +567,7 @@ function date_from_offset($offset) {
 	}
 }
 
-function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
+function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $entity_encode = true) {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 	global $dateOffset;
@@ -607,11 +607,12 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 			if (empty($foodSingle) || mb_strlen($foodSingle) < 3)
 				continue;
 
-			$foodSingle_slashes = "\"$foodSingle\"";
-			$url = "statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
+			$foodSingle_clean = htmlspecialchars($foodSingle);
+			$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
 			if (isset($_GET['minimal']))
 				$url .= '&minimal';
-			$replace_pairs[$foodSingle] = "<a class='$a_class' title='Statistik zu $foodSingle_slashes' href='$url'>$foodSingle</a>";
+			$url = $entity_encode ? htmlspecialchars($url) : $url;
+			$replace_pairs[$foodSingle] = "<a class='{$a_class}' title='Statistik zu {$foodSingle_clean}' href='{$url}'>{$foodSingle_clean}</a>";
 		}
 		// replace via strtr and built replace_pairs to avoid
 		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
@@ -619,11 +620,12 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	}
 	// if nothing found, replace whole string with link to stats
 	if (empty($replace_pairs)) {
-		$string_slashes = "\"$string\"";
-		$url = "statistics.php?date=$date&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
+		$string_clean  = htmlspecialchars($string_clean);
+		$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
 		if (isset($_GET['minimal']))
 			$url .= '&minimal';
-		$string = "<a class='$a_class' title='Statistik zu $string_slashes' href='$url'>$string</a>";
+		$url = $entity_encode ? htmlspecialchars($url) : $url;
+		$string = "<a class='{$a_class}' title='Statistik zu {$string_clean}' href='{$url}'>{$string_clean}</a>";
 	}
 
 	return $string;
@@ -708,13 +710,13 @@ function build_minimal_url() {
 	global $dateOffset;
 	$url = '?minimal';
 	if (isset($dateOffset))
-		$url .= '&amp;date=' . date_from_offset($dateOffset);
+		$url .= '&amp;date=' . urlencode(date_from_offset($dateOffset));
 	if (isset($_GET['keyword']))
-		$url .= '&amp;keyword=' . $_GET['keyword'];
+		$url .= '&amp;keyword=' . urlencode($_GET['keyword']);
 	if (isset($_GET['food']))
-		$url .= '&amp;food=' . $_GET['food'];
+		$url .= '&amp;food=' . urlencode($_GET['food']);
 	if (isset($_GET['action']))
-		$url .= '&amp;action=' . $_GET['action'];
+		$url .= '&amp;action=' . urlencode($_GET['action']);
 	if (isset($_GET['html']) || isset($_GET['html/']))
 		$url .= '&amp;html';
 	return $url;

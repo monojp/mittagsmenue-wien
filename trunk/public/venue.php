@@ -5,6 +5,8 @@
 
 	session_write_close();
 
+	header("Content-Type: application/json; charset=UTF-8");
+
 	// --------------
 	// handle actions
 	$classname = get_var('classname');

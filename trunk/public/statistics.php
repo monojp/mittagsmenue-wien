@@ -17,9 +17,8 @@ else if (isset($_GET['keyword']))
 	$keyword = mb_strtolower(trim($_GET['keyword']));
 // no (venue) keyword => redirect
 if (empty($keyword)) {
-	$server = $_SERVER['SERVER_NAME'];
 	header("HTTP/1.0 403 Forbidden");
-	header("Location: http://$server");
+	header("Location: http://{$_SERVER['SERVER_NAME']}");
 	exit;
 }
 // get food keyword (search term)
@@ -28,11 +27,12 @@ if (isset($_POST['food']))
 	$foodKeyword = mb_strtolower(trim($_POST['food']));
 else if (isset($_GET['food']))
 	$foodKeyword = mb_strtolower(trim($_GET['food']));
+$foodKeyword = htmlspecialchars($foodKeyword);
 
 $errors = array();
 // input checks
 if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $keyword))
-	$errors[] = 'Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, ê, è, é, û, <, >)';
+	$errors[] = htmlspecialchars('Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, ê, è, é, û, <, >)');
 
 // get data from cache
 if (empty($errors)) {
@@ -56,7 +56,7 @@ if (empty($errors)) {
 		shuffle_assoc($compositionsAbsolute);
 }
 
-echo "<h1>Statistik für <span style='color: red'>$keyword</span>:</h1>";
+echo "<h1>Statistik für <span style='color: red'>{$keyword}</span>:</h1>";
 
 // show minimal (no JS) site notice
 if (isset($_GET['minimal'])) {
@@ -65,12 +65,12 @@ if (isset($_GET['minimal'])) {
 }
 
 $date = date_from_offset($dateOffset);
-echo "<a href='/?date=$date'>Zurück zur Übersicht</a>";
+echo "<a href='/?date={$date}'>Zurück zur Übersicht</a>";
 echo '<br /><br />';
 
 $action = htmlspecialchars($_SERVER['REQUEST_URI']);
-echo "Stichwort-Suche: <form action='$action' method='post'>
-	<input type='search' name='food' value='$foodKeyword' />
+echo "Stichwort-Suche: <form action='{$action}' method='post'>
+	<input type='search' name='food' value='{$foodKeyword}' />
 </form>";
 
 if (!empty($datasetSize)) {
@@ -81,7 +81,7 @@ if (!empty($datasetSize)) {
 	if (empty($foodKeyword))
 		echo '<h2>Häufigkeiten</h2>';
 	else
-		echo '<h2>Häufigkeiten bezogen auf "' . $foodKeyword . '"</h2>';
+		echo "<h2>Häufigkeiten bezogen auf \"{$foodKeyword}\"</h2>";
 	arsort($foods);
 	if (!isset($_GET['minimal']))
 		echo '<table id="table_ingredients" class="stats" style="display: none">';
@@ -95,18 +95,16 @@ if (!empty($datasetSize)) {
 	foreach ($foods as $food => $amount) {
 		$food_dates = 'Daten: ' . implode(', ', format_date($dates[$food], 'd.m.Y'));
 		$url = htmlspecialchars('statistics.php?date=' . $date . '&keyword=' . urlencode($keyword) . '&food=' . urlencode($food));
-		// dirty encode & character
-		// can't use htmlspecialchars here, because we need those ">" and "<"
-		$food = str_replace("&", "&amp;", $food);
+		$food_clean = htmlspecialchars($food);
 		echo "<tr>
 			<td>
-				<a href='$url'>$food</a>
+				<a href='$url'>{$food_clean}</a>
 			</td>
 			<td>
-				<a href='javascript:void(0)' title='$food_dates'>Anzeigen</a>
+				<a href='javascript:void(0)' title='{$food_dates}' onclick='alert($(this).attr(\"title\"))'>Anzeigen</a>
 			</td>
 			<td class='center'>
-				$amount
+				{$amount}
 			</td>
 		</tr>";
 	}
@@ -128,18 +126,15 @@ if (!empty($datasetSize)) {
 
 		// mark each ingredient by an href linking to search
 		$food = create_ingredient_hrefs($food, $keyword);
-		// dirty encode & character
-		// can't use htmlspecialchars here, because we need those ">" and "<"
-		$food = str_replace("&", "&amp;", $food);
 		echo "<tr>
 			<td>
-				$food
+				{$food}
 			</td>
 			<td>
-				<a href='javascript:void(0)' title='$dates'>Anzeigen</a>
+				<a href='javascript:void(0)' title='{$dates}' onclick='alert($(this).attr(\"title\"))'>Anzeigen</a>
 			</td>
 			<td class='center'>
-				$amount
+				{$amount}
 			</td>
 		</tr>";
 	}
@@ -160,9 +155,9 @@ else {
 ?>
 <script type="text/javascript">
 	head.ready('scripts', function() {
-		$('#table_ingredients').dynatable();
+		$('#table_ingredients').dataTable();
 		$('#table_ingredients').show();
-		$('#table_compositions').dynatable();
+		$('#table_compositions').dataTable();
 		$('#table_compositions').show();
 
 		$('#loader_stats').hide();
