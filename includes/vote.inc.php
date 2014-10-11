@@ -190,8 +190,20 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 					$venueTmp = new $venue_class;
 					$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venueTmp->title) . '</a>';
 				}
-				else
-					$venue_title = '<a href="' . nearplace_cache_search($venue_class)['website'] . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
+				else {
+					// query nearplace cache (finds fake venues)
+					$website = nearplace_cache_search($venue_class);
+					$website = isset($website['website']) ? $website['website'] : null;
+					// query nearplace details cache (finds already clicked on real venues)
+					if ($website === null) {
+						$website = nearplace_details_cache_search($venue_class);
+						$website = isset($website['website']) ? $website['website'] : null;
+					}
+					// google fallback
+					if ($website === null)
+						$website = 'https://www.google.com/search?q=' . urlencode($venue_class);
+					$venue_title = '<a href="' . $website . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
+				}
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
@@ -208,8 +220,20 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 					$venueTmp = new $venue_class;
 					$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venueTmp->title) . '</a>';
 				}
-				else
-					$venue_title = '<a href="' . nearplace_cache_search($venue_class)['website'] . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
+				else {
+					// query nearplace cache (finds fake venues)
+					$website = nearplace_cache_search($venue_class);
+					$website = isset($website['website']) ? $website['website'] : null;
+					// query nearplace details cache (finds already clicked on real venues)
+					if ($website === null) {
+						$website = nearplace_details_cache_search($venue_class);
+						$website = isset($website['website']) ? $website['website'] : null;
+					}
+					// google fallback
+					if ($website === null)
+						$website = 'https://www.google.com/search?q=' . urlencode($venue_class);
+					$venue_title = '<a href="' . $website . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venue_class) . '</a>';
+				}
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";

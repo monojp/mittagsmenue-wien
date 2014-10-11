@@ -62,6 +62,19 @@ $custom_venues = array(
 
 // searches for venue data in the nearplaces cache
 // returns null if nothing found
+function nearplace_details_cache_search($name) {
+	$data = details_cache_read(null, null);
+	foreach ((array)$data as $dataset) {
+		foreach ((array)$dataset as $venue) {
+			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false)
+				return $venue;
+		}
+	}
+	return null;
+}
+
+// searches for venue data in the nearplaces cache
+// returns null if nothing found
 function nearplace_cache_search($name) {
 	$data = nearplace_cache_read(null, null, null);
 	foreach ((array)$data as $dataset) {
@@ -241,7 +254,9 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner', 'NIPPON YA Handels',
 			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler', 'pentahotel Vienna', 'Rudi\'s Beisl',
 			'Café Rüdigerhof', 'Cafe Siebenbrunnen', 'Café Wortner Kaffeehaus', 'Wieden Bräu', 'Cafe Savoy', 'Frascati Pizzeria Gelateria', 'Café Ritter',
-			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub',
+			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub', 'Restaurant Goldene Glocke', 'Tchibo Filiale',
+			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
+			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski'
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'

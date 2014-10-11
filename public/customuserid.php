@@ -2,9 +2,6 @@
 
 	require_once('../includes/customuserid.inc.php');
 
-	header("Vary: Accept-Encoding");
-	header("Content-Type: text/html; charset=UTF-8");
-
 	// disallow access for extern ips; even with valid userid
 	if (!is_intern_ip()) {
 		echo json_encode(array('alert' => 'Zugriff verweigert!'));
