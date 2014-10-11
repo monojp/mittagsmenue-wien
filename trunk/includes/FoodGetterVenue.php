@@ -276,7 +276,6 @@ abstract class FoodGetterVenue {
 											"dateOffset": "' . $this->dateOffset . '",
 											"date": "'. $date_GET . '"
 										},
-										dataType: "json",
 										success: function(result) {
 											$("#' . $CSSid . '_data").html(result);
 										},

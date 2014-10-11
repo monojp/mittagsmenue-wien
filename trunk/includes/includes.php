@@ -15,7 +15,7 @@ session_set_cookie_params(3 * 60, '/', $server_name, false, true);
 session_start();
 
 header("Vary: Accept-Encoding");
-header("Content-Type: application/xhtml+xml; charset=UTF-8");
+header("Content-Type: text/html; charset=UTF-8");
 //header("Content-Type: text/html; charset=UTF-8");
 
 
@@ -567,7 +567,7 @@ function date_from_offset($offset) {
 	}
 }
 
-function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $entity_encode = true) {
+function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 	global $dateOffset;
@@ -607,12 +607,10 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $enti
 			if (empty($foodSingle) || mb_strlen($foodSingle) < 3)
 				continue;
 
-			$foodSingle_clean = htmlspecialchars($foodSingle);
 			$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
 			if (isset($_GET['minimal']))
 				$url .= '&minimal';
-			$url = $entity_encode ? htmlspecialchars($url) : $url;
-			$replace_pairs[$foodSingle] = "<a class='{$a_class}' title='Statistik zu {$foodSingle_clean}' href='{$url}'>{$foodSingle_clean}</a>";
+			$replace_pairs[$foodSingle] = "<a class='{$a_class}' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle}</a>";
 		}
 		// replace via strtr and built replace_pairs to avoid
 		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
@@ -620,12 +618,10 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $enti
 	}
 	// if nothing found, replace whole string with link to stats
 	if (empty($replace_pairs)) {
-		$string_clean  = htmlspecialchars($string_clean);
 		$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
 		if (isset($_GET['minimal']))
 			$url .= '&minimal';
-		$url = $entity_encode ? htmlspecialchars($url) : $url;
-		$string = "<a class='{$a_class}' title='Statistik zu {$string_clean}' href='{$url}'>{$string_clean}</a>";
+		$string = "<a class='{$a_class}' title='Statistik zu {$string}' href='{$url}'>{$string}</a>";
 	}
 
 	return $string;

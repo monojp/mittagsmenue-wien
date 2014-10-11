@@ -456,7 +456,7 @@ function handle_href_reference_details(id, reference, name, try_count) {
 				window.open(result.result.website, '_blank');
 			// now website open google search
 			else
-				window.open('https://www.google.com/#q=' + name, '_blank');
+				window.open('https://www.google.com/search?q=' + name, '_blank');
 		},
 		error: function() {
 			// retry
@@ -473,8 +473,8 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 		type: 'POST',
 		url:  'nearplaces.php',
 		data: {
-			//'action'     : 'nearbysearch_staged', // takes so long, is it worth it?
-			'action'     : 'nearbysearch_full',
+			'action'     : 'nearbysearch_staged', // takes so long, is it worth it?
+			//'action'     : 'nearbysearch_full',
 			'lat'        : lat,
 			'lng'        : lng,
 			'radius'     : radius,
@@ -505,9 +505,9 @@ function init_venues_alt() {
 	$('#table_voting_alt').hide();
 	$('#div_voting_alt_loader').show();
 
-	// get venues in 1000 - user distance radius
+	// get venues in 500 - 1000 distance radius
 	var results = new Array();
-	get_alt_venues(lat, lng, 1000, $('#distance').val(), function (results) {
+	get_alt_venues(lat, lng, 500, 1000, function (results) {
 		$('#table_voting_alt').dataTable().fnDestroy();
 		$('#table_voting_alt').dataTable({
 			data: results,
