@@ -90,6 +90,9 @@ function nearplace_cache_search($name) {
  * reads an entry from the details cache
  */
 function details_cache_read($id, $reference) {
+	// do nothing for custom nearplace venue
+	if ($id < 0)
+		return null;
 	if (!file_exists(DETAILS_CACHE))
 		return null;
 	else {
@@ -122,6 +125,9 @@ function details_cache_read($id, $reference) {
  * writes an entry in the details cache
  */
 function details_cache_write($id, $reference, $cache_entry) {
+	// do nothing for custom nearplace venue
+	if ($id < 0)
+		return null;
 	if (!file_exists(DETAILS_CACHE))
 		$data = array();
 	else {
