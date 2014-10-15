@@ -278,8 +278,10 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 		$html .= '</table>';
 
 		// top ratings
+		// last changed date
+		$access_time = date('H:i', $votes['access']);
 		$html .= '<table style="border-spacing: 5px">';
-		$html .= '<tr><td><b>Ranking:</b></td></tr>';
+		$html .= "<tr><td><b>Ranking (<span title='Letzte Änderung'>${access_time}</span>):</b></td></tr>";
 		$cnt = 1;
 		// get all sane rating count
 		$all_sane_rating_cnt = 0;
