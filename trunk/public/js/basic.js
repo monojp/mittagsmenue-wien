@@ -348,7 +348,7 @@ function setDistance(distance) {
 function showLocation(el) {
 	// current location
 	var latlng = $('#lat').html() + "," + $('#lng').html();
-	var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="+latlng+"&amp;zoom=15&amp;language=de&amp;size=400x300&amp;sensor=false"+
+	var img_url = "https://maps.googleapis.com/maps/api/staticmap?center="+latlng+"&amp;zoom=15&amp;language=de&amp;size=400x300&amp;sensor=false"+
 	"&amp;markers=color:red|"+latlng;
 
 	// marker for each venue
