@@ -76,7 +76,8 @@ class Bierometer extends FoodGetterVenue {
 	function parse_multi($dataTmp) {
 		$posStart = mb_strpos($dataTmp, 'Menü 1');
 		$posEnd   = mb_strpos($dataTmp, 'Menü 10', $posStart);
-		$posEnd   = mb_strpos($dataTmp, 'table', $posEnd);
+		if ($posEnd !== false)
+			$posEnd   = mb_strpos($dataTmp, 'table', $posEnd);
 
 		// get all 10 foods
 		if ($posStart === false || $posEnd === false)
