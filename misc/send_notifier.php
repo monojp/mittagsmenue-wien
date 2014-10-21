@@ -9,7 +9,7 @@ function wrap_in_email_html($body, $custom_userid_access_url) {
 		cursor: pointer;
 		color: inherit ! important;
 		background-color: inherit;
-		}</style><title>Voting</title><meta charset="UTF-8"/></head><body>';
+		}</style><meta charset="UTF-8"/></head><body>';
 	$html .= $body;
 	$html .= '<br />';
 	$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}' style='font-weight: bold'>{$custom_userid_access_url}</a></div>";
