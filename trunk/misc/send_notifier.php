@@ -58,6 +58,7 @@
 				background-color: inherit;
 				}</style><title>Voting</title><meta charset="UTF-8"/></head><body>';
 			$html .= vote_summary_html($votes, true, false);
+			$html .= '<br />';
 			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}'>{$custom_userid_access_url}</a></div>";
 			$html .= '</body></html>';
 			$html  = html_compress($html);
@@ -76,6 +77,7 @@
 				background-color: inherit;
 				}</style><title>Voting</title><meta charset="UTF-8"/></head><body>';
 			$html .= "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
+			$html .= '<br />';
 			$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}'>{$custom_userid_access_url}</a></div>";
 			$html .= '</body></html>';
 			$html  = html_compress($html);
