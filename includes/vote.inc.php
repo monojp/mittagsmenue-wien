@@ -222,7 +222,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			foreach ($upVotes as &$venue_class) {
 				$website = getWebsiteFromVenueClass($venue_class);
 				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_title = "<a href='${website}' target='_blank' title='Homepage' style='color: inherit ! important'>${title}</a>";
+				$venue_title = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
@@ -237,7 +237,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			foreach ($downVotes as &$venue_class) {
 				$website = getWebsiteFromVenueClass($venue_class);
 				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_title = "<a href='${website}' target='_blank' title='Homepage' style='color: inherit ! important'>${title}</a>";
+				$venue_title = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
 					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
@@ -297,7 +297,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			foreach ($venues as &$venue_class) {
 				$website = getWebsiteFromVenueClass($venue_class);
 				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_class = "<a href='${website}' target='_blank' title='Homepage' style='color: inherit ! important'>${title}</a>";
+				$venue_class = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
 			}
 			unset($venue_class);
 
@@ -320,11 +320,12 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				foreach ((array)$venues as $venue_class) {
 					if (class_exists($venue_class)) {
 						$venueTmp = new $venue_class;
-						$html_menu .= "<div style='margin: 5px'><span style='font-weight: bold'>{$venueTmp->title}</span>{$venueTmp->getMenuData()}</div>";
+						$html_menu .= "<div style='margin: 10px 5px'><span style='font-weight: bold'>{$venueTmp->title}</span>{$venueTmp->getMenuData()}</div>";
 					}
 				}
 			}
 			if (isset($html_menu)) {
+				$html .= '<br />';
 				$html .= '<div style="margin: 5px; font-weight: bold">Menüs:</div>';
 				$html .= $html_menu;
 			}
