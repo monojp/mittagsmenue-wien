@@ -56,10 +56,6 @@
 				exit;
 			}
 
-			// delete special vote if set and no user comment
-			if (isset($votes['venue'][$ip]['special']) && in_array($votes['venue'][$ip]['special'], array('Egal', 'Verweigerung')))
-				unset($votes['venue'][$ip]['special']);
-
 			$votes['venue'][$ip][$identifier] = 'up';
 			ksort($votes['venue'][$ip]);
 
@@ -85,10 +81,6 @@
 				exit;
 			}
 
-			// delete special vote if set and no user comment
-			if (isset($votes['venue'][$ip]['special']) && in_array($votes['venue'][$ip]['special'], array('Egal', 'Verweigerung')))
-				unset($votes['venue'][$ip]['special']);
-
 			$votes['venue'][$ip][$identifier] = 'down';
 			ksort($votes['venue'][$ip]);
 
@@ -113,9 +105,6 @@
 				echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
 				exit;
 			}
-
-			// delete other votes
-			unset($votes['venue'][$ip]);
 
 			$votes['venue'][$ip]['special'] = $identifier;
 			ksort($votes['venue'][$ip]);

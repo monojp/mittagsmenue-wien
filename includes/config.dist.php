@@ -60,4 +60,6 @@ if (date('N') == 5)
 else
 	$voting_over_time = strtotime('11:50');
 
+$tracking_code = "";
+
 ?>

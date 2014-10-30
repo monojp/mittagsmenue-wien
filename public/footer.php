@@ -27,7 +27,7 @@ if (META_DESCRIPTION)
 $key_desc = array_unique($key_desc);
 echo '<br /><br />Keywords: ' . implode(', ', $key_desc);
 
-echo '<br /><br /></body></html>';
+echo "<br /><br />${tracking_code}</body></html>";
 
 // write custom compressed output buffer
 ob_end_flush();
