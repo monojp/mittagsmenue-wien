@@ -95,6 +95,10 @@ function custom_userid_generate(try_count) {
 
 // sends vote action (vote_up, vote_down, vote_get) and identifier (delete, restaurant name, ..) to server
 function vote_helper(action, identifier, note, try_count) {
+	// piwik track
+	if (typeof _paq != 'undefined' && action != 'vote_get')
+		_paq.push(['trackEvent', 'Voting', action, identifier, note]);
+	// ajax call
 	$.ajax({
 		type: "POST",
 		url:  'vote.php',
