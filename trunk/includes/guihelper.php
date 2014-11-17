@@ -97,6 +97,18 @@ function get_alt_venue_and_vote_setting_opener_html() {
 	return "<div class='subheader_div'>$data</div>";
 }
 
+function get_piwik_user_id_script() {
+	$userId = ip_anonymize();
+	$userId = (stripos($userId, 'extern') !== false) ? null : $userId;
+	// set piwik user id via js, output html
+	return '
+		<script type="text/javascript">
+			var _paq = _paq || [];
+			_paq.push(["setUserId", "' . $userId . '"]);
+		</script>
+	';
+}
+
 function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
 
@@ -130,12 +142,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 		';
 	}
 
-	// set piwik user id via js, output html
 	return '
-		<script type="text/javascript">
-			var _paq = _paq || [];
-			_paq.push(["setUserId", "' . ip_anonymize() . '"]);
-		</script>
 		<div style="display: none" id="userid">' . $custom_userid . '</div>
 		<div id="setAlternativeVenuesDialog" class="hidden">
 			<fieldset>

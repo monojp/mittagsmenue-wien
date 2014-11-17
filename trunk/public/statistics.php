@@ -63,6 +63,10 @@ if (isset($_GET['minimal'])) {
 	echo get_minimal_site_notice_html();
 	echo '<br /><br />';
 }
+else {
+	// piwik user id script
+	echo get_piwik_user_id_script();
+}
 
 $date = date_from_offset($dateOffset);
 echo "<a href='/?date={$date}'>Zurück zur Übersicht</a>";
