@@ -29,6 +29,7 @@ abstract class FoodGetterVenue {
 	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
 	protected $price_nested_info = null;
+	private $CSSid = null;
 
 	// constructor
 	// set date offset via get parameter
@@ -41,6 +42,8 @@ abstract class FoodGetterVenue {
 		// fix wrong lat/lng values
 		$this->addressLat = str_replace(',', '.', $this->addressLat);
 		$this->addressLng = str_replace(',', '.', $this->addressLng);
+
+		$this->CSSid = 'id_' . md5($this->dataSource);
 	}
 
 	// overwrite in inherited class
@@ -70,6 +73,32 @@ abstract class FoodGetterVenue {
 		$this->dataFromCache = $cacheNew->getFromCache($this->date, $this->price, $this->data);
 	}
 
+	private function get_ajax_venue_code($date_GET) {
+		return '
+			$.ajax({
+				type: "POST",
+				url:  "venue.php",
+				data: {
+					"classname": "' . get_class($this) . '",
+					"timestamp": "' . $this->timestamp . '",
+					"dateOffset": "' . $this->dateOffset . '",
+					"date": "'. $date_GET . '"
+				},
+				success: function(result) {
+					$("#' . $this->CSSid . '_data").html(result);
+				},
+				error: function() {
+					var errMsg = $(document.createElement("span"));
+					errMsg.attr("class", "error");
+					errMsg.html("Fehler beim Abfragen der Daten :(");
+					errMsg.prepend($(document.createElement("br")));
+					$("#' . $this->CSSid . '_data").empty();
+					$("#' . $this->CSSid . '_data").append(errMsg);
+				}
+			});
+		';
+	}
+
 	// main methode which will be called
 	// queries the datasource for the menu
 	// if a filterword is detected the line will be marked
@@ -78,6 +107,7 @@ abstract class FoodGetterVenue {
 		global $cacheDataExplode;
 		global $cacheDataIgnore;
 		global $explodeNewLines;
+		global $date_GET;
 
 		// query cache
 		$this->cacheRead();
@@ -201,7 +231,24 @@ abstract class FoodGetterVenue {
 			}
 		}
 		else {
-			$return .= '<br /><span class="error">Leider nichts gefunden :(</span><br />';
+			// do randomized ajax reloads (60 - 120 seconds) of menu data
+			$reload_code = '
+				<script type="text/javascript">
+					function reload_' . $this->CSSid . '() {
+						var id = "' . $this->CSSid . '_data";
+						$("#" + id).html(\'<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />\');
+						' . $this->get_ajax_venue_code($date_GET) . '
+					}
+					function set_rand_reload_' . $this->CSSid . '() {
+						setTimeout(function() {
+							reload_' . $this->CSSid . '();
+						}, Math.floor((Math.random() * 60) + 60) * 1000);
+					}
+					set_rand_reload_' . $this->CSSid . '();
+				</script>
+				<a href="javascript:void(0)" onclick="reload_' . $this->CSSid . '()">aktualisieren</a>
+			';
+			$return .= '<br /><span class="error">Leider nichts gefunden :( ' . $reload_code . '</span><br />';
 			$return .= "Speisekarte: <a href='{$this->dataSource}' target='_blank'>Link</a>";
 		}
 
@@ -214,15 +261,13 @@ abstract class FoodGetterVenue {
 
 		$string = '';
 
-		$CSSid = 'id_' . md5($this->dataSource);
-
 		// if minimal (JS free) site requested => show venues immediately
 		if (!isset($_GET['minimal']))
 			$attributeStyle = 'display: none';
 		else
 			$attributeStyle = '';
 
-		$string .= "<div id='{$CSSid}' class='venueDiv' style='{$attributeStyle}'>";
+		$string .= "<div id='{$this->CSSid}' class='venueDiv' style='{$attributeStyle}'>";
 		// hidden lat/lng spans
 		if (!isset($_GET['minimal'])) {
 			$string .= "<span class='hidden lat'>{$this->addressLat}</span>";
@@ -262,32 +307,12 @@ abstract class FoodGetterVenue {
 			// new data getter via ajax
 			else
 				$string .= '
-					<span id="' . $CSSid . '_data">
+					<span id="' . $this->CSSid . '_data">
 						<script type="text/javascript">
 							head.ready("scripts", function() {
 								if (jQuery.inArray("' . get_class($this) . '", venues_ajax_query) == -1) {
 									venues_ajax_query.push("' . get_class($this) . '");
-									$.ajax({
-										type: "POST",
-										url:  "venue.php",
-										data: {
-											"classname": "' . get_class($this) . '",
-											"timestamp": "' . $this->timestamp . '",
-											"dateOffset": "' . $this->dateOffset . '",
-											"date": "'. $date_GET . '"
-										},
-										success: function(result) {
-											$("#' . $CSSid . '_data").html(result);
-										},
-										error: function() {
-											var errMsg = $(document.createElement("span"));
-											errMsg.attr("class", "error");
-											errMsg.html("Fehler beim Abfragen der Daten :(");
-											errMsg.prepend($(document.createElement("br")));
-											$("#' . $CSSid . '_data").empty();
-											$("#' . $CSSid . '_data").append(errMsg);
-										}
-									});
+									' . $this->get_ajax_venue_code($date_GET) . '
 								}
 							});
 						</script>
