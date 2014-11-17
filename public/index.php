@@ -21,6 +21,8 @@
 		echo get_note_dialog_html();
 		// voting setting dialog
 		echo get_alt_venue_and_vote_setting_dialog();
+		// piwik user id script
+		echo get_piwik_user_id_script();
 	}
 
 	// write voteable for JS
