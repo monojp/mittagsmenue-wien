@@ -58,6 +58,18 @@ $custom_venues = array(
 		'website' => 'https://plus.google.com/106777516565797933298/about',
 		'reference' => -1,
 	),
+	array(
+		'id' => -5,
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.192429,
+				'lng' => 16.360060,
+			),
+		),
+		'name' => 'Flying Diner',
+		'website' => 'http://www.flying-diner.com/cms/flying-diner-stores/filiale-1050/',
+		'reference' => -1,
+	)
 );
 
 // searches for venue data in the nearplaces cache
@@ -262,7 +274,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Café Rüdigerhof', 'Cafe Siebenbrunnen', 'Café Wortner Kaffeehaus', 'Wieden Bräu', 'Cafe Savoy', 'Frascati Pizzeria Gelateria', 'Café Ritter',
 			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub', 'Restaurant Goldene Glocke', 'Tchibo Filiale',
 			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
-			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski'
+			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
