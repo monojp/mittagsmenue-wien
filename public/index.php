@@ -69,6 +69,7 @@
 		new MensaSchroedinger(),
 		new Woracziczky(),
 		new Bierometer(),
+		new CoteSud(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;
