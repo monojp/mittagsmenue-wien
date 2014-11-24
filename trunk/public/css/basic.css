@@ -2,39 +2,25 @@
 
 body {
 	font-family: sans-serif;
-	/*line-height: 1.28;*/
 	font-size: 0.9em;
 	margin: 5px;
 }
-a {
-	text-decoration: none;
+a, a:visited {
+	text-decoration: underline;
 	cursor: pointer;
-	color: inherit;
-	background-color: inherit;
-}
-a:not(.ui-state-default):not(.menuData) {
-	text-decoration: none;
-	cursor: pointer;
-	color: #36c ! important;
+	color: #36c;
 	background-color: inherit;
 }
 a:hover {
 	text-decoration: underline;
-	cursor: pointer;
 	text-shadow: 0px 0px 10px lightgray;
 }
-a:hover:not(.ui-state-default):not(.menuData), a:focus:not(.ui-state-default):not(.menuData) {
-	text-decoration: underline;
-	cursor: pointer;
-	text-shadow: 0px 0px 10px lightgray;
-	color: #36c ! important;
-	background-color: inherit;
+.no_decoration {
+	text-decoration: none ! important;
+	color: inherit ! important;
 }
-a:visited:not(.ui-state-default):not(.menuData) {
-	text-decoration: none;
-	cursor: pointer;
-	color: #36c ! important;
-	background-color: inherit;
+.color_inherit {
+	color: inherit ! important;
 }
 #venueContainer {
 	margin-top: 5px;
