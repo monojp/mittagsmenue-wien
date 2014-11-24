@@ -201,8 +201,8 @@ abstract class FoodGetterVenue {
 			// can't use htmlspecialchars here, because we need those ">" and "<"
 			$data = str_replace("&", "&amp;", $data);
 
-			$angebot_link = "<a class='menuData dataSource' href='{$this->dataSource}' target='_blank' title='Datenquelle'>Angebot:</a>";
-			$return .= "<div class='menu'>{$angebot_link} <span class='menuData'>{$data}</span></div>";
+			$angebot_link = "<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle'>Angebot:</a>";
+			$return .= "<div class='menu '>{$angebot_link} <span class='menuData '>{$data}</span></div>";
 
 			if ($this->price && strpos($this->data, '€') === FALSE) {
 				if (!is_array($this->price)) {

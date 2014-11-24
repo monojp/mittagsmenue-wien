@@ -610,7 +610,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 			$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
 			if (isset($_GET['minimal']))
 				$url .= '&minimal';
-			$replace_pairs[$foodSingle] = "<a class='{$a_class}' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle}</a>";
+			$replace_pairs[$foodSingle] = "<a class='{$a_class} no_decoration' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle}</a>";
 		}
 		// replace via strtr and built replace_pairs to avoid
 		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
@@ -621,7 +621,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 		$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
 		if (isset($_GET['minimal']))
 			$url .= '&minimal';
-		$string = "<a class='{$a_class}' title='Statistik zu {$string}' href='{$url}'>{$string}</a>";
+		$string = "<a class='{$a_class} no_decoration' title='Statistik zu {$string}' href='{$url}'>{$string}</a>";
 	}
 
 	return $string;
