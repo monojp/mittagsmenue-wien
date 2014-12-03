@@ -9,12 +9,17 @@ class Ausklang extends FoodGetterVenue {
 		$this->addressLng = '16.3906608';
 		$this->url = 'http://ausklang.at/';
 		$this->dataSource = 'http://ausklang.at/essen/menue.html';
+		$this->menu = 'http://ausklang.at/essen.html';
 		$this->statisticsKeyword = 'ausklang';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'Vorspeise oder Dessert / Vorspeise und Dessert';
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

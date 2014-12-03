@@ -9,11 +9,16 @@ class HaasBeisl extends FoodGetterVenue {
 		$this->addressLng = '16.3602763';
 		$this->url = 'http://www.haasbeisl.at/';
 		$this->dataSource = 'http://www.haasbeisl.at/pdf/aktuelles.pdf';
+		$this->menu = 'http://www.haasbeisl.at/pdf/tageskarte.pdf';
 		$this->statisticsKeyword = 'haasbeisl';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

@@ -9,11 +9,16 @@ class DeliciousMonster extends FoodGetterVenue {
 		$this->addressLng = '16.3720652';
 		$this->url = 'http://www.deliciousmonster.at/';
 		$this->dataSource = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/wochenkarte-delicious-monster-restaurant-wien.pdf';
+		$this->menu = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/speisekarte-lokal-1040-wien-delicious-monster.pdf';
 		$this->statisticsKeyword = 'deliciousmonster';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

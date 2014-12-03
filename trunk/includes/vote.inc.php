@@ -225,10 +225,10 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
-					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' class='no_decoration' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
+					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
 				// otherwise => add "me too" functionality
 				else if ($show_js_actions)
-					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' class='no_decoration' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
+					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
 			unset($venue_class);
@@ -240,10 +240,10 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
 				// current user => add delete functionality
 				if ($show_js_actions && $user == get_identifier_ip())
-					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' class='no_decoration' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
+					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
 				// otherwise => add "me too" functionality
 				else if ($show_js_actions)
-					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' class='no_decoration' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
+					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
 				$venue_class = $venue_title;
 			}
 			unset($venue_class);
@@ -255,13 +255,13 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			// current user => add delete functionality
 			if ($show_js_actions && $user == get_identifier_ip()) {
 				if (!empty($specialVote))
-					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" class="no_decoration" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
+					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
 				else
-					$specialVote = '<a href="javascript:void(0)" class="no_decoration" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
+					$specialVote = '<a href="javascript:void(0)" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
 			}
 			// otherwise => add "me too" functionality
 			else if ($show_js_actions && !empty($specialVote))
-				$specialVote .= " <sup title='Selbiges voten'><a href='javascript:void(0)' class='no_decoration' onclick='vote_special(\"{$specialVote}\")' style='color: red ! important'>+1</a></sup>";
+				$specialVote .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_special(\"{$specialVote}\")' style='color: red ! important'>+1</a></sup>";
 
 			// prepare data for output
 			$upVotes     = empty($upVotes)     ? '-' : implode(', ', $upVotes);

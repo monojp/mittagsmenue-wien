@@ -2,7 +2,7 @@
 	require_once('../includes/guihelper.php');
 	require_once('header.php');
 
-	define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßêèéû<>\/ -]*$/');
+	define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
 ?>
 </head>
 <body>
@@ -32,7 +32,7 @@ $foodKeyword = htmlspecialchars($foodKeyword);
 $errors = array();
 // input checks
 if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $keyword))
-	$errors[] = htmlspecialchars('Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, ê, è, é, û, <, >)');
+	$errors[] = htmlspecialchars('Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, č, ć, ê, è, é, û, <, >)');
 
 // get data from cache
 if (empty($errors)) {

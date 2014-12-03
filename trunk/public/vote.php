@@ -116,14 +116,6 @@
 			check_voting_time();
 
 			$note = trim($_POST['note']);
-			$badwords_raw = cleanText(file_get_contents('../includes/badwords'));
-			$badwords = explode("\n", $badwords_raw);
-			$badwords_noslash = explode("\n", mb_str_replace("'", '', $badwords_raw));
-			$badwords_nospace = explode("\n", mb_str_replace(' ', '', $badwords_raw));
-
-			$note = str_ireplace_array($badwords, '***', $note);
-			$note = str_ireplace_array($badwords_noslash, '***', $note);
-			$note = str_ireplace_array($badwords_nospace, '***', $note);
 
 			// check vote length
 			if (strlen($note) > VOTE_NOTE_MAX_LENGTH) {

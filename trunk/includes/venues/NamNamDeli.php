@@ -10,11 +10,16 @@ class NamNamDeli extends FoodGetterVenue {
 		$this->addressLng = '16.348016';
 		$this->url = 'http://www.nam-nam.at/restaurant/';
 		$this->dataSource = 'http://www.nam-nam.at/restaurant/wochenkarte/';
+		$this->menu = 'http://www.nam-nam.at/restaurant/menue/speisen/';
 		$this->statisticsKeyword = 'nam-nam';
 		$this->no_menu_days = array(0, 1, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

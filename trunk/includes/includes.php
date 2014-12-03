@@ -60,11 +60,14 @@ if (isset($_GET['date']) && is_string($_GET['date'])) {
 	 	$dateOffset = 1;
 }*/
 
-// calculate timestamp from offset
+// calculate timestamp from offset, use today midnight as base
+// to avoid problems with timestamps where the hours are not important but set
+$timestamp_base = strtotime(date('Y-m-d') . ' 00:00:00');
+//error_log(date('r', $timestamp_base));
 if ($dateOffset != 0)
-	$timestamp = strtotime($dateOffset . ' days');
+	$timestamp = strtotime($dateOffset . ' days', $timestamp_base);
 else
-	$timestamp = time();
+	$timestamp = time($timestamp_base);
 
 /*
  * Utils
@@ -438,9 +441,9 @@ function pdftohtml($file) {
 
 	// convert to hmtl
 	// single HTML with all pages, ignore images, no paragraph merge, no frames, force hidden text extract
-	shell_exec("pdftohtml -s -i -nomerge -noframes -hidden $tmpPath $tmpPath");
+	shell_exec("pdftohtml -s -i  -nomerge -noframes -hidden $tmpPath $tmpPath");
 
-	// parse html
+	// parse / fix html
 	$doc = new DOMDocument();
 	$doc->loadHTMLFile($tmpPath . '.html');
 	$html = $doc->saveHTML();
