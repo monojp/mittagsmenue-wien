@@ -9,11 +9,16 @@ class TasteOfIndia extends FoodGetterVenue {
 		$this->addressLng = '16.3641738';
 		$this->url = 'http://www.taste-of-india.at/';
 		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue.html';
+		$this->menu = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
 		$this->statisticsKeyword = 'taste-of-india';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

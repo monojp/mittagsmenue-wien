@@ -21,6 +21,7 @@ abstract class FoodGetterVenue {
 	protected $addressLat = null;
 	protected $addressLng = null;
 	protected $dataSource = null;
+	protected $menu = null;
 	protected $data = null;
 	protected $date = null;
 	protected $price = null;
@@ -45,6 +46,11 @@ abstract class FoodGetterVenue {
 
 		$this->CSSid = 'id_' . md5($this->dataSource);
 	}
+
+	// overwrite in inherited class
+	// provides an array of the possible today strings
+	// which are used to perform searches on the menu data
+	abstract protected function get_today_variants();
 
 	// overwrite in inherited class
 	// should parse datasource, set data, date, price, cache it and return it
@@ -227,7 +233,7 @@ abstract class FoodGetterVenue {
 					}
 				}
 				$price = implode(' / ', $this->price);
-				$return .= "Preis: <b>{$price}</b>";
+				$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank'>Speisekarte</a>)";
 			}
 		}
 		else {
@@ -248,8 +254,10 @@ abstract class FoodGetterVenue {
 				</script>
 				<a href="javascript:void(0)" onclick="reload_' . $this->CSSid . '()">aktualisieren</a>
 			';
-			$return .= '<br /><span class="error">Leider nichts gefunden :( ' . $reload_code . '</span><br />';
-			$return .= "Speisekarte: <a href='{$this->dataSource}' target='_blank'>Link</a>";
+			$return .= '<br />';
+			$return .= '<span class="error">Leider nichts gefunden :(</span>';
+			$return .= '<br />';
+			$return .= "<a href='{$this->dataSource}' target='_blank'>Mittagskarte</a> / <a href='{$this->menu}' target='_blank'>Speisekarte</a> / ${reload_code}";
 		}
 
 		return $return;

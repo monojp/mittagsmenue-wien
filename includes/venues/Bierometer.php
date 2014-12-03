@@ -10,12 +10,17 @@ class Bierometer extends FoodGetterVenue {
 		$this->addressLng = '16.358819';
 		$this->url = 'http://www.bierometer-2.at/';
 		$this->dataSource = 'http://www.bierometer-2.at/menueplan/';
+		$this->menu = 'http://www.bierometer-2.at/speisekarte/suppen-salate';
 		$this->statisticsKeyword = 'bierometer';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'ohne Suppe / mit Suppe';
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	private function parse_helper($data, $soup_output = true, &$food_counter) {
@@ -62,8 +67,11 @@ class Bierometer extends FoodGetterVenue {
 		$weekday = date('w', $this->timestamp);
 		if ($weekday == 5) // friday
 			$posEnd = mb_stripos($dataTmp, 'table', $posStart);
-		else
-			$posEnd = mb_stripos($dataTmp, date('d.m.', strtotime('+1 day', $this->timestamp)), $posStart);
+		else {
+			$posEnd = mb_stripos($dataTmp, getGermanDayNameShort(1) . date(', d.m.', strtotime('+1 day', $this->timestamp)), $posStart);
+			if (!$posEnd)
+				$posEnd = mb_stripos($dataTmp, date('d.m.', strtotime('+1 day', $this->timestamp)), $posStart);
+		}
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 
 		$data = $this->parse_helper($data, true, $food_counter);

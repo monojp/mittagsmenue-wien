@@ -13,11 +13,16 @@ class Woracziczky extends FoodGetterVenue {
 		$this->addressLng = '16.352982';
 		$this->url = 'http://www.woracziczky.at/';
 		$this->dataSource = 'https://facebook.com/WORACZICZKY';
+		$this->menu = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
 		$this->statisticsKeyword = 'woracziczky';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {
@@ -67,7 +72,7 @@ class Woracziczky extends FoodGetterVenue {
 		$this->data = $data;
 
 		// set price
-		$this->price = null;
+		$this->price = array('8,50');
 
 		// set date
 		$this->date = $today;

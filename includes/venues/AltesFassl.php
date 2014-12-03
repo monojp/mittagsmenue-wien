@@ -9,11 +9,16 @@ class AltesFassl extends FoodGetterVenue {
 		$this->addressLng = '16.3604868';
 		$this->url = 'http://www.zum-alten-fassl.at/';
 		$this->dataSource = 'http://www.zum-alten-fassl.at/mittagsmenues.html';
+		$this->menu = 'http://www.zum-alten-fassl.at/standard-karte.html';
 		$this->statisticsKeyword = 'zum-alten-fassl';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {

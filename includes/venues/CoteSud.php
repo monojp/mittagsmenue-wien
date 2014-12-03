@@ -4,11 +4,13 @@ class CoteSud extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Coté Sud';
+		$this->title_notifier = 'NEU';
 		$this->address = 'Schleifmühlgasse 8, 1040 Wien';
 		$this->addressLat = '48.196901';
 		$this->addressLng = '16.365892';
 		$this->url = 'http://www.cotesud.at/';
 		$this->dataSource = 'http://www.cotesud.at/Menu.pdf';
+		$this->menu = 'http://www.cotesud.at/Speisekarte.pdf';
 		$this->statisticsKeyword = 'cotesud';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
@@ -25,6 +27,12 @@ class CoteSud extends FoodGetterVenue {
  * 2)Paprikahuhn	mit	Reis
  */
 
+	protected function get_today_variants() {
+		$today_variants[] = getGermanDayName() . date(', d. ', $this->timestamp) . getGermanMonthName();
+		$today_variants[] = getGermanDayName() . date(', j. ', $this->timestamp) . getGermanMonthName();
+		return $today_variants;
+	}
+
 	protected function parseDataSource() {
 		/*$dataTmp = file_get_contents($this->dataSource);
 		if ($dataTmp === FALSE)
@@ -37,33 +45,41 @@ class CoteSud extends FoodGetterVenue {
 		// get validity date range
 		preg_match('/vom([\s]*[\d.]*)+bis([\s]*[\d.]*)+/', $dataTmp, $matches);
 		//error_log(print_r($matches[0], true));
-		if (!isset($matches[0]) || empty($matches[0]))
+		if (!isset($matches[0]) || empty($matches[0]) || stripos($dataTmp, getGermanMonthName()) === false)
 			return;
 		// cleanup by removing space, tabs, line feeds and dots
 		$matches[0] = preg_replace('/[.\s]/', '', $matches[0]);
-		//error_log(print_r($matches[0], true));
+		//return error_log(print_r($matches[0], true));
 		// get start and end date strings
 		$range       = array();
 		$range[0] = mb_substr($matches[0], 0, stripos($matches[0], 'bis'));
 		$range[0] = mb_substr($range[0], striposAfter($matches[0], 'vom'));
 		$range[1] = mb_substr($matches[0], striposAfter($matches[0], 'bis'));
+		//error_log($range[0]);
+		//return error_log($range[1]);
 		// complete date strings
 		foreach ($range as &$date_string) {
 			// 17 => 17.11.2014
-			if (strlen($date_string) == 2)
+			$length = strlen($date_string);
+			if ($length >= 1 && $length <= 2)
 				$date_string .= date('.m.Y', $this->timestamp);
 			// 21112014 => 21.11.2014
-			else if (strlen($date_string) == 8)
+			else if ($length == 8)
 				$date_string = preg_replace('/[\d]{2}[\d]{2}[\d]{4}/', '$1.$2.$3', $date_string);
 		}
 		unset($date_string);
+		//error_log($range[0]);
+		//return error_log($range[1]);
 		// parse date from strings
 		$range[0] = strtotime($range[0]);
 		$range[1] = strtotime($range[1]);
+		//error_log('timestamp: ' . date('r', $this->timestamp));
+		//error_log(date('r', $range[0]));
+		//return error_log(date('r', $range[1]));
 		//error_log(date('d.m.Y', $range[0]));
-		//error_log(date('d.m.Y', $range[1]));
+		//return error_log(date('d.m.Y', $range[1]));
 		// check if date is in range
-		if ($this->timestamp >= $range[1] || $this->timestamp <= $range[0])
+		if ($this->timestamp > $range[1] || $this->timestamp < $range[0])
 			return;
 
 		// fix unclean data by replacing tabs with spaces
@@ -73,10 +89,15 @@ class CoteSud extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
-		$today = getGermanDayName() . date(', d. ', $this->timestamp) . getGermanMonthName();
-		//return error_log($today);
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
 
-		$posStart = strposAfter($dataTmp, $today);
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
+		}
 		// fix pdf font bug where 'tt' turns to '#'
 		if ($posStart === false)
 			$posStart = strposAfter($dataTmp, str_replace('tt', '#', $today));
@@ -132,13 +153,26 @@ class CoteSud extends FoodGetterVenue {
 			}
 		}
 		$data = str_replace("\n", "<br />", $data);
+		//return error_log(print_r($data, true));
 		$this->data = $data;
 
 		// set date
 		$this->date = $today;
 
 		// set price
-		$this->price = array('6,90', '9,30');
+		$prices = array();
+		$startPos = striposAfter($dataTmp, 'Menü 1:');
+		$endPos   = mb_stripos($dataTmp, 'Menü 2:');
+		$prices[0] = strip_tags(mb_substr($dataTmp, $startPos, $endPos - $startPos));
+		$startPos = striposAfter($dataTmp, 'Menü 2:');
+		$prices[1] = strip_tags(mb_substr($dataTmp, $startPos));
+		foreach ($prices as &$price) {
+			$price = str_replace(array('€', 'EUR'), array('', ''), $price);
+			$price = trim($price);
+		}
+		unset($price);
+		//return error_log(print_r($prices, true));
+		$this->price = $prices;
 
 		return $this->data;
 	}
@@ -148,15 +182,17 @@ class CoteSud extends FoodGetterVenue {
 
 	public function isDataUpToDate() {
 		//return false;
-		$today = getGermanDayName() . date(', d. ', $this->timestamp) . getGermanMonthName();
+		$today_variants = $this->get_today_variants();
 
-		if ($this->date == $today)
-			return true;
-		else {
-			// fix pdf font bug where 'tt' turns to '#'
-			$today = str_replace('tt', '#', $today);
+		foreach ($today_variants as $today) {
 			if ($this->date == $today)
 				return true;
+			else {
+				// fix pdf font bug where 'tt' turns to '#'
+				$today = str_replace('tt', '#', $today);
+				if ($this->date == $today)
+					return true;
+			}
 		}
 		return false;
 	}

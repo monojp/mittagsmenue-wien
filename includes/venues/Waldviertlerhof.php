@@ -10,11 +10,16 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->addressLng = '16.358687';
 		$this->url = 'http://www.waldviertlerhof.at/';
 		$this->dataSource = 'http://www.waldviertlerhof.at/htm/wochenmenue.doc';
+		$this->menu = 'http://www.waldviertlerhof.at/htm/speisekarte.htm';
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
+	}
+
+	protected function get_today_variants() {
+		return array();
 	}
 
 	protected function parseDataSource() {
