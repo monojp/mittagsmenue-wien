@@ -65,7 +65,7 @@ class CoteSud extends FoodGetterVenue {
 				$date_string .= date('.m.Y', $this->timestamp);
 			// 21112014 => 21.11.2014
 			else if ($length == 8)
-				$date_string = preg_replace('/[\d]{2}[\d]{2}[\d]{4}/', '$1.$2.$3', $date_string);
+				$date_string = preg_replace('/([\d]{2})([\d]{2})([\d]{4})/', '$1.$2.$3', $date_string);
 		}
 		unset($date_string);
 		//error_log($range[0]);

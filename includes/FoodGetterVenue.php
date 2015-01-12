@@ -283,7 +283,7 @@ abstract class FoodGetterVenue {
 		}
 
 		// title
-		$string .= "<span class='title' title='Homepage'><a href='{$this->url}' target='_blank'>{$this->title}</a></span>";
+		$string .= "<span class='title' title='Homepage'><a href='{$this->url}' class='no_decoration' target='_blank'>{$this->title}</a></span>";
 		if ($this->title_notifier)
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		// address icon with route planner

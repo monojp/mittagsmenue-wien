@@ -12,6 +12,30 @@ $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
 
+function get_allergen_info() {
+	return '
+		<div style="font-weight: smaller">
+			<span>Allergeninformation gemäß Codex-Empfehlung:</span>
+			<div>
+				<div class="allergenDiv">A) glutenhaltiges Getreide</div>
+				<div class="allergenDiv">B) Krebstiere</div>
+				<div class="allergenDiv">C) Ei</div>
+				<div class="allergenDiv">D) Fisch</div>
+				<div class="allergenDiv">E) Erdnuss</div>
+				<div class="allergenDiv">F) Soja</div>
+				<div class="allergenDiv">G) Milch oder Laktose</div>
+				<div class="allergenDiv">H) Schalenfrüchte</div>
+				<div class="allergenDiv">L) Sellerie</div>
+				<div class="allergenDiv">M) Senf</div>
+				<div class="allergenDiv">N) Sesam</div>
+				<div class="allergenDiv">O) Sulfite</div>
+				<div class="allergenDiv">P) Lupinen</div>
+				<div class="allergenDiv">R) Weichtiere</div>
+			</div>
+		</div>
+	';
+}
+
 function get_location_opener_html() {
 	global $city;
 
