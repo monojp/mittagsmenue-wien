@@ -30,6 +30,10 @@ a:hover {
 	margin: 5px;
 	width: 420px;
 }
+.allergenDiv {
+	float: left;
+	margin-right: 1em;
+}
 .title {
 	font-weight: bold;
 	font-size: 1.5em;

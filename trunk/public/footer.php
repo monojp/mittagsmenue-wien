@@ -27,6 +27,8 @@ if (META_DESCRIPTION)
 $key_desc = array_unique($key_desc);
 echo '<br /><br />Keywords: ' . implode(', ', $key_desc);
 
+echo '<br /><br />' . get_allergen_info() . '<div style="clear:both" />';
+
 echo "<br /><br />${tracking_code}</body></html>";
 
 // write custom compressed output buffer
