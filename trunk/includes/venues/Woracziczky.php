@@ -5,6 +5,8 @@ require_once(__DIR__ . '/../includes.php');
 
 class Woracziczky extends FoodGetterVenue {
 
+	const FACEBOOK_ID = 350394680695;
+
 	function __construct() {
 		$this->title = 'Gasthaus Woracziczky';
 		//$this->title_notifier = 'UPDATE';
@@ -28,12 +30,16 @@ class Woracziczky extends FoodGetterVenue {
 	protected function parseDataSource() {
 		global $fb_app_id, $fb_app_secret;
 		$fb_helper = new FB_Helper($fb_app_id, $fb_app_secret);
-		$all_posts = $fb_helper->get_all_posts('woracziczky');
+		$all_posts = $fb_helper->get_all_posts(self::FACEBOOK_ID);
 
 		$data = $today = null;
 
 		foreach ((array)$all_posts as $post) {
-			if (!isset($post['message']) || !isset($post['created_time']))
+			if (!isset($post['message']) || !isset($post['created_time']) || !isset($post['from']))
+				continue;
+
+			// ignore user posts
+			if ($post['from']['id'] != self::FACEBOOK_ID)
 				continue;
 
 			// get wanted data out of post
