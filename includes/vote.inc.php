@@ -152,10 +152,13 @@ function getTitleFromVenueClass($venue_class) {
 function vote_summary_html($votes, $display_menus = false, $show_js_actions = true) {
 	$html = '';
 
+	// minimal => no vote actions
+	if (isset($_GET['minimal']))
+		$show_js_actions = false;
+
 	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
 		// get venue ratings
 		$venue_rating = array();
-		$anti_verweigerer = 0;
 
 		foreach ($votes['venue'] as $user => $vote_data) {
 			foreach ($vote_data as $venue => $vote) {
@@ -166,14 +169,6 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 						$venue_rating[$venue] += ($vote == 'up') ? 1 : -1;
 				}
 			}
-			if (
-				!empty($vote_data) ||
-				(isset($vote_data['special']) && cnt($vote_data) > 1)
-			)
-				if (isset($vote_data['special']) && $vote_data['special'] != 'Verweigerung')
-					$anti_verweigerer++;
-				else if (!isset($vote_data['special']))
-					$anti_verweigerer++;
 		}
 
 		// remove <= 0 rankings

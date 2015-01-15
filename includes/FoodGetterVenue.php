@@ -257,7 +257,11 @@ abstract class FoodGetterVenue {
 			$return .= '<br />';
 			$return .= '<span class="error">Leider nichts gefunden :(</span>';
 			$return .= '<br />';
-			$return .= "<a href='{$this->dataSource}' target='_blank'>Mittagskarte</a> / <a href='{$this->menu}' target='_blank'>Speisekarte</a> / ${reload_code}";
+			$return .= "<a href='{$this->dataSource}' target='_blank'>Mittagskarte</a> / <a href='{$this->menu}' target='_blank'>Speisekarte</a>";
+
+			// not minimal => reload action
+			if (!isset($_GET['minimal']))
+				$return .= " / ${reload_code}";
 		}
 
 		return $return;
