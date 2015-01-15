@@ -18,6 +18,12 @@ header("Vary: Accept-Encoding");
 header("Content-Type: text/html; charset=UTF-8");
 //header("Content-Type: text/html; charset=UTF-8");
 
+// content-security-policy headers
+// self: all content should come from the site's own domain, excluding even subdomains
+// unsafe-inline: JS and CSS may be also be inline TODO get rid of them
+$content_security_policy_value = "default-src 'self' 'unsafe-inline' 'unsafe-eval'";
+header("X-Content-Security-Policy: ${content_security_policy_value}");
+header("Content-Security-Policy: ${content_security_policy_value}");
 
 // cache 3 hours
 $seconds_to_cache = 10800;
@@ -720,5 +726,3 @@ function build_minimal_url() {
 		$url .= '&amp;html';
 	return $url;
 }
-
-?>
