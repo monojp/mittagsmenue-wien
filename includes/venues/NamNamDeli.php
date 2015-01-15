@@ -19,7 +19,11 @@ class NamNamDeli extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
+		$today_variants[] = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
+		if (date('n', $this->timestamp) == 1)
+			$today_variants[] = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' Januar';
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -31,16 +35,19 @@ class NamNamDeli extends FoodGetterVenue {
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		// date without trailing zeros
-		$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName();
-		$posStart = striposAfter($dataTmp, $today);
-		// date with trailing zeros
-		if ($posStart === false) {
-			$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName();
-			$posStart = striposAfter($dataTmp, $today);
-			if ($posStart === false)
-				return;
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
 		}
+		if ($posStart === false)
+			return;
+
 		$weekday = date('w', $this->timestamp);
 		if ($weekday == 5) // friday
 			$posEnd = mb_stripos($dataTmp, 'Daily Menu Specials', $posStart);
@@ -105,13 +112,13 @@ class NamNamDeli extends FoodGetterVenue {
 
 	public function isDataUpToDate() {
 		//return false;
-		if (
-			$this->date == getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . getGermanMonthName() ||
-			$this->date == getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . getGermanMonthName()
-		)
-			return true;
-		else
-			return false;
+		$today_variants = $this->get_today_variants();
+
+		foreach ($today_variants as $today) {
+			if ($this->date == $today)
+				return true;
+		}
+		return false;
 	}
 }
 
