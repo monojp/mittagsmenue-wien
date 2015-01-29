@@ -149,6 +149,27 @@ function getTitleFromVenueClass($venue_class) {
 		return $venue_class;
 }
 
+function votes_adapt($votes, $user, $show_js_actions = true) {
+	foreach ($votes as &$venue_class) {
+		$website = getWebsiteFromVenueClass($venue_class);
+		$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
+		$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
+		// current user => add delete functionality
+		if ($show_js_actions && $user == get_identifier_ip())
+			$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
+		// otherwise => add vote actions
+		else if ($show_js_actions) {
+			$venue_title .= ' ';
+			$venue_title .= "<sup title='Vote Up'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
+			$venue_title .= '<sup> | </sup>';
+			$venue_title .= " <sup title='Vote Down'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>-1</a></sup>";
+		}
+		$venue_class = $venue_title;
+	}
+	unset($venue_class);
+	return $votes;
+}
+
 function vote_summary_html($votes, $display_menus = false, $show_js_actions = true) {
 	$html = '';
 
@@ -213,35 +234,8 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			else
 				$row_style = '';
 
-			// replace classnames with real venue titles
-			foreach ($upVotes as &$venue_class) {
-				$website = getWebsiteFromVenueClass($venue_class);
-				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
-				// current user => add delete functionality
-				if ($show_js_actions && $user == get_identifier_ip())
-					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
-				// otherwise => add "me too" functionality
-				else if ($show_js_actions)
-					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
-				$venue_class = $venue_title;
-			}
-			unset($venue_class);
-
-			// replace classnames with real venue titles
-			foreach ($downVotes as &$venue_class) {
-				$website = getWebsiteFromVenueClass($venue_class);
-				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
-				// current user => add delete functionality
-				if ($show_js_actions && $user == get_identifier_ip())
-					$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' style='color: red ! important'>x</a></sup>";
-				// otherwise => add "me too" functionality
-				else if ($show_js_actions)
-					$venue_title .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>+1</a></sup>";
-				$venue_class = $venue_title;
-			}
-			unset($venue_class);
+			$upVotes = votes_adapt($upVotes, $user, $show_js_actions);
+			$downVotes = votes_adapt($downVotes, $user, $show_js_actions);
 
 			// cleanup other data for output
 			$specialVote = htmlspecialchars($specialVote);
