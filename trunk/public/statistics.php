@@ -159,9 +159,9 @@ else {
 ?>
 <script type="text/javascript">
 	head.ready('scripts', function() {
-		$('#table_ingredients').dataTable();
+		$('#table_ingredients').dataTable({"order": [[ 2, "desc" ]]});
 		$('#table_ingredients').show();
-		$('#table_compositions').dataTable();
+		$('#table_compositions').dataTable({"order": [[ 2, "desc" ]]});
 		$('#table_compositions').show();
 
 		$('#loader_stats').hide();
