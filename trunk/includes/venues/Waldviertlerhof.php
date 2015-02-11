@@ -9,8 +9,8 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->addressLat = '48.193692';
 		$this->addressLng = '16.358687';
 		$this->url = 'http://www.waldviertlerhof.at/';
-		$this->dataSource = 'http://www.waldviertlerhof.at/htm/wochenmenue.doc';
-		$this->menu = 'http://www.waldviertlerhof.at/htm/speisekarte.htm';
+		$this->dataSource = 'http://www.waldviertlerhof.at/assets/w4h-mittagsmenue.pdf';
+		$this->menu = 'http://www.waldviertlerhof.at/assets/w4h_speisen_getränke.pdf';
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
@@ -23,13 +23,12 @@ class Waldviertlerhof extends FoodGetterVenue {
 	}
 
 	protected function parseDataSource() {
-		$dataTmp = doctotxt($this->dataSource);
-		$dataTmp = preg_replace('/[[:blank:]]+/', ' ', $dataTmp);
-		//error_log($dataTmp);
-		//return;
+		$dataTmp = pdftohtml($this->dataSource);
 
-		if (stripos($dataTmp, 'urlaub') !== false)
-			return ($this->data = VenueStateSpecial::Urlaub);
+		/*if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);*/
+
+		//return error_log($dataTmp);
 
 		// check if current week number matches
 		$week_number = date('W', $this->timestamp);
@@ -88,5 +87,3 @@ class Waldviertlerhof extends FoodGetterVenue {
 			return false;
 	}
 }
-
-?>

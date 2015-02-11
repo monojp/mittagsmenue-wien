@@ -69,7 +69,7 @@
 		new MensaSchroedinger(),
 		new Woracziczky(),
 		//new Bierometer(),
-		new CoteSud(),
+		//new CoteSud(),
 		//new FalkensteinerStueberl(),
 	);
 	foreach ($venues as $venue) {
@@ -86,4 +86,3 @@
 	echo '<div id="noVenueFoundNotifier" style="display: none"><p>Es wurde leider nichts gefunden :(<br />Bitte ändern Sie den Ausgangsort und/oder den Umkreis.</p></div>';
 
 	require_once('footer.php');
-?>
