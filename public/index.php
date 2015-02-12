@@ -71,6 +71,7 @@
 		//new Bierometer(),
 		//new CoteSud(),
 		//new FalkensteinerStueberl(),
+		new Lambrecht(),
 	);
 	foreach ($venues as $venue) {
 		echo $venue;

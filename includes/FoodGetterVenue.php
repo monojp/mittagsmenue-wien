@@ -147,35 +147,7 @@ abstract class FoodGetterVenue {
 		else if ($data == VenueStateSpecial::UrlaubMaybe)
 			return '<br /><span class="error">Vermutlich zurzeit geschlossen wegen Urlaub</span><br />';
 
-		// break too long data via js helper
-		/*if (!isset($_GET['minimal']) && strlen($data) > DIRECT_SHOW_MAX_LENGTH) {
-			// get break position (next whitespace)
-			$break_pos = mb_strpos($data, ' ', DIRECT_SHOW_MAX_LENGTH);
-			for ($i=0; $i<10; $i++) {
-				error_log("pos: $break_pos");
-				error_log($data[$break_pos]);
-				error_log($data[$break_pos + 2]);
-				if (!$break_pos || !preg_match('/[0-9a-zA-Z ]/', $data[$break_pos]) || !preg_match('/[0-9a-zA-Z ]/', $data[$break_pos+2])) {
-					error_log('search next');
-					$break_pos = mb_strpos($data, ' ', $break_pos);
-					continue;
-				}
-				if ($break_pos) {
-					$break_pos++;
-					error_log($break_pos);
-					$data_show = mb_substr($data, 0, $break_pos);
-					$data_hide = mb_substr($data, $break_pos);
-					// add hidden part with js code
-					$placeholder_id = uniqid();
-					$data_hide = "<span class='$placeholder_id'>... </span><a href='javascript:void(0)' onclick='$(\".$placeholder_id\").toggle(); $(this).hide()' class='bold'>alles anzeigen</a><span class='$placeholder_id' style='display: none'>$data_hide</span>";
-					$data = $data_show . $data_hide;
-					error_log($data);
-				}
-			}
-		}
-		// mark each ingredient by an href linking to search
-		else*/
-			$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
+		$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 
 		// run filter
 		if ($data) {
@@ -338,4 +310,3 @@ abstract class FoodGetterVenue {
 		return $string;
 	}
 }
-?>
