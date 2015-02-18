@@ -8,5 +8,3 @@ foreach ($commands_to_check as $command) {
 	if (!command_exist($command))
 		die("command '$command' not existing");
 }
-
-?>
