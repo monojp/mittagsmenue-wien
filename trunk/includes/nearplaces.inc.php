@@ -4,7 +4,7 @@ require_once(__DIR__ . '/includes.php');
 
 define('NEARPLACES_CACHE', TMP_PATH . 'nearplaces_cache.json');
 define('DETAILS_CACHE', TMP_PATH . 'details_cache.json');
-define('LOG_API_REQUESTS', true);
+define('LOG_API_REQUESTS', false);
 
 // imitate google api data for custom venues
 // use negative ids to distinguish between google nearplace
@@ -275,7 +275,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub', 'Restaurant Goldene Glocke', 'Tchibo Filiale',
 			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
 			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry',
-			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky',
+			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Restaurant Cuadro', 'Pizza Mann Wien 5',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -353,7 +353,7 @@ function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=n
 		if ($opennow)
 			$api_url .= '&opennow';
 		$api_url .= "&pagetoken=$next_page_token";
-		$api_response = @file_get_contents($api_url);
+		$api_response = file_get_contents($api_url);
 		if ($api_response === false)
 			continue;
 		$api_response = json_decode($api_response, true);
@@ -375,7 +375,7 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 		$api_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$api_key&location=$lat,$lng&radius=$radius&rankby=$rankby&sensor=$sensor&types=restaurant|food&language=de";
 		if ($opennow)
 			$api_url .= '&opennow';
-		$api_response = @file_get_contents($api_url);
+		$api_response = file_get_contents($api_url);
 		if ($api_response === false)
 			continue;
 		$api_response = json_decode($api_response, true);
@@ -416,7 +416,7 @@ function details($id, $reference, $sensor) {
 			if (LOG_API_REQUESTS)
 				error_log("@details: query api with key $api_key");
 			$api_url = "https://maps.googleapis.com/maps/api/place/details/json?key=$api_key&reference=$reference&sensor=$sensor&language=de";
-			$api_response = @file_get_contents($api_url);
+			$api_response = file_get_contents($api_url);
 			if ($api_response === false)
 				continue;
 			$api_response = json_decode($api_response, true);
@@ -462,5 +462,3 @@ function nearbysearch_full($lat, $lng, $radius, $sensor) {
 	}
 	return $api_results;
 }
-
-?>

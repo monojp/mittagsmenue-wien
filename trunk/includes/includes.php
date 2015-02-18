@@ -79,8 +79,10 @@ else
  * Utils
  */
 function command_exist($cmd) {
-	$returnVal = shell_exec("which $cmd");
-	return (empty($returnVal) ? false : true);
+	//$returnVal = shell_exec("which $cmd");
+	//return (empty($returnVal) ? false : true);
+	$returnVal = shell_exec("command -v ${cmd} >/dev/null 2>&1");
+	return ($returnVal == 0);
 }
 function cacheSafeUrl($file) {
 	return $file . "?" . filemtime($file);
