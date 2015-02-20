@@ -109,4 +109,5 @@ $searchReplace = array(
 	', (1/ 0)' => '',
 	'Meeeres' => 'Meeres',
 	'Eeintropf' => 'Eintropf',
+	'Gebackens' => 'Gebackenes',
 );
