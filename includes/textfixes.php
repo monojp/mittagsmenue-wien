@@ -108,6 +108,5 @@ $searchReplace = array(
 	'gebr.Speck' => 'gebr. Speck',
 	', (1/ 0)' => '',
 	'Meeeres' => 'Meeres',
+	'Eeintropf' => 'Eintropf',
 );
-
-?>
