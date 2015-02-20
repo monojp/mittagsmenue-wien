@@ -5,12 +5,16 @@ require_once(__DIR__ . '/../includes/vote.inc.php');
 
 function wrap_in_email_html($body, $custom_userid_access_url) {
 	$css_basic = file_get_contents(__DIR__ . '/../public/css/basic.css');
-	$html  = '<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
+	$html  = '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
 	$html .= $body;
 	$html .= '<br />';
 	$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}' style='font-weight: bold'>{$custom_userid_access_url}</a></div>";
 	$html .= '</body></html>';
 	return $html;
+}
+
+function mail_encode_utf8($string) {
+	return '=?utf-8?b?' . base64_encode($string) . '?=';
 }
 
 $valid_actions = array(
@@ -32,10 +36,10 @@ $votes = getAllVotes();
 
 // build mail headers
 $headers   = array();
-$headers[] = "From: " . SITE_FROM_MAIL;
+$headers[] = 'From: ' . mail_encode_utf8(META_KEYWORDS) . '<' .  SITE_FROM_MAIL . '>';
 $headers[] = "MIME-Version: 1.0";
 $headers[] = "Content-type: text/html; charset=utf-8";
-$headers[] = "X-Mailer: PHP/" . phpversion();
+$headers[] = "X-Mailer: PHP";
 $headers[] = "Precedence: bulk";
 
 $voting_over_time_print = date('H:i', $voting_over_time);
@@ -103,5 +107,3 @@ foreach ((array)$user_configs as $ip => $user_config) {
 		break;
 	}
 }
-
-?>
