@@ -132,11 +132,9 @@ input {
 	vertical-align: top;
 	font-size: 0.8em;
 }
-/* override jqueryui font-size in dialogs */
 .ui-dialog, .ui-widget {
 	font-size: 1em ! important;
 }
-
 .sprite {
 	background: url('../imagesCommon/sprite_icons.png?2') no-repeat top left;
 	display: inline-block;
