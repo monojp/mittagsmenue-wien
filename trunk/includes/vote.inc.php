@@ -313,7 +313,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 					}
 				}
 			}
-			if (isset($html_menu)) {
+			if (!empty($html_menu)) {
 				$html .= '<br />';
 				$html .= '<div style="margin: 5px; font-weight: bold">Menüs:</div>';
 				$html .= $html_menu;

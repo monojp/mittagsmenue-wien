@@ -439,7 +439,8 @@ function pdftohtml($file) {
 
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_pdf_');
-	$data = @file_get_contents($file);
+	$tmpPath_html = $tmpPath . '.html';
+	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
 	if (empty($data))
@@ -449,11 +450,11 @@ function pdftohtml($file) {
 
 	// convert to hmtl
 	// single HTML with all pages, ignore images, no paragraph merge, no frames, force hidden text extract
-	shell_exec("pdftohtml -s -i  -nomerge -noframes -hidden $tmpPath $tmpPath");
+	shell_exec("pdftohtml -s -i  -nomerge -noframes -hidden ${tmpPath} ${tmpPath}");
 
 	// parse / fix html
 	$doc = new DOMDocument();
-	$doc->loadHTMLFile($tmpPath . '.html');
+	$doc->loadHTMLFile($tmpPath_html);
 	$html = $doc->saveHTML();
 
 	// remove unwanted stuff (fix broken htmlentities)
@@ -464,6 +465,10 @@ function pdftohtml($file) {
 	$html = preg_replace('/[[:blank:]]+/', ' ', $html);
 	$html = html_entity_decode($html);
 
+	// cleanups
+	unlink($tmpPath);
+	unlink($tmpPath_html);
+
 	// return utf-8 encoded html
 	return mb_check_encoding($html, 'UTF-8') ? $html : utf8_encode($html);
 }
@@ -473,7 +478,7 @@ function doctotxt($file) {
 
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_txt_');
-	$data = @file_get_contents($file);
+	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
 	if (empty($data))
@@ -482,7 +487,43 @@ function doctotxt($file) {
 	file_put_contents($tmpPath, $data);
 
 	// convert to txt
-	$txt = shell_exec("antiword -w 99999 -s $tmpPath 2>&1");
+	$txt = shell_exec("antiword -w 99999 -s ${tmpPath} 2>&1");
+
+	// cleanups
+	unlink($tmpPath);
+
+	// return utf-8 txt
+	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
+}
+
+function pdftotxt_ocr($file, $lang = 'deu') {
+	$fileUniq = $file . uniqid();
+
+	// read data to uniqe tmp file
+	$tmpPath = tempnam('/tmp', 'food_pdf_');
+	$tmpPath_tif = $tmpPath . '.tif';
+	$tmpPath_txt = $tmpPath . '.txt';
+	$data = file_get_contents($file);
+
+	// abort if pdf data empty / invalid
+	if (empty($data))
+		return null;
+
+	file_put_contents($tmpPath, $data);
+
+	// convert to tiff
+	shell_exec("convert -density 300 ${tmpPath} -depth 8 ${tmpPath_tif}");
+
+	// do tesseract ocr
+	shell_exec("tesseract ${tmpPath_tif} ${tmpPath} -l ${lang}");
+
+	// get txt result
+	$txt = file_get_contents($tmpPath_txt);
+
+	// cleanups
+	unlink($tmpPath);
+	unlink($tmpPath_tif);
+	unlink($tmpPath_txt);
 
 	// return utf-8 txt
 	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
@@ -727,4 +768,36 @@ function build_minimal_url() {
 	if (isset($_GET['html']) || isset($_GET['html/']))
 		$url .= '&amp;html';
 	return $url;
+}
+
+// prüft ob url erreichbar via header check
+// alternativ wird der http_code als parameter retourniert
+function url_exists($url, &$http_code=null) {
+	global $debuglog;
+
+	$headers = @get_headers($url);
+	$debuglog['@' . __FUNCTION__ . ":$url:headers"] = $headers;
+
+	if (preg_match('/[0-9]{3}/', $headers[0], $matches))
+		$http_code = isset($matches[0]) ? $matches[0] : null;
+
+	if ($headers === false || strpos($headers[0], '404') !== false)
+		return false;
+	return true;
+}
+
+function strtotimep($time, $format, $timestamp = null) {
+	if (empty($timestamp))
+		$timestamp = time();
+
+	$date = strptime($time, $format);
+
+	$hour  = empty($date['tm_hour']) ? date('H', $timestamp) : $date['tm_hour'];
+	$min   = empty($date['tm_min']) ? date('i', $timestamp) : $date['tm_min'];
+	$sec   = empty($date['tm_sec']) ? date('s', $timestamp) : $date['tm_sec'];
+	$day   = empty($date['tm_mday']) ? date('j', $timestamp) : $date['tm_mday'];
+	$month = empty($date['tm_mon']) ? date('n', $timestamp) : ($date['tm_mon'] + 1);
+	$year  = empty($date['tm_year']) ? date('Y', $timestamp) : $date['tm_year'];
+
+	return mktime($hour, $min, $sec, $month, $day, $year);
 }

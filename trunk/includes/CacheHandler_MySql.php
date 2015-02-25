@@ -12,7 +12,7 @@ class CacheHandler_MySql extends CacheHandler {
 		// open db connection, try different configs after each other if connection fails
 		global $DB_CONFIGS;
 		// shuffle db configs to balance data on all dbs
-		shuffle($DB_CONFIGS);
+		//shuffle($DB_CONFIGS);
 		$this->db = mysqli_init();
 		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3)) {
 			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
