@@ -4,76 +4,92 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Waldviertlerhof';
-		//$this->title_notifier = 'NEU';
+		$this->title_notifier = 'BETA';
 		$this->address = 'Schönbrunnerstrasse 20, 1050 Wien';
 		$this->addressLat = '48.193692';
 		$this->addressLng = '16.358687';
 		$this->url = 'http://www.waldviertlerhof.at/';
-		$this->dataSource = 'http://www.waldviertlerhof.at/assets/w4h-mittagsmenue.pdf';
-		$this->menu = 'http://www.waldviertlerhof.at/assets/w4h_speisen_getränke.pdf';
+		$this->dataSource = 'http://www.waldviertlerhof.at/assets/w4h-mittagsmenue2.pdf';
+		$this->menu = 'http://www.waldviertlerhof.at/assets/w4h_speisen_getränke2.pdf';
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
+		$this->price_nested_info = 'Menü / Tagesteller';
 
 		parent::__construct();
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = getGermanDayName();
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
-		$dataTmp = pdftohtml($this->dataSource);
-
-		/*if (stripos($dataTmp, 'urlaub') !== false)
-			return ($this->data = VenueStateSpecial::Urlaub);*/
-
+		$dataTmp = pdftotxt_ocr($this->dataSource);
+		if (stripos($dataTmp, 'urlaub') !== false)
+			return ($this->data = VenueStateSpecial::Urlaub);
 		//return error_log($dataTmp);
 
-		// check if current week number matches
-		$week_number = date('W', $this->timestamp);
-		preg_match('/[0-9]{2}[\. ]+KW/', $dataTmp, $matches);
-		if (empty($matches))
+		// check date range
+		preg_match('/[\d]+\.(.)+-(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
+		if (empty($date_check) || !isset($date_check[0]) || !isset($date_check[1]))
 			return;
-		$week_number_match = trim($matches[0], 'KW. ');
-		if ($week_number != $week_number_match)
+		$date_check = explode('-', $date_check[0]);
+		$date_check = array_map('trim', $date_check);
+		$date_start = strtotimep($date_check[0], '%d. %B', $this->timestamp);
+		$date_end   = strtotimep($date_check[1], '%d. %B', $this->timestamp);
+		if ($this->timestamp < $date_start || $this->timestamp > $date_end)
 			return;
 
-		$today = getGermanDayName();
-		$tomorrow = getGermanDayName(1);
-		$posStart = striposAfter($dataTmp, $today);
-		if ($posStart === FALSE) {
+		// check menu food count
+		if (substr_count($dataTmp, 'suppe') != 5)
 			return;
-		}
-		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
-		// last day of the week
-		if (!$posEnd)
-			$posEnd = mb_stripos($dataTmp, 'Ihre Tischreservierung', $posStart);
-		$dataTmp = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
-		$dataTmp = explode('|', $dataTmp);
-		//var_export($dataTmp);
-		//return;
+
+		// remove unwanted stuff
+		$data = $dataTmp;
+		//$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
+		// remove multiple newlines
+		$data = preg_replace("/(\n)+/i", "\n", $data);
+		$data = trim($data);
+		//return error_log($data);
+		// split per new line
+		$foods = explode("\n", $data);
+		//return error_log(print_r($foods, true));
 
 		$data = null;
-		foreach ($dataTmp as $food) {
+		$foodCount = 1; // 1 is monday, 5 is friday
+		$weekday = date('w', $this->timestamp);
+		foreach ($foods as $food) {
 			$food = cleanText($food);
+			// nothing found
 			if (empty($food))
 				continue;
-			// price
-			if (preg_match('/^[0-9]+,[0-9]+$/', $food))
-				$this->price = $food;
-			// food part
-			else
-				$data = empty($data) ? $food : "$data $food";
+			// first part of menu (soup)
+			else if (mb_strpos($food, 'suppe') !== false) {
+				if ($foodCount == $weekday) {
+					$data = $food;
+				}
+				$foodCount++;
+			}
+			// second part of menu
+			else if ($foodCount == ($weekday+1) && !empty($data)) {
+				$data .= ", ${food}";
+				break;
+			}
 		}
+		//return error_log($data);
 
 		$this->data = $data;
 
-		// set date
-		$this->date = $week_number . $today;
+		preg_match('/((.)*€(.*)){2,2}/', $dataTmp, $prices);
+		preg_match_all('/€( )+[\d\.\,]+/', $prices[0], $prices);
+		$prices = array_map(function (&$val) { return str_replace(',', '.', trim($val, ' ,.&€')); }, $prices[0]);
+		//return error_log(print_r($prices, true));
+		$this->price = array($prices);
 
-		//var_export($data);
-		//return;
+		// set date
+		$this->date = getGermanDayName();
+
 		return $this->data;
 	}
 
@@ -81,9 +97,13 @@ class Waldviertlerhof extends FoodGetterVenue {
 	}
 
 	public function isDataUpToDate() {
-		if ($this->date == date('W', $this->timestamp) . getGermanDayName())
-			return true;
-		else
-			return false;
+		//return false;
+		$today_variants = $this->get_today_variants();
+
+		foreach ($today_variants as $today) {
+			if ($this->date == $today)
+				return true;
+		}
+		return false;
 	}
 }
