@@ -18,7 +18,10 @@ class DeliciousMonster extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = strtoupper(getGermanDayName()) . ' ' . date('j.n.', $this->timestamp);
+		$today_variants[] = strtoupper(getGermanDayName()) . '!' . date('j.n.', $this->timestamp);
+		$today_variants[] = strtoupper(getGermanDayName()) . '&#160;' . date('j.n.', $this->timestamp);
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -31,12 +34,15 @@ class DeliciousMonster extends FoodGetterVenue {
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		$today = date('j.n.', $this->timestamp);
-		$today = mb_strtoupper(getGermanDayName()) . " $today";
-		$posStart = strposAfter($dataTmp, $today);
-		if ($posStart === false) {
-			$today = date('j.n', $this->timestamp);
-			$posStart = striposAfter($dataTmp, $today);
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
 		}
 		if ($posStart === false)
 			return;
@@ -87,14 +93,13 @@ class DeliciousMonster extends FoodGetterVenue {
 	}
 
 	public function isDataUpToDate() {
-		$today = date('j.n.', $this->timestamp);
-		$today = strtoupper(getGermanDayName()) . " $today";
+		//return false;
+		$today_variants = $this->get_today_variants();
 
-		if ($this->date == $today)
-			return true;
-		else
-			return false;
+		foreach ($today_variants as $today) {
+			if ($this->date == $today)
+				return true;
+		}
+		return false;
 	}
 }
-
-?>
