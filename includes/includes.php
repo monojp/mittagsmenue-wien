@@ -466,8 +466,8 @@ function pdftohtml($file) {
 	$html = html_entity_decode($html);
 
 	// cleanups
-	unlink($tmpPath);
-	unlink($tmpPath_html);
+	@unlink($tmpPath);
+	@unlink($tmpPath_html);
 
 	// return utf-8 encoded html
 	return mb_check_encoding($html, 'UTF-8') ? $html : utf8_encode($html);
@@ -490,7 +490,7 @@ function doctotxt($file) {
 	$txt = shell_exec("antiword -w 99999 -s ${tmpPath} 2>&1");
 
 	// cleanups
-	unlink($tmpPath);
+	@unlink($tmpPath);
 
 	// return utf-8 txt
 	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
@@ -521,9 +521,9 @@ function pdftotxt_ocr($file, $lang = 'deu') {
 	$txt = file_get_contents($tmpPath_txt);
 
 	// cleanups
-	unlink($tmpPath);
-	unlink($tmpPath_tif);
-	unlink($tmpPath_txt);
+	@unlink($tmpPath);
+	@unlink($tmpPath_tif);
+	@unlink($tmpPath_txt);
 
 	// return utf-8 txt
 	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
