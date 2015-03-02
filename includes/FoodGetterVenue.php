@@ -122,8 +122,8 @@ abstract class FoodGetterVenue {
 		if (!$this->data || !$this->isDataUpToDate()) {
 			// avoid querying other week than current
 			// fixes cache problems
-			$currentWeekYear = date('W/Y');
-			$wantedWeekYear = date('W/Y', $this->timestamp);
+			$currentWeekYear = date('YW');
+			$wantedWeekYear = date('YW', $this->timestamp);
 			//error_log(date('W', $this->timestamp));
 			if (
 				($currentWeekYear == $wantedWeekYear) ||	// current week only
