@@ -31,7 +31,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// check date range
-		preg_match('/[\d]+\.(.)+-(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
+		preg_match('/[\d]+\.(.)+(-|—)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
 		if (empty($date_check) || !isset($date_check[0]) || !isset($date_check[1]))
 			return;
 		$date_check = explode('-', $date_check[0]);
