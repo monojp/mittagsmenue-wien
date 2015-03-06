@@ -32,12 +32,13 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 		// check date range
 		preg_match('/[\d]+\.(.)+(-|—)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
-		if (empty($date_check) || !isset($date_check[0]) || !isset($date_check[1]))
+		if (empty($date_check) || !isset($date_check[0]))
 			return;
-		$date_check = explode('-', $date_check[0]);
+		$date_check = explode_by_array(array('-', '—'), $date_check[0]);
 		$date_check = array_map('trim', $date_check);
 		$date_start = strtotimep($date_check[0], '%d. %B', $this->timestamp);
 		$date_end   = strtotimep($date_check[1], '%d. %B', $this->timestamp);
+		//return error_log(print_r($date_check, true));
 		if ($this->timestamp < $date_start || $this->timestamp > $date_end)
 			return;
 
@@ -91,19 +92,5 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->date = getGermanDayName();
 
 		return $this->data;
-	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		//return false;
-		$today_variants = $this->get_today_variants();
-
-		foreach ($today_variants as $today) {
-			if ($this->date == $today)
-				return true;
-		}
-		return false;
 	}
 }

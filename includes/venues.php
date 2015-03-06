@@ -36,6 +36,3 @@ if ($handle) {
  * www.horvath.at
  * www.zwoelf-apostelkeller.at
  */
-
-
-?>

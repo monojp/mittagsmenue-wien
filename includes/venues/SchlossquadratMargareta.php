@@ -18,26 +18,32 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = getGermanDayName() . ' ' . date('j.n.', $this->timestamp);
+		$today_variants[] = date('j.n.', $this->timestamp);
+		$today_variants[] = date('j.n', $this->timestamp);
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
-		/*$dataTmp = file_get_contents($this->dataSource);
-		if ($dataTmp === FALSE)
-			return;*/
 		$dataTmp = pdftohtml($this->dataSource);
-		//var_export($dataTmp);
+		//return error_log($dataTmp);
 
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		$today = getGermanDayName() . ' ' . date('j.n.', $this->timestamp);
-		$tomorrow = getGermanDayName(1);
-		$posStart = striposAfter($dataTmp, $today);
-		if ($posStart === FALSE) {
-			return;
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
 		}
-		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
+		if ($posStart === false)
+			return;
+		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// last day of the week
 		if (!$posEnd)
 			$posEnd = mb_stripos($dataTmp, 'br', $posStart);
@@ -53,6 +59,7 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 		// clean text and add seperator for 2nd line
 		$data = cleanText($data);
 		$data = preg_replace("/[\r\n]{1,}/", " & ", $data);
+		//return error_log($data);
 
 		$this->data = trim($data);
 
@@ -66,44 +73,4 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-		$dataSourceTmp = $this->url;
-		$dataTmp = file_get_contents($dataSourceTmp);
-		if ($dataTmp === FALSE)
-			return;
-
-		$posStart = striposAfter($dataTmp, '<p class="tickertext">');
-		if ($posStart === FALSE)
-			return;
-		$posEnd = stripos($dataTmp, '</p>', $posStart);
-		$data = cleanText(substr($dataTmp, $posStart, $posEnd-$posStart));
-
-		// set date
-		$parts = explode(' ', $data);
-		$this->date = trim($parts[1], ':.');
-		unset($parts[0]);
-		unset($parts[1]);
-		$this->data = implode(' ', $parts);
-
-		// set price
-		if (strpos($this->data, 'Feiertagsmenü') === FALSE) {
-			$posStart = striposAfter($dataTmp, 'Mittagsteller um');
-			$posEnd = stripos($dataTmp, '€', $posStart);
-			$data = substr($dataTmp, $posStart, $posEnd-$posStart);
-			$this->price = trim($data);
-		}
-
-		return $this->data;
-	}
-
-	public function isDataUpToDate() {
-		$today = getGermanDayName() . ' ' . date('j.n.', $this->timestamp);
-		if ($this->date == $today || $this->date == date('j.n.', $this->timestamp) || $this->date == date('j.n', $this->timestamp))
-			return true;
-		else
-			return false;
-	}
 }
-
-?>

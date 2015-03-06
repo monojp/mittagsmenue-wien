@@ -34,5 +34,3 @@ function user_config_set($ip, $name, $email, $vote_reminder, $voted_mail_only) {
 	$data = json_encode($all_emails, JSON_FORCE_OBJECT);
 	return file_put_contents(USERS_FILE, $data);
 }
-
-?>

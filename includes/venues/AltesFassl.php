@@ -18,7 +18,9 @@ class AltesFassl extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = date('d.m.', $this->timestamp);
+		$today_variants[] = date('d.m', $this->timestamp);
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -29,16 +31,18 @@ class AltesFassl extends FoodGetterVenue {
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		$today = date('d.m.', $this->timestamp);
-		//$todayHotfix = '30.05.';
-		$todayHotfix = $today;
-		$posStart = striposAfter($dataTmp, $todayHotfix);
-		if ($posStart === FALSE) {
-			$today = date('d.m', $this->timestamp);
-			$posStart = striposAfter($dataTmp, $today);
-			if ($posStart === FALSE)
-				return;
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
 		}
+		if ($posStart === false)
+			return;
 		$tomorrow = getGermanDayName(1);
 		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
 		// last day of the week
@@ -96,16 +100,4 @@ class AltesFassl extends FoodGetterVenue {
 
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		if ($this->date == date('d.m.', $this->timestamp) || $this->date == date('d.m', $this->timestamp))
-			return true;
-		else
-			return false;
-	}
 }
-
-?>

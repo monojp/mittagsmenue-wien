@@ -187,7 +187,7 @@ function positionHandler(position) {
 
 	// get address via ajax
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		url:  'locator.php',
 		data: { "action": "latlngToAddress", "lat": lat, "lng": lng, 'userid' : $('#userid').html()},
 		dataType: "json",
@@ -297,7 +297,7 @@ function setLocation(location, force_geolocation, try_count) {
 
 	// get lat / lng via ajax
 	$.ajax({
-		type: "POST",
+		type: "GET",
 		url:  'locator.php',
 		data: { "action": "addressToLatLong", "address": location, 'userid' : $('#userid').html()},
 		dataType: "json",
@@ -456,7 +456,7 @@ function setNoteDialog() {
 
 function handle_href_reference_details(id, reference, name, try_count) {
 	$.ajax({
-		type: 'POST',
+		type: 'GET',
 		url:  'nearplaces.php',
 		data: {
 			'action'    : 'details',
@@ -490,7 +490,7 @@ function handle_href_reference_details(id, reference, name, try_count) {
 
 function get_alt_venues(lat, lng, radius, radius_max, success_function, try_count) {
 	$.ajax({
-		type: 'POST',
+		type: 'GET',
 		url:  'nearplaces.php',
 		data: {
 			'action'     : 'nearbysearch_staged', // takes so long, is it worth it?
@@ -735,7 +735,8 @@ window.alert = function(message, alertTitle, showIcon, width) {
 				}
 			}
 		});
-};/*!
+};
+/*!
  * jQuery Cookie Plugin v1.3.1
  * https://github.com/carhartl/jquery-cookie
  *
