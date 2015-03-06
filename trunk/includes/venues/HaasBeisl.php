@@ -48,11 +48,15 @@ class HaasBeisl extends FoodGetterVenue {
 			if ($posStart !== false)
 				break;
 		}
+		if ($posStart === false)
+			return;
 		$friday = (date('w', $this->timestamp) == 5);
 		if (!$friday)
 			$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		else
 			$posEnd = mb_strpos($dataTmp, 'Menüsalat', $posStart);
+		if ($posEnd === false)
+			return;
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		//$data = html_entity_decode($data);
 		$data = strip_tags($data, '<br>');
