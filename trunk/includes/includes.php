@@ -242,7 +242,7 @@ function cleanText($text) {
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
 	$text = str_replace_array(array('`', '´'), '', $text);
 	$text = str_replace_wrapper($searchReplace, $text);
-	$text = trim($text);
+	$text = trim($text, "., \t\n\r\0\x0B");
 
 	return $text;
 }
@@ -329,9 +329,9 @@ function getCacheData($keyword, $foodKeyword) {
 	$datasetSize = 0;
 
 	$cacheHandler = new CacheHandler_MySql();
-	$result = $cacheHandler->queryCache($keyword, $foodKeyword, array('timestamp', 'dataSource', 'data'));
+	$result = $cacheHandler->queryCache($keyword, $foodKeyword);
 
-	foreach ($result as $row) {
+	foreach ((array)$result as $row) {
 		$food = $row['data'];
 
 		// stats-cleaner

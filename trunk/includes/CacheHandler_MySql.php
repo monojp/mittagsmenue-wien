@@ -2,10 +2,14 @@
 
 require_once(__DIR__ . '/CacheHandler.php');
 
+define('CacheHandler_MySql_DEBUG', false);
+
 class CacheHandler_MySql extends CacheHandler {
 	protected $db = null;
 
 	function __construct($dataSource=null, $timestamp=null) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::__construct');
 		$this->dataSource = $dataSource;
 		$this->timestamp = $timestamp;
 
@@ -14,7 +18,7 @@ class CacheHandler_MySql extends CacheHandler {
 		// shuffle db configs to balance data on all dbs
 		//shuffle($DB_CONFIGS);
 		$this->db = mysqli_init();
-		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3)) {
+		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 1)) {
 			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
 		}
 		$db_connect_ok = false;
@@ -33,7 +37,16 @@ class CacheHandler_MySql extends CacheHandler {
 		$this->db->query("SET NAMES 'utf8'");
 	}
 
+	function __destruct() {
+		// abort on error
+		if (!$this->db)
+			return null;
+		$this->db->close();
+	}
+
 	public function saveToCache(&$date, &$price, &$data) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::saveToCache');
 		// abort on error
 		if (!$this->db)
 			return null;
@@ -55,17 +68,21 @@ class CacheHandler_MySql extends CacheHandler {
 
 			// prepare statement
 			if (!($stmt = $this->db->prepare("INSERT INTO foodCache VALUES (?, ?, ?, ?, ?)")))
-				return error_log("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+				return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 			// bind params
 			if (!$stmt->bind_param("sssss", $timestamp, $dataSource, $date, $priceDB, $data))
 				return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
 			// execute
 			if (!$stmt->execute())
 				return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+			$stmt->free_result();
 		}
 	}
 
 	public function getFromCache(&$date, &$price, &$data) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::getFromCache');
+
 		// abort on error
 		if (!$this->db)
 			return null;
@@ -76,7 +93,7 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("SELECT date, price, data FROM foodCache WHERE timestamp=? AND dataSource=?")))
-			return error_log("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		// bind params
 		if (!$stmt->bind_param("ss", $timestamp, $dataSource))
 			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
@@ -92,6 +109,7 @@ class CacheHandler_MySql extends CacheHandler {
 			return error_log("Fetching results failed: (" . $stmt->errno . ") " . $stmt->error);
 		else if (!$result)
 			return false;
+		$stmt->free_result();
 
 		// update 2013-07-23: use json instead of serialized data
 		// because of better read- & editability
@@ -118,6 +136,9 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function updateCache($date, $price, $data) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::updateCache');
+
 		// abort on error
 		if (!$this->db)
 			return null;
@@ -136,49 +157,68 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodCache SET date=?, price=?, data=? WHERE timestamp=? AND dataSource=?")))
-			return error_log("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		// bind params
-		if (!$stmt->bind_param("sssss", $date, $price, $timestamp, $dataSource))
+		if (!$stmt->bind_param("sssss", $timestamp, $dataSource, $date, $priceDB, $data))
 			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
 		// execute
 		if (!$stmt->execute())
 			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		$stmt->free_result();
 	}
 
-	public function queryCache($dataSourceKeyword, $dataKeyword, $selectors=array('timestamp', 'data')) {
+	public function queryCache($dataSourceKeyword, $dataKeyword) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::queryCache');
 		// abort on error
 		if (!$this->db)
 			return null;
 
 		$return = array();
+		$dataSourceKeyword = "%${dataSourceKeyword}%";
+		$dataKeyword = "%${dataKeyword}%";
 
-		$selector = implode(', ', $selectors);
-		$result = $this->db->query("SELECT $selector FROM foodCache WHERE dataSource LIKE '%$dataSourceKeyword%' AND data LIKE '%$dataKeyword%'");
-		while ($row = $result->fetch_object()) {
-			$returnRow = array();
-			foreach ($selectors as $sel) {
-				$returnRow[$sel] = $row->$sel;
-			}
-			$return[] = $returnRow;
+		// prepare statement
+		if (!($stmt = $this->db->prepare("SELECT timestamp, dataSource, data FROM foodCache WHERE dataSource LIKE ? AND data LIKE ?")))
+			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
+		// bind params
+		if (!$stmt->bind_param("ss", $dataSourceKeyword, $dataKeyword))
+			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
+		// execute
+		if (!$stmt->execute())
+			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		// bind result variables
+		if (!$stmt->bind_result($timestamp, $dataSource, $data))
+			return error_log("Binding results failed: (" . $stmt->errno . ") " . $stmt->error);
+		// fetch results
+		while ($stmt->fetch()) {
+			$return[] = array(
+				'timestamp'  => $timestamp,
+				'dataSource' => $dataSource,
+				'data'       => $data,
+			);
 		}
+		$stmt->free_result();
+
 		return $return;
 	}
 
 	public function deleteFromCache($timestamp, $dataSource) {
+		if (CacheHandler_MySql_DEBUG)
+			error_log('CacheHandler_MySql::deleteFromCache');
 		// abort on error
 		if (!$this->db)
 			return null;
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("DELETE FROM foodCache WHERE timestamp=? AND dataSource=?")))
-			return error_log("Prepare failed: (" . $mysqli->errno . ") " . $mysqli->error);
+			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		// bind params
 		if (!$stmt->bind_param("ss", $timestamp, $dataSource))
 			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
 		// execute
 		if (!$stmt->execute())
 			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		$stmt->free_result();
 	}
 }
-
-?>

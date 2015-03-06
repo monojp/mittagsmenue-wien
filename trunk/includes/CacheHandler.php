@@ -8,8 +8,6 @@ abstract class CacheHandler {
 
 	abstract public function saveToCache(&$date, &$price, &$data);
 	abstract public function getFromCache(&$date, &$price, &$data);
-	abstract public function queryCache($dataSourceKeyword, $dataKeyword, $selectors=array('timestamp', 'data'));
+	abstract public function queryCache($dataSourceKeyword, $dataKeyword);
 	abstract public function deleteFromCache($timestamp, $dataSource);
 }
-
-?>

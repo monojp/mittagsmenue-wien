@@ -18,7 +18,9 @@ class TasteOfIndia extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = date_offsetted('d.m.y');
+		$today_variants[] = getGermanDayName();
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -29,13 +31,17 @@ class TasteOfIndia extends FoodGetterVenue {
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		//$today = getGermanDayName();
-		$today = date_offsetted('d.m.y');
-		//$todayHotfix = date_offsetted('d.my');
-		$todayHotfix = $today;
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
 
-		$posStart = striposAfter($dataTmp, $todayHotfix);
-		if ($posStart === FALSE)
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
+		}
+		if ($posStart === false)
 			return;
 		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// last day of the week
@@ -77,16 +83,4 @@ class TasteOfIndia extends FoodGetterVenue {
 
 		//return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		if ($this->date == date_offsetted('d.m.y') || $this->date == getGermanDayName())
-			return true;
-		else
-			return false;
-	}
 }
-
-?>

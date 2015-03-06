@@ -20,7 +20,8 @@ class MensaFreihaus extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = date('d.m.', $this->timestamp);
+		return $today_variants;
 	}
 
 	private function mensa_menu_get($dataTmp, $title_search, &$price_return=null) {
@@ -75,10 +76,19 @@ class MensaFreihaus extends FoodGetterVenue {
 		//var_export($dataTmp);
 		//return;
 
-		// check if correct week
-		$today = date('d.m.', $this->timestamp);
-		if (strpos($dataTmp, $today) === false)
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		$today = null;
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($dataTmp, $today);
+			if ($posStart !== false)
+				break;
+		}
+		if ($posStart === false)
 			return;
+		//return error_log($posStart);
 
 		// get menus via helper function
 		$price_return = null;
@@ -126,17 +136,4 @@ class MensaFreihaus extends FoodGetterVenue {
 		//return;
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		//return false;
-		if ($this->date == date('d.m.', $this->timestamp))
-			return true;
-		else
-			return false;
-	}
 }
-
-?>

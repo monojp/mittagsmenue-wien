@@ -62,5 +62,3 @@ if ($action) {
 }
 else
 	echo json_encode(array('error' => js_message_prepare('Es ist keine Aktion gesetzt!')));
-
-?>

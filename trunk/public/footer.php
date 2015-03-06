@@ -33,5 +33,3 @@ echo "<br /><br />${tracking_code}</body></html>";
 
 // write custom compressed output buffer
 ob_end_flush();
-
-?>

@@ -106,20 +106,4 @@ class NamNamDeli extends FoodGetterVenue {
 
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		//return false;
-		$today_variants = $this->get_today_variants();
-
-		foreach ($today_variants as $today) {
-			if ($this->date == $today)
-				return true;
-		}
-		return false;
-	}
 }
-
-?>

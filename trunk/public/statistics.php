@@ -1,8 +1,10 @@
 <?php
-	require_once('../includes/guihelper.php');
-	require_once('header.php');
 
-	define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
+require_once('../includes/guihelper.php');
+require_once('header.php');
+
+define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
+
 ?>
 </head>
 <body>
@@ -169,5 +171,5 @@ else {
 </script>
 
 <?php
+
 require_once('footer.php');
-?>

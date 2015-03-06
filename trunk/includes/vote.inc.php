@@ -325,5 +325,3 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 
 	return html_compress($html);
 }
-
-?>

@@ -1,6 +1,5 @@
 <?php
 
-
 class FB_Helper {
 	private $auth_token = null;
 
@@ -40,5 +39,3 @@ class FB_Helper {
 		return is_array($response['data']) ? $response['data'] : null;
 	}
 }
-
-?>

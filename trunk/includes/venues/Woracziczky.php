@@ -24,7 +24,8 @@ class Woracziczky extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$today_variants[] = getGermanDayName();
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -68,7 +69,7 @@ class Woracziczky extends FoodGetterVenue {
 
 			// use whole fp post
 			$data = str_replace("\n", "<br />", $message);
-			$today = getGermanDayName();
+			$today = reset($this->get_today_variants());
 		}
 
 		// all posts scanned, nothing found, but relevant string in a post => maybe vacation!
@@ -85,16 +86,4 @@ class Woracziczky extends FoodGetterVenue {
 
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		if ($this->date == getGermanDayName())
-			return true;
-		else
-			return false;
-	}
 }
-
-?>

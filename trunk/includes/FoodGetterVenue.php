@@ -55,12 +55,22 @@ abstract class FoodGetterVenue {
 	// overwrite in inherited class
 	// should parse datasource, set data, date, price, cache it and return it
 	abstract protected function parseDataSource();
-	abstract protected function parseDataSource_fallback();
 
 	// overwrite in inherited class
 	// should check if the data is from today
 	// used for caching
-	abstract public function isDataUpToDate();
+	//abstract public function isDataUpToDate();
+
+	protected function isDataUpToDate() {
+		//return false;
+		$today_variants = $this->get_today_variants();
+
+		foreach ($today_variants as $today) {
+			if ($this->date == $today)
+				return true;
+		}
+		return false;
+	}
 
 	// writes data to the cache
 	protected function cacheWrite() {
@@ -79,11 +89,13 @@ abstract class FoodGetterVenue {
 		$this->dataFromCache = $cacheNew->getFromCache($this->date, $this->price, $this->data);
 	}
 
-	private function get_ajax_venue_code($date_GET) {
+	private function get_ajax_venue_code($date_GET, $cache = true) {
+		$cache = $cache ? 'true' : 'false';
 		return '
 			$.ajax({
-				type: "POST",
+				type: "GET",
 				url:  "venue.php",
+				cache: ' . $cache . ',
 				data: {
 					"classname": "' . get_class($this) . '",
 					"timestamp": "' . $this->timestamp . '",
@@ -130,9 +142,7 @@ abstract class FoodGetterVenue {
 				($this->lookaheadSafe && $currentWeekYear < $wantedWeekYear) || // lookaheadsafe menus work with future weeks also
 				($this->lookaheadSafe && $wantedWeekYear == 1) // because of ISO 8601 last week of year is sometimes returned as 1
 			)
-				if (!$this->parseDataSource()) {
-					$this->parseDataSource_fallback();
-				}
+				$this->parseDataSource();
 		}
 
 		// check if data suggests that venue is closed
@@ -188,23 +198,27 @@ abstract class FoodGetterVenue {
 				}
 				foreach ($this->price as &$price) {
 					if (!is_array($price)) {
-						$price = trim($price, ' ,.');
+						$price = cleanText($price);
 						$price = str_replace(',', '.', $price);
 						$price = money_format('%.2n', $price);
 					}
 					else {
 						foreach ($price as &$p) {
-							$p = trim($p, ' ,./');
+							$p = trim($p, "/., \t\n\r\0\x0B");
 							$p = str_replace(',', '.', $p);
-							$p = money_format('%.2n', $p);
+							if (!empty($p))
+								$p = money_format('%.2n', $p);
 						}
+						// remove empty values
+						$price = array_filter($price);
 						if (count($price) > 1)
 							$price = "<span title='{$this->price_nested_info}'>(" . implode(' / ', $price) . ')<span class="raised">i</span></span>';
-						else
+						else if (!empty($price))
 							$price = '<span>' . reset($price) . '</span>';
 					}
 				}
-				$price = implode(' / ', $this->price);
+				// remove empty values
+				$price = implode(' / ', array_filter($this->price));
 				$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank'>Speisekarte</a>)";
 			}
 		}
@@ -215,7 +229,7 @@ abstract class FoodGetterVenue {
 					function reload_' . $this->CSSid . '() {
 						var id = "' . $this->CSSid . '_data";
 						$("#" + id).html(\'<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />\');
-						' . $this->get_ajax_venue_code($date_GET) . '
+						' . $this->get_ajax_venue_code($date_GET, false) . '
 					}
 					function set_rand_reload_' . $this->CSSid . '() {
 						setTimeout(function() {

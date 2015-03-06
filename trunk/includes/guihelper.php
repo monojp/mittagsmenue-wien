@@ -271,5 +271,3 @@ function get_minimal_site_notice_html() {
 		</span>
 	';
 }
-
-?>

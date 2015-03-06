@@ -18,7 +18,15 @@ class HaasBeisl extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return array();
+		$month = getGermanMonthName();
+		if ($month == 'Februar')
+			$month = 'Feber';
+
+		$today_variants[] = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . $month;
+		$today_variants[] = getGermanDayName(). ', ' . date('j.', $this->timestamp) . ' ' . $month;
+		return $today_variants;
 	}
 
 	protected function parseDataSource() {
@@ -30,29 +38,15 @@ class HaasBeisl extends FoodGetterVenue {
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 
-		$month = getGermanMonthName();
-		if ($month == 'Februar')
-			$month = 'Feber';
+		// get menu data for the chosen day
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
 
-		// date without trailing 0 and without .
-		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . $month;
-		$posStart = strposAfter($dataTmp, $today);
-		// date with trailing 0 and without .
-		if ($posStart === false) {
-			$today = getGermanDayName() . ', ' . date('d', $this->timestamp) . ' ' . $month;
+		$today = null;
+		foreach ($today_variants as $today) {
 			$posStart = strposAfter($dataTmp, $today);
-			// date with trailing 0 and with .
-			if ($posStart === false) {
-				$today = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . $month;
-				$posStart = strposAfter($dataTmp, $today);
-				// date with trailing 0 and with .
-				if ($posStart === false) {
-					$today = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . $month;
-					$posStart = strposAfter($dataTmp, $today);
-					if ($posStart === false)
-						return;
-				}
-			}
+			if ($posStart !== false)
+				break;
 		}
 		$friday = (date('w', $this->timestamp) == 5);
 		if (!$friday)
@@ -114,26 +108,4 @@ class HaasBeisl extends FoodGetterVenue {
 		//var_export($data);
 		return $this->data;
 	}
-
-	public function parseDataSource_fallback() {
-	}
-
-	public function isDataUpToDate() {
-		//return false;
-		$month = getGermanMonthName();
-		if ($month == 'Februar')
-			$month = 'Feber';
-		$today = getGermanDayName() . ', ' . date('j', $this->timestamp) . ' ' . $month;
-
-		// remove 0 and . from date to match with all 4 types from above
-		$today = str_replace(array('.', '0', 0), '', $today);
-		$date_compare = str_replace(array('.', '0', 0), '', $this->date);
-
-		if ($date_compare == $today)
-			return true;
-		else
-			return false;
-	}
 }
-
-?>
