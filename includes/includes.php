@@ -25,12 +25,15 @@ $content_security_policy_value = "default-src 'self' 'unsafe-inline' 'unsafe-eva
 header("X-Content-Security-Policy: ${content_security_policy_value}");
 header("Content-Security-Policy: ${content_security_policy_value}");
 
+function header_set_cache($seconds_to_cache) {
+	$ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
+	header("Expires: $ts");
+	header("Pragma: cache");
+	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
+}
+
 // cache 3 hours
-$seconds_to_cache = 10800;
-$ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-header("Expires: $ts");
-header("Pragma: cache");
-header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
+header_set_cache(10800);
 
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code

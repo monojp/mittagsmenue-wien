@@ -185,6 +185,9 @@ abstract class FoodGetterVenue {
 			if (!$this->dataFromCache)
 				$this->cacheWrite();
 
+			// data found => increase cache to 1 year
+			header_set_cache(31536000);
+
 			// dirty encode & character
 			// can't use htmlspecialchars here, because we need those ">" and "<"
 			$data = str_replace("&", "&amp;", $data);

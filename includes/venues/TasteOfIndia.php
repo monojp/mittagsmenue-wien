@@ -19,7 +19,6 @@ class TasteOfIndia extends FoodGetterVenue {
 
 	protected function get_today_variants() {
 		$today_variants[] = date_offsetted('d.m.y');
-		$today_variants[] = getGermanDayName();
 		return $today_variants;
 	}
 
