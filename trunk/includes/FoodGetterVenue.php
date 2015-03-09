@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/includes.php');
-//require_once(__DIR__ . '/CacheHandler_File.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
 
 define('DIRECT_SHOW_MAX_LENGTH', 256);
@@ -74,17 +73,11 @@ abstract class FoodGetterVenue {
 
 	// writes data to the cache
 	protected function cacheWrite() {
-		/*$cache = new CacheHandler_File($this->dataSource, $this->timestamp);
-		$cache->saveToCache($this->date, $this->price, $this->data);*/
-
 		$cache = new CacheHandler_MySql($this->dataSource, $this->timestamp);
 		$cache->saveToCache($this->date, $this->price, $this->data);
 	}
 	// reads data from the cache
 	protected function cacheRead() {
-		/*$cache = new CacheHandler_File($this->dataSource, $this->timestamp);
-		$this->dataFromCache = $cache->getFromCache($this->date, $this->price, $this->data);*/
-
 		$cacheNew = new CacheHandler_MySql($this->dataSource, $this->timestamp);
 		$this->dataFromCache = $cacheNew->getFromCache($this->date, $this->price, $this->data);
 	}
@@ -145,10 +138,6 @@ abstract class FoodGetterVenue {
 				$this->parseDataSource();
 		}
 
-		// check if data suggests that venue is closed
-		/*if (stringsExist($data, $cacheDataDelete))
-			$data = null;*/
-
 		$data = $this->data;
 
 		// special state urlaub
@@ -184,9 +173,6 @@ abstract class FoodGetterVenue {
 			// not from cache? => write back
 			if (!$this->dataFromCache)
 				$this->cacheWrite();
-
-			// data found => increase cache to 1 year
-			header_set_cache(31536000);
 
 			// dirty encode & character
 			// can't use htmlspecialchars here, because we need those ">" and "<"

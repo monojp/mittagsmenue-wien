@@ -131,7 +131,7 @@ if (!empty($datasetSize)) {
 		$dates = 'Daten: ' . implode(', ', format_date($data['dates'], 'd.m.Y'));
 
 		// mark each ingredient by an href linking to search
-		$food = create_ingredient_hrefs($food, $keyword);
+		$food = create_ingredient_hrefs($food, $keyword, '', true);
 		echo "<tr>
 			<td>
 				{$food}
