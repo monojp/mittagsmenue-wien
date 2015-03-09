@@ -25,16 +25,17 @@ class Waldviertlerhof extends FoodGetterVenue {
 	}
 
 	protected function parseDataSource() {
-		$dataTmp = pdftotxt_ocr($this->dataSource);
+		//$dataTmp = pdftotxt_ocr($this->dataSource);
+		$dataTmp = pdftotext($this->dataSource);
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
 		//return error_log($dataTmp);
 
 		// check date range
-		preg_match('/[\d]+\.(.)+(-|—)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
+		preg_match('/[\d]+\.(.)+(-|—|bis)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
 		if (empty($date_check) || !isset($date_check[0]))
 			return;
-		$date_check = explode_by_array(array('-', '—'), $date_check[0]);
+		$date_check = explode_by_array(array('-', '—', 'bis'), $date_check[0]);
 		$date_check = array_map('trim', $date_check);
 		$date_start = strtotimep($date_check[0], '%d. %B', $this->timestamp);
 		$date_end   = strtotimep($date_check[1], '%d. %B', $this->timestamp);
@@ -83,7 +84,9 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->data = $data;
 
 		preg_match('/((.)*€(.*)){2,2}/', $dataTmp, $prices);
-		preg_match_all('/€( )+[\d\.\,]+/', $prices[0], $prices);
+		if (empty($prices))
+			preg_match('/Menü(.*)|Tagesteller(.*)/', $dataTmp, $prices);
+		preg_match_all('/[\d\.\,]+/', $prices[0], $prices);
 		$prices = array_map(function (&$val) { return str_replace(',', '.', trim($val, ' ,.&€')); }, $prices[0]);
 		//return error_log(print_r($prices, true));
 		$this->price = array($prices);
