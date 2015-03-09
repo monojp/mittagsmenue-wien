@@ -16,15 +16,6 @@ session_start();
 
 header("Vary: Accept-Encoding");
 header("Content-Type: text/html; charset=UTF-8");
-//header("Content-Type: text/html; charset=UTF-8");
-
-// content-security-policy headers
-// self: all content should come from the site's own domain, excluding even subdomains
-// unsafe-inline: JS and CSS may be also be inline TODO get rid of them
-$content_security_policy_value = "default-src 'self' 'unsafe-inline' 'unsafe-eval' 'report-uri /csp_report_parser";
-header("Content-Security-Policy: ${content_security_policy_value}");
-
-header('X-Permitted-Cross-Domain-Policies: master-only');
 
 // set secure caching settings
 header('Expires: -1');
