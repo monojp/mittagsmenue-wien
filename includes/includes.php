@@ -32,8 +32,8 @@ function header_set_cache($seconds_to_cache) {
 	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
 }
 
-// cache 3 hours
-header_set_cache(10800);
+// cache 1 year
+header_set_cache(31536000);
 
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code
@@ -474,6 +474,33 @@ function pdftohtml($file) {
 
 	// return utf-8 encoded html
 	return mb_check_encoding($html, 'UTF-8') ? $html : utf8_encode($html);
+}
+
+function pdftotext($file) {
+	$fileUniq = $file . uniqid();
+
+	// read data to uniqe tmp file
+	$tmpPath = tempnam('/tmp', 'food_pdf_');
+	$tmpPath_txt = $tmpPath . '.txt';
+	$data = file_get_contents($file);
+
+	// abort if pdf data empty / invalid
+	if (empty($data))
+		return null;
+
+	file_put_contents($tmpPath, $data);
+
+	// convert to text
+	shell_exec("pdftotext ${tmpPath} ${tmpPath_txt}");
+
+	$txt = file_get_contents($tmpPath_txt);
+
+	// cleanups
+	@unlink($tmpPath);
+	@unlink($tmpPath_txt);
+
+	// return utf-8 encoded html
+	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
 }
 
 function doctotxt($file) {
