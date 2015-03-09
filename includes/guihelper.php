@@ -42,7 +42,7 @@ function get_location_opener_html() {
 	return '
 		<div class="subheader_div">
 			Lokale rund um <a href="javascript:void(0)" onclick="setLocationDialog(this)" title="Adresse festlegen">
-				<span id="location">' . $city . '</span></a> (<a href="javascript:void(0)" onclick="showLocation(this)" title="Google Maps Mashup">Standort-Infos</a>)
+				<span id="location">' . $city . '</span></a>
 		</div>
 	';
 }

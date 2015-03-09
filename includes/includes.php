@@ -11,7 +11,7 @@ mb_internal_encoding('UTF-8');
 
 // valid session for 3 hours
 $server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
-session_set_cookie_params(3 * 60, '/', $server_name, false, true);
+session_set_cookie_params(3 * 60, '/', $server_name, USE_SSL, true);
 session_start();
 
 header("Vary: Accept-Encoding");
@@ -21,19 +21,15 @@ header("Content-Type: text/html; charset=UTF-8");
 // content-security-policy headers
 // self: all content should come from the site's own domain, excluding even subdomains
 // unsafe-inline: JS and CSS may be also be inline TODO get rid of them
-$content_security_policy_value = "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com";
-header("X-Content-Security-Policy: ${content_security_policy_value}");
+$content_security_policy_value = "default-src 'self' 'unsafe-inline' 'unsafe-eval' 'report-uri /csp_report_parser";
 header("Content-Security-Policy: ${content_security_policy_value}");
 
-function header_set_cache($seconds_to_cache) {
-	$ts = gmdate("D, d M Y H:i:s", time() + $seconds_to_cache) . " GMT";
-	header("Expires: $ts");
-	header("Pragma: cache");
-	header("Cache-Control: private, post-check=900, pre-check=$seconds_to_cache, max-age=$seconds_to_cache");
-}
+header('X-Permitted-Cross-Domain-Policies: master-only');
 
-// cache 1 year
-header_set_cache(31536000);
+// set secure caching settings
+header('Expires: -1');
+header('Pragma: no-cache');
+header('Cache-Control: no-cache, no-store, must-revalidate');
 
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code
@@ -649,7 +645,7 @@ function date_from_offset($offset) {
 	}
 }
 
-function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
+function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_html_entities = false) {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 	global $dateOffset;
@@ -685,6 +681,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 		foreach ($foodMulti as $foodSingle) {
 			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
 			$foodSingle = cleanText($foodSingle);
+			$foodSingle_gui = $use_html_entities ? htmlentities($foodSingle) : $foodSingle;
 
 			if (empty($foodSingle) || mb_strlen($foodSingle) < 3)
 				continue;
@@ -692,7 +689,9 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 			$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
 			if (isset($_GET['minimal']))
 				$url .= '&minimal';
-			$replace_pairs[$foodSingle] = "<a class='{$a_class} no_decoration' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle}</a>";
+			if ($use_html_entities)
+				$url = htmlentities($url);
+			$replace_pairs[$foodSingle] = "<a class='{$a_class} no_decoration' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle_gui}</a>";
 		}
 		// replace via strtr and built replace_pairs to avoid
 		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
@@ -700,10 +699,13 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='') {
 	}
 	// if nothing found, replace whole string with link to stats
 	if (empty($replace_pairs)) {
+		$string_gui = $use_html_entities ? htmlentities($string) : $string;
 		$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
 		if (isset($_GET['minimal']))
 			$url .= '&minimal';
-		$string = "<a class='{$a_class} no_decoration' title='Statistik zu {$string}' href='{$url}'>{$string}</a>";
+		if ($use_html_entities)
+			$url = htmlentities($url);
+		$string = "<a class='{$a_class} no_decoration' title='Statistik zu {$string}' href='{$url}'>{$string_gui}</a>";
 	}
 
 	return $string;

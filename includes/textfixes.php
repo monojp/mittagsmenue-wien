@@ -17,7 +17,7 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	'gerösteten', 'gerösteter', 'geröstete', 'geriebenen', 'gehacktes', 'geschmortes', 'getrockneten', 'gekochtem', 'gekochtes', 'gekochter', 'gekocht',
 	'ofenwarmer', 'wiener', 'mexikanisches', 'französische', '| veg', 'WOKSPEZIALITÄT', 'tewas', ' -', 'klassische', 'gefolgt von',
 	' das ', ' des ', ' heute ', '　heutige　', ' bis', '　gleich　', '　lasst　', ' es ', ' euch ', '　schmecken　', '　duo　', '　mittagsmenü　', '　woracziczky　', '　wora　',
-	' gibt ', ' ein ', ' eine ',
+	' gibt ', ' ein ', ' eine ', 'leichter',
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.');
 

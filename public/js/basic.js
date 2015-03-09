@@ -347,36 +347,6 @@ function setDistance(distance) {
 	// update shown venues
 	get_venues_distance();
 }
-// shows an alert with the current location on a google map
-// also the nearest venues are shown
-function showLocation(el) {
-	// current location
-	var latlng = $('#lat').html() + "," + $('#lng').html();
-	var img_url = "https://maps.googleapis.com/maps/api/staticmap?center="+latlng+"&amp;zoom=15&amp;language=de&amp;size=400x300&amp;sensor=false"+
-	"&amp;markers=color:red|"+latlng;
-
-	// marker for each venue
-	var marker = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	var cnt = 0;
-	var key = "";
-	$.each($('[class="venueDiv"]:visible'), function() {
-		var latVenue = $(this).children('.lat').html();
-		var lngVenue = $(this).children('.lng').html();
-		var title = $(this).children('[class="title"]').children('a').html()
-
-		img_url += "&amp;markers=color:red|label:" + marker[cnt] + "|" + latVenue + "," + lngVenue;
-		if (cnt < 5)
-			key += marker[cnt] + ": " + title + "<br />";
-		cnt++;
-		if (cnt >= marker.length)
-			cnt = 0;
-	});
-
-	// show in alert
-	var data = '<img width="400" height="300" src="' + img_url + '"></img>';
-	data += '<br />' + '<div class="locationMapLegend" style="">' + key + '</div>';
-	alert(data, $('#location').html(), false, 425);
-}
 function get_venues_distance() {
 	// current location
 	var lat = $('#lat').html();
