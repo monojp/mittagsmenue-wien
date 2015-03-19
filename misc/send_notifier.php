@@ -45,8 +45,7 @@ $headers[] = "Precedence: bulk";
 $voting_over_time_print = date('H:i', $voting_over_time);
 
 // loop user configs and send emails
-$user_configs = user_config_get();
-foreach ((array)$user_configs as $ip => $user_config) {
+foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) {
 	$user = ip_anonymize($ip);
 	// get user config values
 	$email           = isset($user_config['email']) ? $user_config['email'] : '';
@@ -60,7 +59,7 @@ foreach ((array)$user_configs as $ip => $user_config) {
 		continue;
 
 	// user not voted, but wants mails only if votes => continue
-	if ($voted_mail_only && !isset($votes['venue'][$ip]))
+	if ($voted_mail_only && !isset($votes[$ip]))
 		continue;
 
 	// get/generate custom_userid_access_url
@@ -70,7 +69,7 @@ foreach ((array)$user_configs as $ip => $user_config) {
 	$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
 
 	// notify, votes exist and valid
-	if ($action == 'notify' && $votes && !empty($votes['venue'])) {
+	if ($action == 'notify' && $votes && !empty($votes)) {
 		// build html
 		$html = vote_summary_html($votes, true, false);
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
@@ -81,7 +80,7 @@ foreach ((array)$user_configs as $ip => $user_config) {
 			echo "error sending email to {$email}";
 	}
 	// remind
-	else if ($action == 'remind' && $vote_reminder && !isset($votes['venue'][$ip])) {
+	else if ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
 		// build html
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
@@ -93,9 +92,9 @@ foreach ((array)$user_configs as $ip => $user_config) {
 	}
 	// dryrun to check who will get emails
 	else if ($action == 'dryrun') {
-		if ($vote_reminder && !isset($votes['venue'][$ip]))
+		if ($vote_reminder && !isset($votes[$ip]))
 			echo "would send a remind email to {$email}\n";
-		else if ($votes && !empty($votes['venue']))
+		else if ($votes && !empty($votes))
 			echo "would send a notify email to {$email}\n";
 	}
 	// remind html output test

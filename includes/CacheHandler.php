@@ -6,8 +6,9 @@ abstract class CacheHandler {
 	protected $dataSource = null;
 	protected $timestamp = null;
 
-	abstract public function saveToCache(&$date, &$price, &$data);
-	abstract public function getFromCache(&$date, &$price, &$data);
+	abstract public function saveToCache($dataSource, $date, $price, $data);
+	abstract public function getFromCache($dataSource, &$date, &$price, &$data);
+	abstract public function updateCache($dataSource, $date, $price, $data);
 	abstract public function queryCache($dataSourceKeyword, $dataKeyword);
 	abstract public function deleteFromCache($timestamp, $dataSource);
 }

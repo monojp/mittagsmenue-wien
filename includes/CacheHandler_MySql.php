@@ -1,56 +1,25 @@
 <?php
 
 require_once(__DIR__ . '/CacheHandler.php');
-
-define('CacheHandler_MySql_DEBUG', false);
+require_once(__DIR__ . '/MysqlConnection.php');
 
 class CacheHandler_MySql extends CacheHandler {
+
+	private static $instance;
 	protected $db = null;
 
-	function __construct($dataSource=null, $timestamp=null) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::__construct');
-		$this->dataSource = $dataSource;
+	function __construct($timestamp=null) {
 		$this->timestamp = $timestamp;
-
-		// open db connection, try different configs after each other if connection fails
-		global $DB_CONFIGS;
-		// shuffle db configs to balance data on all dbs
-		//shuffle($DB_CONFIGS);
-		$this->db = mysqli_init();
-		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 1)) {
-			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
-		}
-		$db_connect_ok = false;
-		foreach ($DB_CONFIGS as $db_config) {
-			if (!$this->db->real_connect($db_config['DB_SERVER'], $db_config['DB_USER'], $db_config['DB_PASSWORD'], $db_config['DB_NAME']))
-				error_log('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
-			else {
-				$db_connect_ok = true;
-				break;
-			}
-		}
-		if (!$db_connect_ok) {
-			$this->db = null;
-			return;
-		}
-		$this->db->query("SET NAMES 'utf8'");
+		$this->db = MysqlConnection::getInstance()->getConnection();
 	}
 
-	function __destruct() {
-		// abort on error
-		if (!$this->db)
-			return null;
-		$this->db->close();
+	public static function getInstance($timestamp=null) {
+		if (is_null(self::$instance))
+			self::$instance = new self($timestamp);
+		return self::$instance;
 	}
 
-	public function saveToCache(&$date, &$price, &$data) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::saveToCache');
-		// abort on error
-		if (!$this->db)
-			return null;
-
+	public function saveToCache($dataSource, $date, $price, $data) {
 		$data = cleanText($data);
 
 		// avoid saving some data
@@ -59,7 +28,6 @@ class CacheHandler_MySql extends CacheHandler {
 			return;
 
 		if ($data && !empty($data)) {
-			$dataSource = $this->dataSource;
 			$timestamp = date('Y-m-d', $this->timestamp);
 			// update 2013-07-23: use json instead of serialized data
 			// because of better read- & editability
@@ -79,15 +47,7 @@ class CacheHandler_MySql extends CacheHandler {
 		}
 	}
 
-	public function getFromCache(&$date, &$price, &$data) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::getFromCache');
-
-		// abort on error
-		if (!$this->db)
-			return null;
-
-		$dataSource = $this->dataSource;
+	public function getFromCache($dataSource, &$date, &$price, &$data) {
 		$timestamp = date('Y-m-d', $this->timestamp);
 		global $cacheDataDelete;
 
@@ -123,7 +83,7 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// get rid of unusable (e.g. free day, ..) data
 		if (stringsExist($data, $cacheDataDelete) !== false) {
-			$this->deleteFromCache($this->timestamp, $this->dataSource);
+			$this->deleteFromCache($this->timestamp, $dataSource);
 			return true;
 		}
 
@@ -135,15 +95,7 @@ class CacheHandler_MySql extends CacheHandler {
 		return true;
 	}
 
-	public function updateCache($date, $price, $data) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::updateCache');
-
-		// abort on error
-		if (!$this->db)
-			return null;
-
-		$dataSource = $this->dataSource;
+	public function updateCache($dataSource, $date, $price, $data) {
 		$timestamp = date('Y-m-d', $this->timestamp);
 		// update 2013-07-23: use json instead of serialized data
 		// because of better read- & editability
@@ -168,12 +120,6 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function queryCache($dataSourceKeyword, $dataKeyword) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::queryCache');
-		// abort on error
-		if (!$this->db)
-			return null;
-
 		$return = array();
 		$dataSourceKeyword = "%${dataSourceKeyword}%";
 		$dataKeyword = "%${dataKeyword}%";
@@ -204,12 +150,6 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function deleteFromCache($timestamp, $dataSource) {
-		if (CacheHandler_MySql_DEBUG)
-			error_log('CacheHandler_MySql::deleteFromCache');
-		// abort on error
-		if (!$this->db)
-			return null;
-
 		// prepare statement
 		if (!($stmt = $this->db->prepare("DELETE FROM foodCache WHERE timestamp=? AND dataSource=?")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);

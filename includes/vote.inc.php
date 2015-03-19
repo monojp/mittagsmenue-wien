@@ -2,9 +2,10 @@
 
 require_once(__DIR__ . '/venues.php');
 require_once(__DIR__ . '/nearplaces.inc.php');
+require_once(__DIR__ . '/VoteHandler_MySql.php');
 
-define('VOTE_FILE', TMP_PATH . 'votes.json');
 define('VOTE_NOTE_MAX_LENGTH', 128);
+define('VOTE_DATE_FORMAT', 'Y-m-d');
 
 function ip_username_sort($a, $b) {
 	$a_real = ip_anonymize($a);
@@ -18,9 +19,9 @@ function returnVotes($votes) {
 	global $voting_over_time;
 	$html_return = (get_var('html') !== null) | (get_var('html/') !== null);
 
-	if (isset($votes['venue']) && !empty($votes['venue'])) {
-		if (is_array($votes['venue']))
-			uksort($votes['venue'], 'ip_username_sort');
+	if (!empty($votes)) {
+		if (is_array($votes))
+			uksort($votes, 'ip_username_sort');
 
 		if ($html_return) {
 			require_once('guihelper.php');
@@ -69,50 +70,23 @@ function returnVotes($votes) {
 	}
 }
 
-function saveReturnVotes($votes) {
-	global $voting_over_time;
-
-	// save timestamp to delete old votings
-	$votes['access'] = time();
-
-	// save votes to file
-	if (file_put_contents(VOTE_FILE, json_encode($votes)) === FALSE)
-		echo json_encode(array('alert' => "Das Voting konnte nicht gesetzt werden!"));
-	// sort and return votes
-	returnVotes($votes);
+function vote_allowed() {
+	global $timestamp, $voting_over_time;
+	return (
+		is_intern_ip() &&
+		date('Ymd') < date('Ymd', $timestamp) ||
+		(date('Ymd') == date('Ymd', $timestamp) && time() < $voting_over_time)
+	);
 }
 
 function check_voting_time() {
-	global $voting_over_time;
-
-	if (time() >= $voting_over_time) {
-		$voting_over_time_print = date('H:i', $voting_over_time);
-		echo json_encode(array('alert' => "Das Voting hat um $voting_over_time_print geendet!"));
-		exit;
-	}
+	if (!vote_allowed())
+		exit(json_encode(array('alert' => "Das Voting ist bereits beendet!")));
 }
 
 function getAllVotes() {
-	$votes = array();
-
-	if (file_exists(VOTE_FILE)) {
-		$votes = json_decode(file_get_contents(VOTE_FILE), true);
-		// corrupt file
-		if (!$votes)
-			$votes = array();
-
-		// clear old (5 hours) vote data
-		if ($votes['access'] < strtotime('-5 hours'))
-			$votes = array();
-	}
-
-	return $votes;
-}
-
-// gets the vote of the user
-function getUserVote() {
-	$votes = getAllVotes();
-	return isset($votes['venue'][get_identifier_ip()]) ? $votes['venue'][get_identifier_ip()] : null;
+	global $timestamp;
+	return VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp));
 }
 
 // tries to get the website from the venue class
@@ -170,47 +144,115 @@ function votes_adapt($votes, $user, $show_js_actions = true) {
 	return $votes;
 }
 
-function vote_summary_html($votes, $display_menus = false, $show_js_actions = true) {
+function vote_get_rankings($votes, $preserve_only_top=3) {
+	// get venue ratings
+	$venue_rating = array();
+
+	foreach ($votes as $user => $vote_data) {
+		foreach ($vote_data as $venue => $vote) {
+			if (is_array($vote)) {
+				foreach ($vote as $vote_part) {
+					if (!isset($venue_rating[$venue]))
+						$venue_rating[$venue] = ($vote_part == 'up') ? 1 : -1;
+					else
+						$venue_rating[$venue] += ($vote_part == 'up') ? 1 : -1;
+				}
+			}
+			else if ($venue != 'special') {
+				if (!isset($venue_rating[$venue]))
+					$venue_rating[$venue] = ($vote == 'up') ? 1 : -1;
+				else
+					$venue_rating[$venue] += ($vote == 'up') ? 1 : -1;
+			}
+		}
+	}
+
+	// remove <= 0 rankings
+	foreach ($venue_rating as $key => $value)
+		if ($value <= 0)
+			unset($venue_rating[$key]);
+
+	$ratings = array_values($venue_rating);
+	rsort($ratings);
+
+	// build new grouped by rating list
+	$venue_rating_final = array();
+	foreach ($ratings as $rating) {
+
+		$venue_rating_final[$rating] = array_keys($venue_rating, $rating);
+	}
+
+	// only preserve top x for rating
+	if ($preserve_only_top)
+		$venue_rating_final = array_slice($venue_rating_final, 0, $preserve_only_top, true);
+
+	return $venue_rating_final;
+}
+
+function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_actions=true) {
+	$html = '<table style="border-spacing: 5px">';
+	$html .= "<tr><td><b>${title}</b></td></tr>";
+	$cnt = 1;
+	// get all sane rating count
+	$all_sane_rating_cnt = 0;
+	foreach ($rankings as $rating => $venues) {
+		$all_sane_rating_cnt += $rating;
+	}
+	foreach ($rankings as $rating => $venues) {
+		// resolve class names to venue titles
+		foreach ($venues as &$venue_class) {
+			$website = getWebsiteFromVenueClass($venue_class);
+			$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
+			$venue_class = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
+		}
+		unset($venue_class);
+
+		// mark venues which got >= 50% sane ratings
+		// but only if there are multiple venues
+		if (count($rankings) > 1 && ($rating / $all_sane_rating_cnt) >= 0.5)
+			$html .= "<tr><td title='Votes >= 50%' style='font-weight: bold'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+		else
+			$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+		$cnt++;
+	}
+	if (empty($rankings))
+		$html .= '<tr><td>Kein Ergebnis</td></tr>';
+	$html .= '</table>';
+
+	// print menu of rated venues (for email notifier)
+	if ($display_menus) {
+		$html_menu = '';
+		foreach ((array)$rankings as $venues) {
+			foreach ((array)$venues as $venue_class) {
+				//error_log($venue_class);
+				if (class_exists($venue_class)) {
+					$venueTmp = new $venue_class;
+					//error_log($venueTmp->getMenuData());
+					//error_log($venueTmp->title);
+					$html_menu .= "<div style='margin: 10px 5px'><span style='font-weight: bold'>{$venueTmp->title}</span>{$venueTmp->getMenuData()}</div>";
+				}
+			}
+		}
+		if (!empty($html_menu)) {
+			$html .= '<br />';
+			$html .= '<div style="margin: 5px; font-weight: bold">Menüs:</div>';
+			$html .= $html_menu;
+		}
+	}
+	return $html;
+}
+
+function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) {
+	global $timestamp;
 	$html = '';
 
 	// minimal => no vote actions
 	if (isset($_GET['minimal']))
 		$show_js_actions = false;
 
-	if (isset($votes['venue']) && is_array($votes['venue']) && !empty($votes['venue'])) {
-		// get venue ratings
-		$venue_rating = array();
-
-		foreach ($votes['venue'] as $user => $vote_data) {
-			foreach ($vote_data as $venue => $vote) {
-				if ($venue != 'special') {
-					if (!isset($venue_rating[$venue]))
-						$venue_rating[$venue] = ($vote == 'up') ? 1 : -1;
-					else
-						$venue_rating[$venue] += ($vote == 'up') ? 1 : -1;
-				}
-			}
-		}
-
-		// remove <= 0 rankings
-		foreach ($venue_rating as $key => $value)
-			if ($value <= 0)
-				unset($venue_rating[$key]);
-
-		$ratings = array_values($venue_rating);
-		rsort($ratings);
-
-		// build new grouped by rating list
-		$venue_rating_final = array();
-		foreach ($ratings as $rating) {
-			$venue_rating_final[$rating] = array_keys($venue_rating, $rating);
-		}
-
-		// only preserve top 3 for rating
-		//$venue_rating_final = array_slice($venue_rating_final, 0, 3, true);
-
+	if (!empty($votes)) {
 		// table with details
-		uksort($votes['venue'], 'ip_username_sort');
+		uksort($votes, 'ip_username_sort');
 		// note: use inline style here for email
 		$html .= '<table style="border-spacing: 5px"><tr>
 			<th style="text-align: center"><b>Benutzer</b></th>
@@ -218,7 +260,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			<th style="text-align: center"><b>Vote Downs</b></th>
 			<th style="text-align: center"><b>Notizen</b></th>
 		</tr>';
-		foreach ($votes['venue'] as $user => $vote_data) {
+		foreach ($votes as $user => $vote_data) {
 			$upVotes = array_keys($vote_data, 'up');
 			$downVotes = array_keys($vote_data, 'down');
 			$specialVote = isset($vote_data['special']) ? $vote_data['special'] : null;
@@ -227,14 +269,14 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			sort($downVotes);
 
 			// style adaptions according to vote
-			if ($specialVote == 'Verweigerung')
+			if (mb_stripos($specialVote, 'verweigerung') !== false)
 				$row_style = 'color: #f99';
-			else if ($specialVote == 'Egal')
+			else if (mb_stripos($specialVote, 'egal') !== false)
 				$row_style = 'color: #999';
 			else
 				$row_style = '';
 
-			$upVotes = votes_adapt($upVotes, $user, $show_js_actions);
+			$upVotes   = votes_adapt($upVotes, $user, $show_js_actions);
 			$downVotes = votes_adapt($downVotes, $user, $show_js_actions);
 
 			// cleanup other data for output
@@ -265,60 +307,36 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>
 				<td style='$upVotes_style'>{$upVotes}</td>
 				<td style='$downVotes_style'>{$downVotes}</td>
-				<td style='$specialVote_style'>{$specialVote}</td>
+				<td class='convert-emoji' style='$specialVote_style'>{$specialVote}</td>
 			</tr>";
 		}
 		$html .= '</table>';
 
-		// top ratings
-		// last changed date
-		$access_time = date('H:i', $votes['access']);
-		$html .= '<table style="border-spacing: 5px">';
-		$html .= "<tr><td><b>Ranking (<span title='Letzte Änderung'>${access_time}</span>):</b></td></tr>";
-		$cnt = 1;
-		// get all sane rating count
-		$all_sane_rating_cnt = 0;
-		foreach ($venue_rating_final as $rating => $venues) {
-			$all_sane_rating_cnt += $rating;
-		}
-		foreach ($venue_rating_final as $rating => $venues) {
-			// resolve class names to venue titles
-			foreach ($venues as &$venue_class) {
-				$website = getWebsiteFromVenueClass($venue_class);
-				$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-				$venue_class = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
-			}
-			unset($venue_class);
-
-			// mark venues which got >= 50% sane ratings
-			// but only if there are multiple venues
-			if (count($venue_rating_final) > 1 && ($rating / $all_sane_rating_cnt) >= 0.5)
-				$html .= "<tr><td title='Votes >= 50%' style='font-weight: bold'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
-			else
-				$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
-			$cnt++;
-		}
-		if (empty($venue_rating_final))
-			$html .= '<tr><td>Kein Ergebnis</td></tr>';
-		$html .= '</table>';
-
-		// print menu of rated venues (for email notifier)
-		if ($display_menus) {
-			$html_menu = '';
-			foreach ((array)$venue_rating_final as $venues) {
-				foreach ((array)$venues as $venue_class) {
-					if (class_exists($venue_class)) {
-						$venueTmp = new $venue_class;
-						$html_menu .= "<div style='margin: 10px 5px'><span style='font-weight: bold'>{$venueTmp->title}</span>{$venueTmp->getMenuData()}</div>";
-					}
-				}
-			}
-			if (!empty($html_menu)) {
-				$html .= '<br />';
-				$html .= '<div style="margin: 5px; font-weight: bold">Menüs:</div>';
-				$html .= $html_menu;
-			}
-		}
+		// current ranking
+		$html .= '<table><tbody><tr>';
+		$html .= '<td style="vertical-align: top">';
+		$html .= ranking_summary_html(
+			vote_get_rankings($votes),
+			'Tages-Ranking:',
+			$display_menus,
+			$show_js_actions
+		);
+		$html .= '</td>';
+		// weekly ranking
+		$html .= '<td style="vertical-align: top">';
+		$html .= ranking_summary_html(
+			vote_get_rankings(
+				VoteHandler_MySql::getInstance($timestamp)->get_weekly(
+					date('W', $timestamp),
+					date('Y', $timestamp)
+				)
+			),
+			'Wochen-Ranking:',
+			false,
+			$show_js_actions
+		);
+		$html .= '</td>';
+		$html .= '</tr></tbody></table>';
 	}
 	else
 		$html = "<div style='margin: 5px'>Noch keine Daten vorhanden</div>";

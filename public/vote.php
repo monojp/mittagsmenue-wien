@@ -5,113 +5,62 @@ require_once('../includes/vote.inc.php');
 
 global $voting_over_time;
 
-if (!is_intern_ip()) {
-	echo json_encode(array('alert' => js_message_prepare('Zugriff verweigert!')));
-	exit;
-}
+if (!is_intern_ip())
+	exit(json_encode(array('alert' => js_message_prepare('Zugriff verweigert!'))));
 
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
-$ip = get_identifier_ip();
-
-$action = get_var('action');
+$ip         = get_identifier_ip();
+$action     = get_var('action');
 
 // --------------
 // handle actions
 if (!$action)
 	exit(json_encode(array('alert' => js_message_prepare('Es wurde keine Aktion übertragen!'))));
 
-
-$votes = getAllVotes();
-
 // delete vote
 if ($action == 'vote_delete') {
 	check_voting_time();
 
-	unset($votes['venue'][$ip]);
-
-	saveReturnVotes($votes);
+	VoteHandler_MySql::getInstance($timestamp)->delete(date(VOTE_DATE_FORMAT, $timestamp), $ip);
 }
 // delete a vote part
 else if ($action == 'vote_delete_part') {
 	check_voting_time();
 
-	if (!$identifier) {
-		echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
-		exit;
-	}
+	if (!$identifier)
+		exit(json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!'))));
 
-	unset($votes['venue'][$ip][$identifier]);
-
-	// no user votes anymore? remove whole user info
-	if (empty($votes['venue'][$ip]))
-		unset($votes['venue'][$ip]);
-
-	saveReturnVotes($votes);
+	VoteHandler_MySql::getInstance($timestamp)->delete(date(VOTE_DATE_FORMAT, $timestamp), $ip, $identifier);
 }
-// vote up
-else if ($action == 'vote_up') {
+// vote up/down
+else if (in_array($action, array('vote_up', 'vote_down'))) {
 	check_voting_time();
 
-	if (!$identifier) {
-		echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
-		exit;
-	}
+	if (!$identifier)
+		exit(json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!'))));
 
-	$votes['venue'][$ip][$identifier] = 'up';
-	ksort($votes['venue'][$ip]);
-
-	// limit amount of up votes
-	$down_cnt = 0;
-	foreach ($votes['venue'][$ip] as $vote) {
-		if ($vote == 'up')
-			$down_cnt++;
-	}
-	if ($down_cnt > 3) {
-		echo json_encode(array('alert' => js_message_prepare('Bitte nicht mehr als 3 Lokale aufwerten. Es kann auch "Egal" gevoted werden ;)')));
-		exit;
-	}
+	$vote = ($action == 'vote_up') ? 'up' : 'down';
+	if (empty(VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip, $identifier)))
+		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp), $ip, $identifier, $vote);
 	else
-		saveReturnVotes($votes);
-}
-// vote down
-else if ($action == 'vote_down') {
-	check_voting_time();
-
-	if (!$identifier) {
-		echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
-		exit;
-	}
-
-	$votes['venue'][$ip][$identifier] = 'down';
-	ksort($votes['venue'][$ip]);
-
-	// limit amount of down votes
-	$down_cnt = 0;
-	foreach ($votes['venue'][$ip] as $vote) {
-		if ($vote == 'down')
-			$down_cnt++;
-	}
-	if ($down_cnt > 3) {
-		echo json_encode(array('alert' => js_message_prepare('Bitte nicht mehr als 3 Lokale abwerten. Es kann auch "Verweigerung" gevoted werden ;)')));
-		exit;
-	}
-	else
-		saveReturnVotes($votes);
+		VoteHandler_MySql::getInstance($timestamp)->update(date(VOTE_DATE_FORMAT, $timestamp), $ip, $identifier, $vote);
 }
 // vote special
 else if ($action == 'vote_special') {
 	check_voting_time();
 
-	if (!$identifier) {
-		echo json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!')));
-		exit;
-	}
+	if (!$identifier)
+		exit(json_encode(array('alert' => js_message_prepare('Es wurde kein Identifier angegeben!'))));
 
 	$votes['venue'][$ip]['special'] = $identifier;
 	ksort($votes['venue'][$ip]);
 
-	saveReturnVotes($votes);
+	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special');
+	if (empty($vote_data))
+		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special', $identifier);
+	else
+		VoteHandler_MySql::getInstance($timestamp)->update(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special', $identifier);
 }
 // set note
 else if ($action == 'vote_set_note') {
@@ -120,30 +69,15 @@ else if ($action == 'vote_set_note') {
 	$note = trim($_POST['note']);
 
 	// check vote length
-	if (strlen($note) > VOTE_NOTE_MAX_LENGTH) {
-		echo json_encode(array('alert' => js_message_prepare('Die Notiz ist zu lange! Es sind max. ' . VOTE_NOTE_MAX_LENGTH . ' Zeichen erlaubt!')));
-		exit;
-	}
+	if (strlen($note) > VOTE_NOTE_MAX_LENGTH)
+		exit(json_encode(array('alert' => js_message_prepare('Die Notiz ist zu lange! Es sind max. ' . VOTE_NOTE_MAX_LENGTH . ' Zeichen erlaubt!'))));
 
-	// check vote via regex
-	// UPDATE: not used anymore because everything is well escaped and formatted
-	/*if (!preg_match('/^[A-Za-z0-9äöüß@ ,;\/\.:_#\*\?\!()-]*$/', $note)) {
-		echo json_encode(array('alert' => js_message_prepare('Die Notiz enthält ungültige Sonderzeichen. Erlaubt sind folgende Zeichen: A-Z, a-z, 0-9, "@", ",", ";", ".", ":", "_", "#", "*", "?", "!", "-", "(", ")", "/" und Umlaute')));
-		exit;
-	}*/
-
-	$votes['venue'][$ip]['special'] = $note;
-	ksort($votes['venue'][$ip]);
-
-	// delete entry if empty note is the only vote
-	if (empty($note) && count($votes['venue'][$ip]) == 1)
-		unset($votes['venue'][$ip]);
-
-	saveReturnVotes($votes);
+	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special');
+	if (empty($vote_data))
+		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special', $note);
+	else
+		VoteHandler_MySql::getInstance($timestamp)->update(date(VOTE_DATE_FORMAT, $timestamp), $ip, 'special', $note);
 }
-// get all votes
-else if ($action == 'vote_get')
-	returnVotes($votes);
-// undefined action
-else
-	echo json_encode(array('alert' => js_message_prepare('Die übertragene Aktion ist ungültig!')));
+
+// return all votes
+returnVotes(getAllVotes());

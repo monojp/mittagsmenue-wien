@@ -9,7 +9,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->addressLat = '48.193692';
 		$this->addressLng = '16.358687';
 		$this->url = 'http://www.waldviertlerhof.at/';
-		$this->dataSource = 'http://www.waldviertlerhof.at/assets/w4h-mittagsmenue2.pdf';
+		$this->dataSource = 'http://www.waldviertlerhof.at/assets/w4h_mittagsmenue.pdf';
 		$this->menu = 'http://www.waldviertlerhof.at/assets/w4h_speisen_getränke2.pdf';
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days = array(0, 6);

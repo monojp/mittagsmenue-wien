@@ -4,8 +4,8 @@ require_once(__DIR__ . '/dependencycheck.php');
 require_once(__DIR__ . '/config.php');
 require_once(__DIR__ . '/textfixes.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
+require_once(__DIR__ . '/UserHandler_MySql.php');
 require_once(__DIR__ . '/customuserid.inc.php');
-require_once(__DIR__ . '/users.inc.php');
 
 mb_internal_encoding('UTF-8');
 
@@ -38,8 +38,8 @@ if (
  */
 $dateOffset = $timestamp = $date_GET = 0;
 // (new) cachesafe offset via date
-if (isset($_GET['date']) && is_string($_GET['date'])) {
-	$date_GET = trim($_GET['date']);
+$date_GET = get_var('date');
+if ($date_GET) {
 	$date = strtotime($date_GET);
 	if ($date) {
 		$date = new DateTime($date_GET);
@@ -280,16 +280,8 @@ function is_intern_ip() {
 	return false;
 }
 function show_voting() {
-	//return true; // DEBUG
-	global $dateOffset;
-	global $voting_show_start;
-	global $voting_show_end;
-
 	return (
-		is_intern_ip() &&
-		$dateOffset == 0 &&
-		time() >= $voting_show_start &&
-		time() <= $voting_show_end
+		is_intern_ip()
 	);
 }
 
@@ -318,8 +310,7 @@ function getCacheData($keyword, $foodKeyword) {
 	$compositionsAbsolute = array(); // list of compositions without ingredience association
 	$datasetSize = 0;
 
-	$cacheHandler = new CacheHandler_MySql();
-	$result = $cacheHandler->queryCache($keyword, $foodKeyword);
+	$result = CacheHandler_MySql::getInstance()->queryCache($keyword, $foodKeyword);
 
 	foreach ((array)$result as $row) {
 		$food = $row['data'];
@@ -704,10 +695,10 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_
 
 // gets an anonymized name of an ip
 function ip_anonymize($ip = null) {
-	$user_config = user_config_get();
-
 	if (!$ip)
 		$ip = get_identifier_ip();
+
+	$user_config = reset(UserHandler_MySql::getInstance()->get($ip));
 
 	// do ip <=> name stuff
 	// anonymyze ip
@@ -717,8 +708,8 @@ function ip_anonymize($ip = null) {
 		$ip_parts[$i] = 'x';
 	$ipPrint = implode('.', $ip_parts);
 	// set username
-	if (isset($user_config[$ip]['name']))
-		$ipPrint = $user_config[$ip]['name'];
+	if (isset($user_config['name']))
+		$ipPrint = $user_config['name'];
 	else if (is_intern_ip())
 		$ipPrint = 'Guest_' . $ipLast;
 	else
@@ -823,4 +814,13 @@ function strtotimep($time, $format, $timestamp = null) {
 	$year  = empty($date['tm_year']) ? date('Y', $timestamp) : $date['tm_year'];
 
 	return mktime($hour, $min, $sec, $month, $day, $year);
+}
+
+function getStartAndEndDate($week, $year) {
+	$dto = new DateTime();
+	$dto->setISODate($year, $week);
+	$ret[] = $dto->format('Y-m-d');
+	$dto->modify('+6 days');
+	$ret[] = $dto->format('Y-m-d');
+	return $ret;
 }

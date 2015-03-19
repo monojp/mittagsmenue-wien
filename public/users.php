@@ -13,16 +13,17 @@ if ($action == 'user_config_set') {
 	$ip              = get_identifier_ip();
 	$name            = get_var('name');
 	$email           = get_var('email');
-	$vote_reminder   = get_var('vote_reminder');
-	$voted_mail_only = get_var('voted_mail_only');
+	$vote_reminder   = (get_var('vote_reminder') == 'true');
+	$voted_mail_only = (get_var('voted_mail_only') == 'true');
 
 	if ($email != filter_var($email, FILTER_VALIDATE_EMAIL))
 		echo json_encode(array('alert' => js_message_prepare('Die Email-Adresse ist ungültig!')));
 	else {
-		if (user_config_set($ip, $name, $email, $vote_reminder, $voted_mail_only) == false)
-			echo json_encode(array('alert' => js_message_prepare('Fehler beim Speichern der Benutzer-Daten!')));
+		if (empty(UserHandler_MySql::getInstance()->get($ip)))
+			UserHandler_MySql::getInstance()->save($ip, $name, $email, $vote_reminder, $voted_mail_only, null /*TODO*/);
 		else
-			echo json_encode(true);
+			UserHandler_MySql::getInstance()->update($ip, $name, $email, $vote_reminder, $voted_mail_only, null /*TODO*/);
+		echo json_encode(true);
 	}
 }
 // invalid action

@@ -73,13 +73,11 @@ abstract class FoodGetterVenue {
 
 	// writes data to the cache
 	protected function cacheWrite() {
-		$cache = new CacheHandler_MySql($this->dataSource, $this->timestamp);
-		$cache->saveToCache($this->date, $this->price, $this->data);
+		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->dataSource, $this->date, $this->price, $this->data);
 	}
 	// reads data from the cache
 	protected function cacheRead() {
-		$cacheNew = new CacheHandler_MySql($this->dataSource, $this->timestamp);
-		$this->dataFromCache = $cacheNew->getFromCache($this->date, $this->price, $this->data);
+		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache($this->dataSource, $this->date, $this->price, $this->data);
 	}
 
 	private function get_ajax_venue_code($date_GET, $cache = true) {
@@ -131,7 +129,7 @@ abstract class FoodGetterVenue {
 			$wantedWeekYear = date('YW', $this->timestamp);
 			//error_log(date('W', $this->timestamp));
 			if (
-				($currentWeekYear == $wantedWeekYear) ||	// current week only
+				($currentWeekYear == $wantedWeekYear) || // current week only
 				($this->lookaheadSafe && $currentWeekYear < $wantedWeekYear) || // lookaheadsafe menus work with future weeks also
 				($this->lookaheadSafe && $wantedWeekYear == 1) // because of ISO 8601 last week of year is sometimes returned as 1
 			)

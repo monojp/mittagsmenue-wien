@@ -18,7 +18,6 @@ $DB_CONFIGS = array(
 );
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
-define('USERS_FILE', TMP_PATH . 'users.json');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 define('USE_SSL', true);
 
@@ -60,6 +59,10 @@ if (date('N') == 5)
 	$voting_over_time = strtotime('14:00');
 else
 	$voting_over_time = strtotime('11:50');
+
+$changelog = array(
+	//strtotime('1970-01-01') => 'New features: x & y',
+);
 
 $tracking_code = "";
 

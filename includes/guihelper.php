@@ -89,15 +89,21 @@ function get_location_dialog_html() {
 }
 
 function get_note_dialog_html() {
-	$vote = getUserVote();
-	$note = isset($vote['special']) ? $vote['special'] : '';
+	global $timestamp;
+	$ip        = get_identifier_ip();
+	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip);
+	$note      = isset($vote_data[$ip]['special']) ? $vote_data[$ip]['special'] : '';
 	return '
 		<div id="setNoteDialog" class="hidden">
 			<form id="noteForm" action="index.php">
 				<fieldset>
 					<label for="noteInput">Notiz</label>
 					<br />
-					<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+					<input type="text" name="note" id="noteInput" title="Emojis werden durch Eingabe von \':\' gesucht/vorgeschlagen" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+					<br /><br />
+					<span>Vorschau</span>
+					<br />
+					<div id="notePreview" style="margin: .5em 0"></div>
 				</fieldset>
 			</form>
 		</div>
@@ -136,12 +142,15 @@ function get_piwik_user_id_script() {
 function get_alt_venue_and_vote_setting_dialog() {
 	global $voting_over_time;
 
+	$ip = get_identifier_ip();
+
+	$user_config = reset(UserHandler_MySql::getInstance()->get($ip));
+
 	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email_config = user_config_get(get_identifier_ip());
-	$email = isset($email_config['email']) ? $email_config['email'] : '';
-	$vote_reminder = isset($email_config['vote_reminder']) ? $email_config['vote_reminder'] : false;
+	$email = isset($user_config['email']) ? $user_config['email'] : '';
+	$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-	$voted_mail_only = isset($email_config['voted_mail_only']) ? $email_config['voted_mail_only'] : false;
+	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
 	$custom_userid_gui_output = '';
@@ -222,7 +231,7 @@ function get_vote_div_html() {
 
 	$vote_loader = '';
 
-	if (time() >= $voting_over_time)
+	if (!vote_allowed())
 		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
 	else {
 		$vote_loader = '

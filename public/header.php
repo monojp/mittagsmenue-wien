@@ -28,6 +28,9 @@ if (USE_MINIMZED_JS_CSS_HTML) {
 // basic css
 echo '
 	<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($stylesCSS) . '" />
+	<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('css/jquery.textcomplete.css') . '" />
+	<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('emojione/emojione.min.css') . '" />
+	<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('emojione/sprites/emojione.sprites.css') . '" />
 ';
 // javascript
 if (!isset($_GET['minimal']))
@@ -35,7 +38,9 @@ if (!isset($_GET['minimal']))
 		<script src="' . cacheSafeUrl($headLoadJS) . '" type="text/javascript"></script>
 		<script type="text/javascript">
 			head.js(
-				{scripts: "' . cacheSafeUrl($scriptsJS) . '"}
+				{scripts: "' . cacheSafeUrl($scriptsJS) . '"},
+				{textcomplete: "' . cacheSafeUrl('js/jquery.textcomplete.min.js') . '"},
+				{emojione: "' . cacheSafeUrl('emojione/emojione.min.js') . '"}
 			);
 		</script>
 	';

@@ -86,4 +86,17 @@ if (!isset($_GET['minimal']))
 
 echo '<div id="noVenueFoundNotifier" style="display: none"><p>Es wurde leider nichts gefunden :(<br />Bitte ändern Sie den Ausgangsort und/oder den Umkreis.</p></div>';
 
+// changelog
+if (!empty($changelog)) {
+	echo '<div id="changelog" style="display: none; max-height: 15em ! important;">';
+	krsort($changelog);
+	foreach ($changelog as $time => $entry) {
+		$time  = date('Y-m-d', $time);
+		$entry = htmlspecialchars($entry);
+		echo "<h4 style='margin:.5em 0;'>${time}</h4><div>${entry}</div>";
+	}
+	echo '<div id="changelog_latest" style="display: none;">' . reset(array_keys($changelog)) . '</div>';
+	echo '</div>';
+}
+
 require_once('footer.php');
