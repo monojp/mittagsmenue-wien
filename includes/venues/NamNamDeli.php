@@ -49,8 +49,14 @@ class NamNamDeli extends FoodGetterVenue {
 			return;
 
 		$weekday = date('w', $this->timestamp);
-		if ($weekday == 5) // friday
+		if ($weekday == 5) { // friday
 			$posEnd = mb_stripos($dataTmp, 'Daily Menu Specials', $posStart);
+			if ($posEnd === false) {
+				$posEnd = mb_stripos($dataTmp, 'Menus of the Week', $posStart);
+				if ($posEnd === false)
+					return;
+			}
+		}
 		else
 			$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
