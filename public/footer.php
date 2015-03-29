@@ -25,7 +25,7 @@ if (META_KEYWORDS)
 if (META_DESCRIPTION)
 	$key_desc = array_merge($key_desc, explode(',', META_DESCRIPTION));
 $key_desc = array_unique($key_desc);
-echo '<br /><br />Keywords: ' . implode(', ', $key_desc);
+//echo '<br /><br />Keywords: ' . implode(', ', $key_desc);
 
 echo '<br /><br />' . get_allergen_info() . '<div style="clear:both"></div>';
 

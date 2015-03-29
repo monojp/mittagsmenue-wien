@@ -232,7 +232,7 @@ function cleanText($text) {
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
 	$text = str_replace_array(array('`', '´'), '', $text);
 	$text = str_replace_wrapper($searchReplace, $text);
-	$text = trim($text, "., \t\n\r\0\x0B");
+	$text = trim($text, " ., \t\n\r\0\x0B");
 
 	return $text;
 }

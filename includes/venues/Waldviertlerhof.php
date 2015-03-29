@@ -4,7 +4,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Waldviertlerhof';
-		$this->title_notifier = 'BETA';
+		//$this->title_notifier = 'BETA';
 		$this->address = 'Schönbrunnerstrasse 20, 1050 Wien';
 		$this->addressLat = '48.193692';
 		$this->addressLng = '16.358687';
@@ -32,10 +32,10 @@ class Waldviertlerhof extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// check date range
-		preg_match('/[\d]+\.(.)+(-|—|bis)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
+		preg_match('/([\d]+\.)+\s*(-|—|–|bis)\s*([\d]+\.)+/', $dataTmp, $date_check);
 		if (empty($date_check) || !isset($date_check[0]))
 			return;
-		$date_check = explode_by_array(array('-', '—', 'bis'), $date_check[0]);
+		$date_check = explode_by_array(array('-', '—', '–', 'bis'), $date_check[0]);
 		$date_check = array_map('trim', $date_check);
 		$date_start = strtotimep($date_check[0], '%d. %B', $this->timestamp);
 		$date_end   = strtotimep($date_check[1], '%d. %B', $this->timestamp);
