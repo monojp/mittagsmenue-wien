@@ -276,6 +276,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
 			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry',
 			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5',
+			'Cafe Amacord',
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
