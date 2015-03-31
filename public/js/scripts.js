@@ -601,7 +601,7 @@ $(document).ready(function() {
 
 	// show latest changelog if not seen yet
 	var changelog_latest = $('#changelog_latest').html();
-	if ($.cookie('changelog_latest') != changelog_latest) {
+	if ($('#changelog').length && $.cookie('changelog_latest') != changelog_latest) {
 		$('#changelog').dialog({title:"Changelog",modal: true,buttons:[{text:'Ok',click:function(){$(this).dialog('close');}}]});
 		$.cookie('changelog_latest', changelog_latest);
 		// piwik track
