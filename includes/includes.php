@@ -24,14 +24,16 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 
 // redirect bots to minimal site without ajax content
 // should be done even before starting a session and with a 301 http code
-if (
+// UPDATE 2015-03-31: not really useful anymore because e.g. the googlebot+
+// can handle the js stuff fine as seen on https://www.google.com/webmasters/tools/mobile-friendly/
+/*if (
 	!isset($_GET['minimal']) &&
 	isset($_SERVER['HTTP_USER_AGENT']) && stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
 ) {
 	//error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
 	header('HTTP/1.1 301 Moved Permanently');
 	header('Location: ?minimal&' . $_SERVER['QUERY_STRING']);
-}
+}*/
 
 /*
  * Global variables
@@ -627,7 +629,7 @@ function date_from_offset($offset) {
 	}
 }
 
-function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_html_entities = false) {
+/*function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_html_entities = false) {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 	global $dateOffset;
@@ -691,7 +693,7 @@ function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_
 	}
 
 	return $string;
-}
+}*/
 
 // gets an anonymized name of an ip
 function ip_anonymize($ip = null) {

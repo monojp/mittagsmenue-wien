@@ -144,7 +144,7 @@ abstract class FoodGetterVenue {
 		else if ($data == VenueStateSpecial::UrlaubMaybe)
 			return '<br /><span class="error">Vermutlich zurzeit geschlossen wegen Urlaub</span><br />';
 
-		$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
+		//$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 
 		// run filter
 		if ($data) {
