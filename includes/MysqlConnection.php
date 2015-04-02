@@ -12,7 +12,7 @@ class MySqlConnection {
 		// open db connection, try different configs after each other if connection fails
 		global $DB_CONFIGS;
 		$this->db = mysqli_init();
-		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 1))
+		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3))
 			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
 		$db_connect_ok = false;
 		foreach ($DB_CONFIGS as $db_config) {

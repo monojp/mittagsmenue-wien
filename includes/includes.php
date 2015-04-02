@@ -12,6 +12,15 @@ mb_internal_encoding('UTF-8');
 // valid session for 3 hours
 $server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
 session_set_cookie_params(3 * 60, '/', $server_name, USE_SSL, true);
+$session_name = session_name('MENU_SESSID') ? 'MENU_SESSID' : session_name();
+
+// cleanup client session id if invalid
+// otherwise hacking-attempts result in php warnings and maybe more at worst
+if (isset($_COOKIE[$session_name]) && !preg_match('/^[a-z0-9]{0,32}$/', $_COOKIE[$session_name])) {
+	$_COOKIE[$session_name] = null;
+	session_regenerate_id(true);
+}
+
 session_start();
 
 header("Vary: Accept-Encoding");
