@@ -243,7 +243,7 @@ function cleanText($text) {
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
 	$text = str_replace_array(array('`', '´'), '', $text);
 	$text = str_replace_wrapper($searchReplace, $text);
-	$text = trim($text, " ., \t\n\r\0\x0B");
+	$text = trim($text, " ., *\t\n\r\0\x0B");
 
 	return $text;
 }
@@ -511,6 +511,30 @@ function doctotxt($file) {
 
 	// return utf-8 txt
 	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
+}
+
+function html_get_clean($url) {
+	// download html
+	$html = file_get_contents($url);
+	if ($html === false)
+		return;
+	// utf-8 encode data
+	if (!mb_check_encoding($html, 'UTF-8'))
+		$html = utf8_encode($html);
+	// fix unclean data by replacing tabs with spaces
+	$html = str_replace(array("\t", "\r"), array(' ', ' '), $html);
+	// remove multiple spaces
+	$html = preg_replace('/( )+/', ' ', $html);
+	// strip html tags
+	$html = strip_tags($html, '<br>');
+	// remove unwanted stuff
+	$html = str_replace(array('&nbsp;'), '', $html);
+	$html = str_ireplace(array("<br />","<br>","<br/>"), "\r\n", $html);
+	$html = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $html);
+	// remove multiple newlines
+	$html = preg_replace("/(\n)+/i", "\n", $html);
+	// return trimmed data
+	return trim($html);
 }
 
 function pdftotxt_ocr($file, $lang = 'deu') {

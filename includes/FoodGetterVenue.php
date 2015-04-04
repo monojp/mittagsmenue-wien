@@ -331,6 +331,41 @@ abstract class FoodGetterVenue {
 	// -------------
 	// PARSE HELPERS
 	// -------------
+	protected function parse_prices_regex($data, $regexes, $regex_price_cleaner = '/\d,(\d){1,2}/') {
+		$prices = array();
+		foreach ($regexes as $regex) {
+			preg_match($regex, $data, $priceTmp);
+			preg_match($regex_price_cleaner, $priceTmp[0], $priceTmp);
+			$prices[] = $priceTmp[0];
+		}
+		return $prices;
+	}
+
+	protected function parse_foods_inbetween_days($data, $string_next_day, $string_last_day_next) {
+		$today_variants = $this->get_today_variants();
+		//return error_log(print_r($today, true));
+
+		foreach ($today_variants as $today) {
+			$posStart = strposAfter($data, $today);
+			// set date and stop if match found
+			if ($posStart !== false) {
+				$this->date = $today;
+				break;
+			}
+		}
+		if ($posStart === false)
+			return;
+		//return error_log($posStart);
+		$posEnd = mb_stripos($data, $string_next_day, $posStart);
+		// last day of the week
+		if ($posEnd === false)
+			$posEnd = mb_stripos($data, $string_last_day_next, $posStart);
+		if ($posEnd === false)
+			return;
+		//return error_log($posEnd);
+		return mb_substr($data, $posStart, $posEnd - $posStart);
+	}
+
 	protected function parse_foods_independant_from_days($foods, $newline_replacer) {
 		$data = null;
 		$foodCount = 1; // 1 is monday, 5 is friday
