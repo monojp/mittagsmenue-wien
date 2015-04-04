@@ -4,7 +4,7 @@ class Lambrecht extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Lambrecht';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Lambrechtgasse 9, 1040 Wien';
 		$this->addressLat = '48.190402';
 		$this->addressLng = '16.364595';

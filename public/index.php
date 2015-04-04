@@ -74,6 +74,7 @@ $venues = array(
 	new Lambrecht(),
 	new CafeAmacord(),
 	new Gondola(),
+	new RadioCafe(),
 );
 foreach ($venues as $venue) {
 	echo $venue;
