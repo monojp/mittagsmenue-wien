@@ -259,14 +259,12 @@ function explode_by_array($delimiter_array, $string, $case_insensitive=true) {
 	return explode($delimiter, $string_uniform);
 }
 function stringsExist($haystack, $needles) {
-	$exists = false;
 	foreach ($needles as $needle) {
 		if (mb_strpos($haystack, $needle) !== false) {
-			$exists = true;
-			break;
+			//error_log("'${needle}' exists in '${haystack}'");
+			return true;
 		}
 	}
-	return $exists;
 }
 function array_occurence_count($needle, $haystack) {
 	$counter = 0;
@@ -328,7 +326,7 @@ function getCacheData($keyword, $foodKeyword) {
 
 		// stats-cleaner
 		if (stringsExist($food, $cacheDataDelete) !== false) {
-			$cacheHandler->deleteFromCache($row['timestamp'], $row['dataSource']);
+			CacheHandler_MySql::getInstance()->deleteFromCache($row['timestamp'], $row['dataSource']);
 		}
 
 		// food cleaner (for old stat files)
