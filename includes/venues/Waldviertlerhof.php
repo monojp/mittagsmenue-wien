@@ -32,19 +32,11 @@ class Waldviertlerhof extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// check date range
-		preg_match('/[\d]+\.(.)+(-|—|–|bis)(.)*[\d]+\.(.)+/', $dataTmp, $date_check);
-		if (empty($date_check) || !isset($date_check[0]))
-			return;
-		$date_check = explode_by_array(array('-', '—', '–', 'bis'), $date_check[0]);
-		$date_check = array_map('trim', $date_check);
-		$date_start = strtotimep($date_check[0], '%d. %B', $this->timestamp);
-		$date_end   = strtotimep($date_check[1], '%d. %B', $this->timestamp);
-		//return error_log(print_r($date_check, true));
-		if ($this->timestamp < $date_start || $this->timestamp > $date_end)
+		if (!$this->in_date_range_string($dataTmp, $this->timestamp))
 			return;
 
 		// check menu food count
-		if (substr_count($dataTmp, 'suppe') != 5)
+		if ((substr_count($dataTmp, 'Feiertag') + substr_count($dataTmp, 'suppe')) != 5)
 			return;
 
 		// remove unwanted stuff
@@ -58,27 +50,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$foods = explode("\n", $data);
 		//return error_log(print_r($foods, true));
 
-		$data = null;
-		$foodCount = 1; // 1 is monday, 5 is friday
-		$weekday = date('w', $this->timestamp);
-		foreach ($foods as $food) {
-			$food = cleanText($food);
-			// nothing found
-			if (empty($food))
-				continue;
-			// first part of menu (soup)
-			else if (mb_strpos($food, 'suppe') !== false) {
-				if ($foodCount == $weekday) {
-					$data = $food;
-				}
-				$foodCount++;
-			}
-			// second part of menu
-			else if ($foodCount == ($weekday+1) && !empty($data)) {
-				$data .= ", ${food}";
-				break;
-			}
-		}
+		$data = $this->parse_foods_independant_from_days($foods, ', ');
 		//return error_log($data);
 
 		$this->data = $data;
@@ -92,7 +64,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->price = array($prices);
 
 		// set date
-		$this->date = getGermanDayName();
+		$this->date = reset($this->get_today_variants());
 
 		return $this->data;
 	}

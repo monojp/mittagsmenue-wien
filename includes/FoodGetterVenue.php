@@ -310,4 +310,79 @@ abstract class FoodGetterVenue {
 
 		return $string;
 	}
+
+	// ------------------
+	// DATE CHECK HELPERS
+	// ------------------
+	protected function in_date_range_string($string, $timestamp, $start_format = '%d. %B', $end_format = '%d. %B') {
+		preg_match('/[\d]+\.(.)+(-|—|–|bis)(.)*[\d]+\.(.)+/', $string, $date_check);
+		if (empty($date_check) || !isset($date_check[0]))
+			return;
+		$date_check = explode_by_array(array('-', '—', '–', 'bis'), $date_check[0]);
+		$date_check = array_map('trim', $date_check);
+		$date_start = strtotimep($date_check[0], $start_format, $timestamp);
+		$date_end   = strtotimep($date_check[1], $end_format, $timestamp);
+		//return (error_log(print_r($date_check, true)) && false && true);
+		//return (error_log(date('d.m.Y', $date_start)) && false && true);
+		//return (error_log(date('d.m.Y', $date_end)) && false && true);
+		return ($timestamp >= $date_start && $timestamp <= $date_end);
+	}
+
+	// -------------
+	// PARSE HELPERS
+	// -------------
+	protected function parse_foods_independant_from_days($foods, $newline_replacer) {
+		$data = null;
+		$foodCount = 1; // 1 is monday, 5 is friday
+		$weekday = date('w', $this->timestamp);
+
+		foreach ($foods as $food) {
+			$food = cleanText($food);
+			// keywords indicating free day, increase foodCount day
+			if (stringsExist($food, array('Feiertag', 'feiertag', 'Oster', 'Weihnacht')))
+				$foodCount++;
+			// nothing/too less found or keywords indicating noise
+			else if (
+				strlen($food) <= 10 ||
+				strlen(count_chars($food, 3)) <= 5 ||
+				stringsExist($food, array(
+					'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'euro', '€', 'montag',
+					'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'gilt in', 'uhr',
+				))
+			)
+				continue;
+			// keywords indicating end
+			else if (stringsExist($food, array(
+				'Menü', 'Freitag',
+			)))
+				break;
+			// first part of menu (soup)
+			else if (mb_strpos($food, 'suppe') !== false) {
+				if ($foodCount == $weekday)
+					$data = $food;
+				$foodCount++;
+			}
+			// second part of menu
+			else if ($foodCount == ($weekday+1) && !empty($data)) {
+				// avoid too small strings that may indicate unusable noise starting
+				//if (strlen($food) <= 10)
+				//	break;
+				$data .= "${newline_replacer}${food}";
+			}
+		}
+
+		// replace common noise strings
+		$data = str_replace(array('III. ', 'II. ', 'I. '), '', $data);
+
+		$foodCount = 1;
+		for ($i=0; $i<strlen($data); $i++) {
+			if (in_array($data[$i], array("\n", "\r"))) {
+				$data = substr_replace($data, $data[$i] . $foodCount . '. ', $i, 1);
+				//$data[$i] = $data[$i] . $foodCount . '. ';
+				$foodCount++;
+			}
+		}
+
+		return $data;
+	}
 }
