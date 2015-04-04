@@ -24,7 +24,7 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// avoid saving some data
 		global $cacheDataDelete;
-		if (stringsExist($data, $cacheDataDelete) !== false)
+		if (stringsExist($data, $cacheDataDelete))
 			return;
 
 		if ($data && !empty($data)) {
@@ -49,7 +49,6 @@ class CacheHandler_MySql extends CacheHandler {
 
 	public function getFromCache($dataSource, &$date, &$price, &$data) {
 		$timestamp = date('Y-m-d', $this->timestamp);
-		global $cacheDataDelete;
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("SELECT date, price, data FROM foodCache WHERE timestamp=? AND dataSource=?")))
@@ -82,7 +81,8 @@ class CacheHandler_MySql extends CacheHandler {
 		$data = cleanText($data);
 
 		// get rid of unusable (e.g. free day, ..) data
-		if (stringsExist($data, $cacheDataDelete) !== false) {
+		global $cacheDataDelete;
+		if (stringsExist($data, $cacheDataDelete)) {
 			$this->deleteFromCache($this->timestamp, $dataSource);
 			return true;
 		}
@@ -103,9 +103,8 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// avoid saving some data
 		global $cacheDataDelete;
-		if (stringsExist($data, $cacheDataDelete) !== false) {
+		if (stringsExist($data, $cacheDataDelete))
 			return;
-		}
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodCache SET date=?, price=?, data=? WHERE timestamp=? AND dataSource=?")))
