@@ -265,6 +265,7 @@ function stringsExist($haystack, $needles) {
 			return true;
 		}
 	}
+	return false;
 }
 function array_occurence_count($needle, $haystack) {
 	$counter = 0;
@@ -301,7 +302,6 @@ function getCacheData($keyword, $foodKeyword) {
 	global $explodeNewLines;
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
-	global $cacheDataDelete;
 
 	if (empty($keyword) || empty($foodKeyword))
 		return null;
@@ -323,11 +323,6 @@ function getCacheData($keyword, $foodKeyword) {
 
 	foreach ((array)$result as $row) {
 		$food = $row['data'];
-
-		// stats-cleaner
-		if (stringsExist($food, $cacheDataDelete) !== false) {
-			CacheHandler_MySql::getInstance()->deleteFromCache($row['timestamp'], $row['dataSource']);
-		}
 
 		// food cleaner (for old stat files)
 		$food = cleanText($food);

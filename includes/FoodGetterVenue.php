@@ -325,6 +325,8 @@ abstract class FoodGetterVenue {
 		//return (error_log(print_r($date_check, true)) && false && true);
 		//return (error_log(date('d.m.Y', $date_start)) && false && true);
 		//return (error_log(date('d.m.Y', $date_end)) && false && true);
+		//return (error_log($date_start) && error_log($date_end) && error_log($timestamp) && false && true);
+		//return (error_log($timestamp >= $date_start && $timestamp <= $date_end) && false && true);
 		return ($timestamp >= $date_start && $timestamp <= $date_end);
 	}
 
@@ -366,6 +368,28 @@ abstract class FoodGetterVenue {
 		return mb_substr($data, $posStart, $posEnd - $posStart);
 	}
 
+	/*
+	 * returns the numerical amount of possible soup strings found in a string
+	 */
+	protected function get_soup_count($string) {
+		$string = strtolower($string);
+		return (
+			substr_count($string, 'suppe') +
+			substr_count($string, 'minestrone')
+		);
+	}
+
+	/*
+	 * returns the numerical amount of possible holiday strings found in a string
+	 */
+	protected function get_holiday_count($string) {
+		$string = strtolower($string);
+		return (
+			substr_count($string, 'feiertag') +
+			substr_count($string, 'urlaub')
+		);
+	}
+
 	protected function parse_foods_independant_from_days($foods, $newline_replacer) {
 		$data = null;
 		$foodCount = 1; // 1 is monday, 5 is friday
@@ -378,11 +402,13 @@ abstract class FoodGetterVenue {
 				$foodCount++;
 			// nothing/too less found or keywords indicating noise
 			else if (
-				strlen($food) <= 10 ||
+				strlen($food) < 10 ||
 				strlen(count_chars($food, 3)) <= 5 ||
 				stringsExist($food, array(
 					'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'euro', '€', 'montag',
-					'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'gilt in', 'uhr',
+					'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'gilt in', 'uhr', 'schanigarten',
+					'bieten', 'fangfrisch', 'ambiente', 'reichhaltig', 'telefonnummer', 'willkommen',
+					'freundlich', 'GONDOLA',
 				))
 			)
 				continue;
@@ -392,7 +418,7 @@ abstract class FoodGetterVenue {
 			)))
 				break;
 			// first part of menu (soup)
-			else if (mb_strpos($food, 'suppe') !== false) {
+			else if ($this->get_soup_count($food) != 0) {
 				if ($foodCount == $weekday)
 					$data = $food;
 				$foodCount++;

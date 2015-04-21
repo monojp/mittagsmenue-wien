@@ -4,7 +4,7 @@ class RadioCafe extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'RadioCafe';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Argentinierstraße 30a, 1040 Wien';
 		$this->addressLat = '48.194522';
 		$this->addressLng = '16.373029';

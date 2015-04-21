@@ -30,12 +30,14 @@ class Gondola extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// check date range
-		if (!$this->in_date_range_string($dataTmp, $this->timestamp, '%d.%m', '%d.%m'))
+		if (!$this->in_date_range_string($dataTmp, $this->timestamp, '%d.%m', '%d.%m')) {
 			return;
+		}
 
 		// check menu food count
-		if ((substr_count($dataTmp, 'feiertag') + substr_count($dataTmp, 'suppe')) != 5)
+		if ($this->get_holiday_count($dataTmp) + $this->get_soup_count($dataTmp) != 5) {
 			return;
+		}
 
 		// remove unwanted stuff
 		$data = $dataTmp;

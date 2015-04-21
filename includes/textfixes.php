@@ -21,14 +21,6 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 ));
 $cacheDataIgnore = array('1.', '2.', '3.', '4.');
 
-$cacheDataDelete = array(
-	'!!!', 'feiertag', 'Feiertag', 'FEIERTAG', 'Feiertagsbrunch',
-	'Genussregion Tullnerfelder Schwein', 'la carte', 'geschlossen',
-	'Geschlossen', 'Silvester', 'Neujahr', 'FROHE', 'OSTERN', 'CHRISTI',
-	'HIMMELFAHRT', 'GESCHLOSSEN', 'Heiliger Abend', 'G E SC H L O S S E N', 'G E S C H L O S S E N',
-	'F E I E R T A G',
-);
-
 $searchReplace = array(
 	'dazu &' => 'dazu',
 	'TikkaMasala' => 'Tikka Masala',

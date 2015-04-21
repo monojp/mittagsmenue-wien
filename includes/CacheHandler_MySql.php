@@ -22,11 +22,6 @@ class CacheHandler_MySql extends CacheHandler {
 	public function saveToCache($dataSource, $date, $price, $data) {
 		$data = cleanText($data);
 
-		// avoid saving some data
-		global $cacheDataDelete;
-		if (stringsExist($data, $cacheDataDelete))
-			return;
-
 		if ($data && !empty($data)) {
 			$timestamp = date('Y-m-d', $this->timestamp);
 			// update 2013-07-23: use json instead of serialized data
@@ -80,13 +75,6 @@ class CacheHandler_MySql extends CacheHandler {
 		$data_orig = $data;
 		$data = cleanText($data);
 
-		// get rid of unusable (e.g. free day, ..) data
-		global $cacheDataDelete;
-		if (stringsExist($data, $cacheDataDelete)) {
-			$this->deleteFromCache($this->timestamp, $dataSource);
-			return true;
-		}
-
 		// update modidfied (cleaned) data
 		if ($data != $data_orig) {
 			$this->updateCache($date, $price, $data);
@@ -100,11 +88,6 @@ class CacheHandler_MySql extends CacheHandler {
 		// update 2013-07-23: use json instead of serialized data
 		// because of better read- & editability
 		$priceDB = json_encode($price);
-
-		// avoid saving some data
-		global $cacheDataDelete;
-		if (stringsExist($data, $cacheDataDelete))
-			return;
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodCache SET date=?, price=?, data=? WHERE timestamp=? AND dataSource=?")))
@@ -148,16 +131,4 @@ class CacheHandler_MySql extends CacheHandler {
 		return $return;
 	}
 
-	public function deleteFromCache($timestamp, $dataSource) {
-		// prepare statement
-		if (!($stmt = $this->db->prepare("DELETE FROM foodCache WHERE timestamp=? AND dataSource=?")))
-			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
-		// bind params
-		if (!$stmt->bind_param("ss", $timestamp, $dataSource))
-			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
-		// execute
-		if (!$stmt->execute())
-			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
-		$stmt->free_result();
-	}
 }

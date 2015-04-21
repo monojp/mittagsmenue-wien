@@ -10,5 +10,4 @@ abstract class CacheHandler {
 	abstract public function getFromCache($dataSource, &$date, &$price, &$data);
 	abstract public function updateCache($dataSource, $date, $price, $data);
 	abstract public function queryCache($dataSourceKeyword, $dataKeyword);
-	abstract public function deleteFromCache($timestamp, $dataSource);
 }

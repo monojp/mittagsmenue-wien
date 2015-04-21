@@ -4,7 +4,7 @@ class CafeAmacord extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Amacord';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Rechte Wienzeile 15, 1040 Wien';
 		$this->addressLat = '48.198478';
 		$this->addressLng = '16.364092';
