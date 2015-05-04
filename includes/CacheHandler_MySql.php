@@ -77,7 +77,7 @@ class CacheHandler_MySql extends CacheHandler {
 
 		// update modidfied (cleaned) data
 		if ($data != $data_orig) {
-			$this->updateCache($date, $price, $data);
+			$this->updateCache($dataSource, $date, $price, $data);
 		};
 
 		return true;

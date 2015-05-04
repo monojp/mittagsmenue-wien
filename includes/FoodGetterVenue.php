@@ -386,21 +386,55 @@ abstract class FoodGetterVenue {
 		$string = strtolower($string);
 		return (
 			substr_count($string, 'feiertag') +
-			substr_count($string, 'urlaub')
+			substr_count($string, 'urlaub') +
+			substr_count($string, 'geöffne') + // for e.g. Waldviertlerhof "Wir haben am 1. Mai geöffnet!" which is parsed as "ai geöffne"
+			substr_count($string, 'weihnacht') +
+			substr_count($string, 'oster')
 		);
 	}
 
-	protected function parse_foods_independant_from_days($foods, $newline_replacer) {
+	protected function get_dessert_count($string) {
+		$string = strtolower($string);
+		return (
+			substr_count($string, 'dessert') +
+			substr_count($string, 'yoghurt') +
+			substr_count($string, 'joghurt') +
+			substr_count($string, 'jogurt') +
+			substr_count($string, 'mousse') +
+			substr_count($string, 'kuchen')
+		);
+	}
+
+	protected function parse_foods_independant_from_days($foods, $newline_replacer, &$prices, $end_on_friday = true, $one_price_per_food = true) {
 		$data = null;
-		$foodCount = 1; // 1 is monday, 5 is friday
-		$weekday = date('w', $this->timestamp);
+		$mainCount = 0; // counts how many main foods there are
+		$foodCount = 0; // 0 is monday, 6 is sunday
+		$weekday = date('w', $this->timestamp) - 1;
+		$weekday = ($weekday == -1) ? 6 : $weekday; // sunday fix
+		$foodDone = false;
+
+		$regex_price = '/(.*)(€|EUR|Euro|Tagesteller|Fischmenü)(.*)(,.)(.*)/';
 
 		foreach ($foods as $food) {
 			$food = cleanText($food);
 			// keywords indicating free day, increase foodCount day
-			if (stringsExist($food, array('Feiertag', 'feiertag', 'Oster', 'Weihnacht')))
+			if ($this->get_holiday_count($food) != 0)
 				$foodCount++;
-			// nothing/too less found or keywords indicating noise
+			// price entry
+			else if (
+				(!$one_price_per_food || ($foodCount == ($weekday+1))) &&
+				!empty($data) &&
+				preg_match_all($regex_price, $food, $prices_temp)
+			) {
+				//error_log("found price in ${food}");
+				$prices_temp = isset($prices_temp[0]) ? reset($prices_temp[0]) : null;
+				preg_match_all('/\d*(,|\.)\d*/', $prices_temp, $prices_temp);
+				$prices_temp = isset($prices_temp[0]) ? $prices_temp[0] : array();
+				foreach ($prices_temp as $price) {
+					$prices[] = str_replace(',', '.', trim($price, ' ,.&€'));
+				}
+			}
+			// nothing/too less found or keywords indicating noise#
 			else if (
 				strlen($food) < 10 ||
 				strlen(count_chars($food, 3)) <= 5 ||
@@ -408,41 +442,58 @@ abstract class FoodGetterVenue {
 					'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'euro', '€', 'montag',
 					'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'gilt in', 'uhr', 'schanigarten',
 					'bieten', 'fangfrisch', 'ambiente', 'reichhaltig', 'telefonnummer', 'willkommen',
-					'freundlich', 'GONDOLA',
-				))
-			)
+					'freundlich', 'donnerstag', 'kleistgasse',
+				), true)
+			) {
+				//error_log("skip ${food}");
 				continue;
+			}
 			// keywords indicating end
-			else if (stringsExist($food, array(
-				'Menü', 'Freitag',
-			)))
-				break;
+			else if (
+				!$foodDone &&
+				stringsExist($food, array('Allergen',)) || ($end_on_friday && stringsExist($food, array('Freitag')))
+			) {
+				//error_log("done on ${food}");
+				$foodDone = true;
+			}
 			// first part of menu (soup)
-			else if ($this->get_soup_count($food) != 0) {
+			else if (
+				!$foodDone &&
+				$this->get_soup_count($food) != 0
+			) {
 				if ($foodCount == $weekday)
 					$data = $food;
 				$foodCount++;
 			}
 			// second part of menu
-			else if ($foodCount == ($weekday+1) && !empty($data)) {
-				// avoid too small strings that may indicate unusable noise starting
-				//if (strlen($food) <= 10)
-				//	break;
+			else if (
+				!$foodDone &&
+				$foodCount == ($weekday+1) &&
+				!empty($data)
+			) {
+				$mainCount++;
 				$data .= "${newline_replacer}${food}";
 			}
+			//error_log($food);
 		}
 
 		// replace common noise strings
-		$data = str_replace(array('III. ', 'II. ', 'I. '), '', $data);
+		$data = str_replace(array('III.', 'II.', 'I.', '1.', '2.', '3.'), '', $data);
 
+		// add counts (as long food is no dessert or soup)
 		$foodCount = 1;
-		for ($i=0; $i<strlen($data); $i++) {
-			if (in_array($data[$i], array("\n", "\r"))) {
-				$data = substr_replace($data, $data[$i] . $foodCount . '. ', $i, 1);
-				//$data[$i] = $data[$i] . $foodCount . '. ';
+		$foods = explode_by_array(array("\n", "\r"), $data);
+		foreach ($foods as &$food) {
+			if (
+				$this->get_dessert_count($food) == 0 &&
+				$this->get_soup_count($food) == 0
+			) {
+				$food = $foodCount . '. ' . $food;
 				$foodCount++;
 			}
 		}
+		unset($food);
+		$data = implode("\n", $foods);
 
 		return $data;
 	}

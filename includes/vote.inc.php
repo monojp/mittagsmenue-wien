@@ -299,9 +299,9 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 			$downVotes   = empty($downVotes)   ? '-' : implode(', ', $downVotes);
 			$specialVote = empty($specialVote) ? '-' : $specialVote;
 
-			$upVotes_style     = ($upVotes     == '-') ? 'color: #999; text-align: center' : 'color: #008000';
-			$downVotes_style   = ($downVotes   == '-') ? 'color: #999; text-align: center' : 'color: #FF0000';
-			$specialVote_style = ($specialVote == '-') ? 'color: #999; text-align: center' : 'text-align: center';
+			$upVotes_style     = ($upVotes     == '-') ? 'color: #999; text-align: center;' : 'color: #008000;';
+			$downVotes_style   = ($downVotes   == '-') ? 'color: #999; text-align: center;' : 'color: #FF0000;';
+			$specialVote_style = ($specialVote == '-') ? 'color: #999; text-align: center;' : 'text-align: left;';
 
 			$html .= "<tr style='$row_style'>
 				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>

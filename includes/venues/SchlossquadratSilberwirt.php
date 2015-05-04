@@ -19,8 +19,9 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 
 	protected function get_today_variants() {
 		$today_variants[] = getGermanDayName() . ' ' . date('j.n.', $this->timestamp);
-		$today_variants[] = date('j.n.', $this->timestamp);
-		$today_variants[] = date('j.n', $this->timestamp);
+		$today_variants[] = getGermanDayName() . ' ' . date('j.n', $this->timestamp);
+		//$today_variants[] = date('j.n.', $this->timestamp);
+		//$today_variants[] = date('j.n', $this->timestamp);
 		return $today_variants;
 	}
 

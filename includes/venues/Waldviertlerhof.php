@@ -14,7 +14,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days = array(0, 6);
 		$this->lookaheadSafe = true;
-		$this->price_nested_info = 'Menü / Tagesteller';
+		$this->price_nested_info = 'Menü / Tagesteller / Fischmenü Freitag';
 
 		parent::__construct();
 	}
@@ -52,17 +52,11 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$foods = explode("\n", $data);
 		//return error_log(print_r($foods, true));
 
-		$data = $this->parse_foods_independant_from_days($foods, ', ');
+		$data = $this->parse_foods_independant_from_days($foods, ', ', $prices, true, false);
 		//return error_log($data);
+		//return error_log(print_r($prices, true));
 
 		$this->data = $data;
-
-		preg_match('/((.)*€(.*)){2,2}/', $dataTmp, $prices);
-		if (empty($prices))
-			preg_match('/Menü(.*)|Tagesteller(.*)/', $dataTmp, $prices);
-		preg_match_all('/[\d\.\,]+/', $prices[0], $prices);
-		$prices = array_map(function (&$val) { return str_replace(',', '.', trim($val, ' ,.&€')); }, $prices[0]);
-		//return error_log(print_r($prices, true));
 		$this->price = array($prices);
 
 		// set date

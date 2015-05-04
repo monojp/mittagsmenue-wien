@@ -240,9 +240,24 @@ function getGermanMonthName($offset = 0) {
 function cleanText($text) {
 	global $searchReplace;
 
+	// fix encoding
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
-	$text = str_replace_array(array('`', '´'), '', $text);
+
+	// unify html line breaks
+	$text = preg_replace('/(<)[brBR]+( )*(\/)*(>)/', '<br>', $text);
+
+	// unify strange apostrophes
+	$text = str_replace_array(array('`', '´'), '\'', $text);
+
+	// replace configured words
 	$text = str_replace_wrapper($searchReplace, $text);
+
+	// remove EU allergy warnings
+	$text = preg_replace('/( |\(|,|;|\n)+[A-Z, ]+( |\)|,|;|\n)+/', ' ', " ${text} ");
+	//$text = preg_replace('/(<br>)+[A-Z, ]+/', '<br>', $text);
+	$text = preg_replace('/[A-Z, ]+(<br>)+/', '<br>', $text);
+
+	// trim different types of characters and special whitespaces / placeholders
 	$text = trim($text, " ., *\t\n\r\0\x0B");
 
 	return $text;
@@ -258,9 +273,13 @@ function explode_by_array($delimiter_array, $string, $case_insensitive=true) {
 
 	return explode($delimiter, $string_uniform);
 }
-function stringsExist($haystack, $needles) {
+function stringsExist($haystack, $needles, $case_insensitive = false) {
 	foreach ($needles as $needle) {
-		if (mb_strpos($haystack, $needle) !== false) {
+		if ($case_insensitive && mb_stripos($haystack, $needle) !== false) {
+			//error_log("'${needle}' exists in '${haystack}'");
+			return true;
+		}
+		else if (!$case_insensitive && mb_strpos($haystack, $needle) !== false) {
 			//error_log("'${needle}' exists in '${haystack}'");
 			return true;
 		}

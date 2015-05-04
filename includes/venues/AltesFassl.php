@@ -46,8 +46,14 @@ class AltesFassl extends FoodGetterVenue {
 		$tomorrow = getGermanDayName(1);
 		$posEnd = mb_stripos($dataTmp, $tomorrow, $posStart);
 		// last day of the week
-		if (!$posEnd)
-			$posEnd = mb_stripos($dataTmp, 'MENÜ 1', $posStart);
+		if (!$posEnd) {
+			$posEnd = mb_stripos($dataTmp, 'Montag', $posStart);
+			if (!$posEnd) {
+				$posEnd = mb_stripos($dataTmp, 'MENÜ 1', $posStart);
+				if (!$posEnd)
+					return;
+			}
+		}
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = strip_tags($data, '<br>');
 		$data = str_ireplace(array("<br />","<br>","<br/>"), "\n", $data);

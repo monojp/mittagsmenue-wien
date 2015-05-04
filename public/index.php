@@ -70,7 +70,7 @@ $venues = array(
 	new MensaSchroedinger(),
 	new Woracziczky(),
 	//new CoteSud(),
-	//new FalkensteinerStueberl(),
+	new FalkensteinerStueberl(),
 	new Lambrecht(),
 	new CafeAmacord(),
 	//new Gondola(),

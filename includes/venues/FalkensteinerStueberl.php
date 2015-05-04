@@ -12,15 +12,23 @@ class FalkensteinerStueberl extends FoodGetterVenue {
 		$this->dataSource = 'http://www.falkensteinerstueberl.at/menueplankleistgasse.pdf';
 		$this->menu = 'http://www.falkensteinerstueberl.at/html/speisekarte.htm';
 		$this->statisticsKeyword = 'falkensteinerstueberl';
-		$this->no_menu_days = array(0, 6);
+		$this->no_menu_days = array();
 		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
 
 /*
- * structure:
- * Menüplan von 08.12.2014 - 14.12.2014
+ * Menüplan von 27.04.2015 - 03.05.2015
+ * Karottencremesuppe A,G,L
+ *
+ * 1.Mexicokotlette mit Bratkartoffeln
+ *
+ * € 7,10
+ *
+ * 2.Mozzarella mit Tomaten, Basilikum und Toastbrot A,G
+ *
+ * € 6,00
  */
 
 	protected function get_today_variants() {
@@ -32,142 +40,41 @@ class FalkensteinerStueberl extends FoodGetterVenue {
 		/*$dataTmp = file_get_contents($this->dataSource);
 		if ($dataTmp === FALSE)
 			return;*/
-		$dataTmp = pdftohtml($this->dataSource);
-
+		$dataTmp = pdftotext($this->dataSource);
 		if (stripos($dataTmp, 'urlaub') !== false)
 			return ($this->data = VenueStateSpecial::Urlaub);
+		//return error_log($dataTmp);
 
-		// get validity date range
-		preg_match('/von([\s]*[\d.]*)+-([\s]*[\d.]*)+/', $dataTmp, $matches);
-		//error_log(print_r($matches[0], true));
-		if (!isset($matches[0]) || empty($matches[0]))
+		// check date range
+		if (!$this->in_date_range_string($dataTmp, $this->timestamp, '%d.%m.', '%d.%m.')) {
 			return;
-		// cleanup by removing space, tabs, line feeds and dots
-		$matches[0] = preg_replace('/[.\s]/', '', $matches[0]);
-		//return error_log(print_r($matches[0], true));
-		// get start and end date strings
-		$range       = array();
-		$range[0] = mb_substr($matches[0], 0, stripos($matches[0], '-'));
-		$range[0] = mb_substr($range[0], striposAfter($matches[0], 'von'));
-		$range[1] = mb_substr($matches[0], striposAfter($matches[0], '-'));
-		//error_log($range[0]);
-		//return error_log($range[1]);
-		// complete date strings
-		foreach ($range as &$date_string) {
-			// 17 => 17.11.2014
-			$length = strlen($date_string);
-			if ($length >= 1 && $length <= 2)
-				$date_string .= date('.m.Y', $this->timestamp);
-			// 21112014 => 21.11.2014
-			else if ($length == 8)
-				$date_string = preg_replace('/([\d]{2})([\d]{2})([\d]{4})/', '$1.$2.$3', $date_string);
 		}
-		//unset($date_string);
-		//error_log($range[0]);
-		//return error_log($range[1]);
-		// parse date from strings
-		$range[0] = strtotime($range[0]);
-		$range[1] = strtotime($range[1]);
-		//error_log('timestamp: ' . date('r', $this->timestamp));
-		//error_log(date('r', $range[0]));
-		//return error_log(date('r', $range[1]));
-		//error_log(date('d.m.Y', $range[0]));
-		//return error_log(date('d.m.Y', $range[1]));
-		// check if date is in range
-		if ($this->timestamp > $range[1] || $this->timestamp < $range[0])
+
+		// check menu food count
+		if ($this->get_holiday_count($dataTmp) + $this->get_soup_count($dataTmp) != 7) {
 			return;
-
-		// fix unclean data by replacing tabs with spaces
-		$dataTmp = str_replace(array("\t", "\r"), array(' ', ' '), $dataTmp);
-		// remove multiple spaces
-		$dataTmp = preg_replace('/( )+/', ' ', $dataTmp);
-		return error_log($dataTmp);
-
-		// get menu data for the chosen day
-		$today_variants = $this->get_today_variants();
-		//return error_log(print_r($today, true));
-
-		$today = null;
-		foreach ($today_variants as $today) {
-			$posStart = strposAfter($dataTmp, $today);
-			if ($posStart !== false)
-				break;
 		}
-		// fix pdf font bug where 'tt' turns to '#'
-		if ($posStart === false)
-			$posStart = strposAfter($dataTmp, str_replace('tt', '#', $today));
-		if ($posStart === false)
-			return;
-		//return error_log($posStart);
-		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
-		// last day of the week
-		if ($posEnd === false)
-			$posEnd = mb_stripos($dataTmp, str_replace('tt', '#', getGermanDayName(1)));
-		if ($posEnd === false)
-			$posEnd = mb_stripos($dataTmp, 'Reservierung', $posStart);
-		if ($posEnd === false)
-			return;
-		//return error_log($posEnd);
 
-		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
-		$data = strip_tags($data, '<br>');
 		// remove unwanted stuff
-		$data = str_replace(array('&nbsp;'), '', $data);
-		$data = str_ireplace(array("<br />","<br>","<br/>"), "\r\n", $data);
-		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
+		$data = $dataTmp;
+		//$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
-		// remove "1.\n" dirty data
-		$data = preg_replace("/([1-9].)(\n)+/", "$1", $data);
 		$data = trim($data);
 		//return error_log($data);
 		// split per new line
 		$foods = explode("\n", $data);
 		//return error_log(print_r($foods, true));
 
-		$data = null;
-		$cnt = 1;
-		foreach ($foods as $food) {
-			$food = cleanText($food);
-			if (!empty($food)) {
-				if (!$data) {
-					// starter
-					$data = trim($food, '+ ');
-				}
-				else {
-					// new food
-					if (preg_match("/[0-9]+\)/", $food)) {
-						// remove pdf numbering via regex
-						$data .= "\n${cnt}. " . preg_replace('/[0-9]+\)/', '', $food);
-						$cnt++;
-					}
-					// staff from before in new line only
-					else
-						$data .= ' ' . $food;
-				}
-			}
-		}
-		$data = str_replace("\n", "<br />", $data);
-		//return error_log(print_r($data, true));
+		$data = $this->parse_foods_independant_from_days($foods, "\n", $prices, false);
+		//return error_log(print_r($prices, true));
+		//return error_log($data);
+
 		$this->data = $data;
+		$this->price = $prices;
 
 		// set date
-		$this->date = $today;
-
-		// set price
-		$prices = array();
-		$startPos = striposAfter($dataTmp, 'Menü 1:');
-		$endPos   = mb_stripos($dataTmp, 'Menü 2:');
-		$prices[0] = strip_tags(mb_substr($dataTmp, $startPos, $endPos - $startPos));
-		$startPos = striposAfter($dataTmp, 'Menü 2:');
-		$prices[1] = strip_tags(mb_substr($dataTmp, $startPos));
-		foreach ($prices as &$price) {
-			$price = str_replace(array('€', 'EUR'), array('', ''), $price);
-			$price = trim($price);
-		}
-		unset($price);
-		//return error_log(print_r($prices, true));
-		$this->price = $prices;
+		$this->date = reset($this->get_today_variants());
 
 		return $this->data;
 	}
