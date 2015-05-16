@@ -18,7 +18,14 @@ class VoteHandler_MySql extends VoteHandler {
 		return self::$instance;
 	}
 
+	private function db_ok() {
+		return ($this->db !== null);
+	}
+
 	public function save($day, $ip, $category, $vote) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("INSERT INTO foodVote VALUES (?, ?, ?, ?)")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
@@ -32,6 +39,9 @@ class VoteHandler_MySql extends VoteHandler {
 	}
 
 	public function update($day, $ip, $category, $vote) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodVote SET vote=? WHERE day=? AND ip=? AND category=?")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
@@ -45,6 +55,8 @@ class VoteHandler_MySql extends VoteHandler {
 	}
 
 	public function get($day, $ip=null, $category=null) {
+		if (!$this->db_ok())
+			return;
 		$return = array();
 
 		// prepare statement
@@ -81,6 +93,8 @@ class VoteHandler_MySql extends VoteHandler {
 	}
 
 	public function get_weekly($weeknumber, $yearnumber) {
+		if (!$this->db_ok())
+			return;
 		$return = array();
 
 		$week_start_end = getStartAndEndDate($weeknumber, 2015);
@@ -109,6 +123,9 @@ class VoteHandler_MySql extends VoteHandler {
 	}
 
 	public function delete($day, $ip, $category=null) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if ($ip && $category && !($stmt = $this->db->prepare("DELETE FROM foodVote WHERE day=? AND ip=? AND category=?")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);

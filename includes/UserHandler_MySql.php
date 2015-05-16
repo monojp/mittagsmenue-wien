@@ -18,7 +18,14 @@ class UserHandler_MySql extends UserHandler {
 		return self::$instance;
 	}
 
+	private function db_ok() {
+		return ($this->db !== null);
+	}
+
 	public function save($ip, $name, $email, $vote_reminder, $voted_mail_only) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("INSERT INTO foodUser VALUES (?, ?, ?, ?, ?)")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
@@ -32,6 +39,9 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function update($ip, $name, $email, $vote_reminder, $voted_mail_only) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodUser SET name=?, email=?, vote_reminder=?, voted_mail_only=? WHERE ip=?")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
@@ -45,6 +55,8 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function get($ip = null) {
+		if (!$this->db_ok())
+			return;
 		$return = array();
 
 		// prepare statement
@@ -78,6 +90,8 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function get_ip($custom_userid = null) {
+		if (!$this->db_ok())
+			return;
 		$return = array();
 
 		// prepare statement
@@ -104,6 +118,8 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function get_custom_userid($ip = null) {
+		if (!$this->db_ok())
+			return;
 		$return = array();
 
 		// prepare statement
@@ -130,6 +146,9 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function save_custom_userid($ip, $custom_userid) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("INSERT INTO foodCustomUser VALUES (?, ?)")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
@@ -143,6 +162,9 @@ class UserHandler_MySql extends UserHandler {
 	}
 
 	public function update_custom_userid($ip, $custom_userid) {
+		if (!$this->db_ok())
+			return;
+
 		// prepare statement
 		if (!($stmt = $this->db->prepare("UPDATE foodCustomUser SET custom_userid=? WHERE ip=?")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);

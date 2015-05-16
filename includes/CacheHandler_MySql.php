@@ -19,7 +19,14 @@ class CacheHandler_MySql extends CacheHandler {
 		return self::$instance;
 	}
 
+	private function db_ok() {
+		return ($this->db !== null);
+	}
+
 	public function saveToCache($dataSource, $date, $price, $data) {
+		if (!$this->db_ok())
+			return;
+	
 		$data = cleanText($data);
 
 		if ($data && !empty($data)) {
@@ -43,6 +50,9 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function getFromCache($dataSource, &$date, &$price, &$data) {
+		if (!$this->db_ok())
+			return;
+	
 		$timestamp = date('Y-m-d', $this->timestamp);
 
 		// prepare statement
@@ -84,6 +94,9 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function updateCache($dataSource, $date, $price, $data) {
+		if (!$this->db_ok())
+			return;
+
 		$timestamp = date('Y-m-d', $this->timestamp);
 		// update 2013-07-23: use json instead of serialized data
 		// because of better read- & editability
@@ -102,6 +115,9 @@ class CacheHandler_MySql extends CacheHandler {
 	}
 
 	public function queryCache($dataSourceKeyword, $dataKeyword) {
+		if (!$this->db_ok())
+			return;
+
 		$return = array();
 		$dataSourceKeyword = "%${dataSourceKeyword}%";
 		$dataKeyword = "%${dataKeyword}%";
