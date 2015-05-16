@@ -745,7 +745,8 @@ function ip_anonymize($ip = null) {
 	if (!$ip)
 		$ip = get_identifier_ip();
 
-	$user_config = reset(UserHandler_MySql::getInstance()->get($ip));
+	$user_config = UserHandler_MySql::getInstance()->get($ip);
+	$user_config = is_array($user_config) ? reset($user_config) : null;
 
 	// do ip <=> name stuff
 	// anonymyze ip

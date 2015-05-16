@@ -144,7 +144,8 @@ function get_alt_venue_and_vote_setting_dialog() {
 
 	$ip = get_identifier_ip();
 
-	$user_config = reset(UserHandler_MySql::getInstance()->get($ip));
+	$user_config = UserHandler_MySql::getInstance()->get($ip);
+	$user_config = is_array($user_config) ? reset($user_config) : null;
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
 	$email = isset($user_config['email']) ? $user_config['email'] : '';

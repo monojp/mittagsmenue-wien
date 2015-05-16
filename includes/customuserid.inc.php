@@ -18,7 +18,8 @@ function custom_userid_original_ip() {
 		return null;
 
 	// read db
-	$custom_user_data = reset(UserHandler_MySql::getInstance()->get_ip($userid));
+	$custom_user_data = UserHandler_MySql::getInstance()->get_ip($userid);
+	$custom_user_data = is_array($custom_user_data) ? reset($custom_user_data) : null;
 	return isset($custom_user_data['ip']) ? $custom_user_data['ip'] : null;
 }
 
@@ -71,6 +72,7 @@ function custom_userid_get($ip = null) {
 		$ip = get_identifier_ip();
 
 	// read db
-	$custom_user_data = reset(UserHandler_MySql::getInstance()->get_custom_userid($ip));
+	$custom_user_data = UserHandler_MySql::getInstance()->get_custom_userid($ip);
+	$custom_user_data = is_array($custom_user_data) ? reset($custom_user_data) : null;
 	return isset($custom_user_data['custom_userid']) ? $custom_user_data['custom_userid'] : null;
 }
