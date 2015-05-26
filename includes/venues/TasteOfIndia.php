@@ -3,16 +3,16 @@
 class TasteOfIndia extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title = 'Taste of India';
-		$this->address = 'Margaretenstraße 34, 1040 Wien';
-		$this->addressLat = '48.1959393';
-		$this->addressLng = '16.3641738';
-		$this->url = 'http://www.taste-of-india.at/';
-		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue.html';
-		$this->menu = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
+		$this->title             = 'Taste of India';
+		$this->address           = 'Margaretenstraße 34, 1040 Wien';
+		$this->addressLat        = 48.1959393;
+		$this->addressLng        = 16.3641738;
+		$this->url               = 'http://www.taste-of-india.at/';
+		$this->dataSource        = 'http://www.taste-of-india.at/mittagsmenue.html';
+		$this->menu              = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
 		$this->statisticsKeyword = 'taste-of-india';
-		$this->no_menu_days = array(0, 6);
-		$this->lookaheadSafe = true;
+		$this->no_menu_days      = [ 0, 6 ];
+		$this->lookaheadSafe     = true;
 
 		parent::__construct();
 	}
@@ -24,11 +24,8 @@ class TasteOfIndia extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = file_get_contents($this->dataSource);
-		if ($dataTmp === FALSE)
+		if (!$dataTmp)
 			return;
-
-		if (stripos($dataTmp, 'urlaub') !== false)
-			return ($this->data = VenueStateSpecial::Urlaub);
 
 		// get menu data for the chosen day
 		$today_variants = $this->get_today_variants();
@@ -49,7 +46,7 @@ class TasteOfIndia extends FoodGetterVenue {
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 
 		$data = strip_tags($data);
-		$data = str_replace(array('1', '2', '3', '4', "\t"), '', $data);
+		$data = str_replace([ '1', '2', '3', '4', "\t" ], '', $data);
 		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
@@ -69,7 +66,7 @@ class TasteOfIndia extends FoodGetterVenue {
 			}
 		}
 
-		$data = mb_str_replace("\n", "<br />", $data);
+		$data = str_replace("\n", "<br />", $data);
 		$this->data = $data;
 
 		// set date
@@ -80,6 +77,6 @@ class TasteOfIndia extends FoodGetterVenue {
 		$posEnd = mb_stripos($dataTmp, '&euro;', $posStart);
 		$this->price = cleanText(mb_substr($dataTmp, $posStart, $posEnd-$posStart));
 
-		//return $this->data;
+		return $this->data;
 	}
 }

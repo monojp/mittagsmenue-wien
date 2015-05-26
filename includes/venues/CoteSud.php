@@ -3,17 +3,17 @@
 class CoteSud extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title = 'Coté Sud';
-		$this->title_notifier = 'NEU';
-		$this->address = 'Schleifmühlgasse 8, 1040 Wien';
-		$this->addressLat = '48.196901';
-		$this->addressLng = '16.365892';
-		$this->url = 'http://www.cotesud.at/';
-		$this->dataSource = 'http://www.cotesud.at/Menu.pdf';
-		$this->menu = 'http://www.cotesud.at/Speisekarte.pdf';
+		$this->title             = 'Coté Sud';
+		$this->title_notifier    = 'NEU';
+		$this->address           = 'Schleifmühlgasse 8, 1040 Wien';
+		$this->addressLat        = 48.196901;
+		$this->addressLng        = 16.365892;
+		$this->url               = 'http://www.cotesud.at/';
+		$this->dataSource        = 'http://www.cotesud.at/Menu.pdf';
+		$this->menu              = 'http://www.cotesud.at/Speisekarte.pdf';
 		$this->statisticsKeyword = 'cotesud';
-		$this->no_menu_days = array(0, 6);
-		$this->lookaheadSafe = true;
+		$this->no_menu_days      = [ 0, 6 ];
+		$this->lookaheadSafe     = true;
 
 		parent::__construct();
 	}
@@ -39,9 +39,6 @@ class CoteSud extends FoodGetterVenue {
 			return;*/
 		$dataTmp = pdftohtml($this->dataSource);
 
-		if (stripos($dataTmp, 'urlaub') !== false)
-			return ($this->data = VenueStateSpecial::Urlaub);
-
 		// get validity date range
 		preg_match('/vom([\s]*[\d.]*)+bis([\s]*[\d.]*)+/', $dataTmp, $matches);
 		//error_log(print_r($matches[0], true));
@@ -51,7 +48,7 @@ class CoteSud extends FoodGetterVenue {
 		$matches[0] = preg_replace('/[.\s]/', '', $matches[0]);
 		//return error_log(print_r($matches[0], true));
 		// get start and end date strings
-		$range       = array();
+		$range       = [];
 		$range[0] = mb_substr($matches[0], 0, stripos($matches[0], 'bis'));
 		$range[0] = mb_substr($range[0], striposAfter($matches[0], 'vom'));
 		$range[1] = mb_substr($matches[0], striposAfter($matches[0], 'bis'));
@@ -83,7 +80,7 @@ class CoteSud extends FoodGetterVenue {
 			return;
 
 		// fix unclean data by replacing tabs with spaces
-		$dataTmp = str_replace(array("\t", "\r"), array(' ', ' '), $dataTmp);
+		$dataTmp = str_replace([ "\t", "\r" ], [ ' ', ' ' ], $dataTmp);
 		// remove multiple spaces
 		$dataTmp = preg_replace('/( )+/', ' ', $dataTmp);
 		//return error_log($dataTmp);
@@ -117,8 +114,8 @@ class CoteSud extends FoodGetterVenue {
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 		$data = strip_tags($data, '<br>');
 		// remove unwanted stuff
-		$data = str_replace(array('&nbsp;'), '', $data);
-		$data = str_ireplace(array("<br />","<br>","<br/>"), "\r\n", $data);
+		$data = str_replace([ '&nbsp;' ], '', $data);
+		$data = str_ireplace([ "<br />", "<br>", "<br/>" ], "\r\n", $data);
 		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
@@ -160,14 +157,14 @@ class CoteSud extends FoodGetterVenue {
 		$this->date = $today;
 
 		// set price
-		$prices = array();
+		$prices = [];
 		$startPos = striposAfter($dataTmp, 'Menü 1:');
 		$endPos   = mb_stripos($dataTmp, 'Menü 2:');
 		$prices[0] = strip_tags(mb_substr($dataTmp, $startPos, $endPos - $startPos));
 		$startPos = striposAfter($dataTmp, 'Menü 2:');
 		$prices[1] = strip_tags(mb_substr($dataTmp, $startPos));
 		foreach ($prices as &$price) {
-			$price = str_replace(array('€', 'EUR'), array('', ''), $price);
+			$price = str_replace([ '€', 'EUR' ], '', $price);
 			$price = trim($price);
 		}
 		unset($price);
@@ -176,4 +173,5 @@ class CoteSud extends FoodGetterVenue {
 
 		return $this->data;
 	}
+
 }

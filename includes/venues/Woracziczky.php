@@ -8,24 +8,25 @@ class Woracziczky extends FoodGetterVenue {
 	const FACEBOOK_ID = 350394680695;
 
 	function __construct() {
-		$this->title = 'Woracziczky';
-		//$this->title_notifier = 'UPDATE';
-		$this->address = 'Spengergasse 52, 1050 Wien';
-		$this->addressLat = '48.189343';
-		$this->addressLng = '16.352982';
-		$this->url = 'http://www.woracziczky.at/';
-		$this->dataSource = 'https://facebook.com/WORACZICZKY';
-		$this->menu = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
+		$this->title             = 'Woracziczky';
+		//$this->title_notifier  = 'UPDATE';
+		$this->address           = 'Spengergasse 52, 1050 Wien';
+		$this->addressLat        = 48.189343;
+		$this->addressLng        = 16.352982;
+		$this->url               = 'http://www.woracziczky.at/';
+		$this->dataSource        = 'https://facebook.com/WORACZICZKY';
+		$this->menu              = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
 		$this->statisticsKeyword = 'woracziczky';
-		$this->no_menu_days = array(0, 6);
-		$this->lookaheadSafe = true;
+		$this->no_menu_days      = [ 0, 6 ];
+		$this->lookaheadSafe     = true;
 
 		parent::__construct();
 	}
 
 	protected function get_today_variants() {
-		$today_variants[] = getGermanDayName();
-		return $today_variants;
+		return [
+			getGermanDayName()
+		];
 	}
 
 	protected function parseDataSource() {
@@ -58,12 +59,12 @@ class Woracziczky extends FoodGetterVenue {
 			//error_log($message);
 
 			// nothing mittags-relevantes found
-			$words_relevant = array(
+			$words_relevant = [
 				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
 				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'servieren euch', 'Bis gleich',
 				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch',
 				'freuen sich auf euch', 'erwarten euch', 'suppe', 'Suppe', 'heute',
-			);
+			];
 			if (!stringsExist($message, $words_relevant))
 				continue;
 
@@ -73,17 +74,18 @@ class Woracziczky extends FoodGetterVenue {
 		}
 
 		// all posts scanned, nothing found, but relevant string in a post => maybe vacation!
-		if (empty($data) && mb_stripos(print_r($all_posts, true), 'urlaub') !== false)
+		if (empty($data) && $this->get_holiday_count(print_r($all_posts, true)))
 			$data = VenueStateSpecial::UrlaubMaybe;
 
 		$this->data = $data;
 
-		// set price
-		$this->price = array('8,50');
-
 		// set date
 		$this->date = $today;
 
+		// set price
+		$this->price = [ 8.50 ];
+
 		return $this->data;
 	}
+
 }

@@ -37,7 +37,7 @@ header('Cache-Control: no-cache, no-store, must-revalidate');
 // can handle the js stuff fine as seen on https://www.google.com/webmasters/tools/mobile-friendly/
 /*if (
 	!isset($_GET['minimal']) &&
-	isset($_SERVER['HTTP_USER_AGENT']) && stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), array('bot', 'google', 'spider', 'yahoo', 'search', 'crawl'))
+	isset($_SERVER['HTTP_USER_AGENT']) && stringsExist(strtolower($_SERVER['HTTP_USER_AGENT']), [ 'bot', 'google', 'spider', 'yahoo', 'search', 'crawl' ])
 ) {
 	//error_log('bot "' . $_SERVER['HTTP_USER_AGENT'] . '" redirect to minimal site, query: ' . $_SERVER['QUERY_STRING']);
 	header('HTTP/1.1 301 Moved Permanently');
@@ -130,39 +130,6 @@ function nmb_striposAfter($haystack, $needle, $offset=0) {
 		$pos += strlen($needle);
 	return $pos;
 }
-function mb_str_replace($needle, $replacement, $haystack) {
-	$needle_len = mb_strlen($needle);
-	$replacement_len = mb_strlen($replacement);
-	$pos = mb_strpos($haystack, $needle);
-	while ($pos !== false) {
-		$haystack = mb_substr($haystack, 0, $pos) . $replacement
-				. mb_substr($haystack, $pos + $needle_len);
-		$pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
-	}
-	return $haystack;
-}
-function mb_str_ireplace($needle, $replacement, $haystack) {
-	$needle_len = mb_strlen($needle);
-	$replacement_len = mb_strlen($replacement);
-	$pos = mb_stripos($haystack, $needle);
-	while ($pos !== false) {
-		$haystack = mb_substr($haystack, 0, $pos) . $replacement
-				. mb_substr($haystack, $pos + $needle_len);
-		$pos = mb_strpos($haystack, $needle, $pos + $replacement_len);
-	}
-	return $haystack;
-}
-function str_replace_array($search, $replace, $subject) {
-	foreach ($search as $s)
-		$subject = str_replace($s, $replace, $subject);
-	return $subject;
-}
-
-function str_ireplace_array($search, $replace, $subject) {
-	foreach ($search as $s)
-		$subject = mb_str_ireplace($s, $replace, $subject);
-	return $subject;
-}
 
 function str_replace_wrapper($searchReplace, $subject) {
 	foreach ($searchReplace as $search => $replace) {
@@ -180,7 +147,7 @@ function shuffle_assoc(&$array) {
 
 	shuffle($keys);
 
-	$new = array();
+	$new = [];
 	foreach($keys as $key) {
 		$new[$key] = $array[$key];
 	}
@@ -237,25 +204,52 @@ function getGermanMonthName($offset = 0) {
 		default: return 'not valid'; break;
 	}
 }
+function strip_invalid_chars($text) {
+	$regex = <<<'END'
+/
+  (
+	(?: [\x00-\x7F]                 # single-byte sequences   0xxxxxxx
+	|   [\xC0-\xDF][\x80-\xBF]      # double-byte sequences   110xxxxx 10xxxxxx
+	|   [\xE0-\xEF][\x80-\xBF]{2}   # triple-byte sequences   1110xxxx 10xxxxxx * 2
+	|   [\xF0-\xF7][\x80-\xBF]{3}   # quadruple-byte sequence 11110xxx 10xxxxxx * 3 
+	){1,100}                        # ...one or more times
+  )
+| .                                 # anything else
+/x
+END;
+	return preg_replace($regex, '$1', $text);
+}
 function cleanText($text) {
 	global $searchReplace;
 
+	//error_log($text);
+
 	// fix encoding
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
+
+	// strip invalid chars
+	$text = strip_invalid_chars($text);
+
+	// remove multiple spaces
+	$text = preg_replace('/( )+/', ' ', $text);
 
 	// unify html line breaks
 	$text = preg_replace('/(<)[brBR]+( )*(\/)*(>)/', '<br>', $text);
 
 	// unify strange apostrophes
-	$text = str_replace_array(array('`', '´'), '\'', $text);
+	$text = str_replace([ '`', '´' ], '\'', $text);
+
+	// completely remove dirty chars
+	$text = str_replace([ '¸', '–' ], '', $text);
 
 	// replace configured words
 	$text = str_replace_wrapper($searchReplace, $text);
 
 	// remove EU allergy warnings
-	$text = preg_replace('/( |\(|,|;|\n)+[A-Z, ]+( |\)|,|;|\n)+/', ' ', " ${text} ");
+	$text = preg_replace('/( |\(|,|;)+[A-Z,\. ]+( |\)|,|;)+/', ' ', " ${text} ");
 	//$text = preg_replace('/(<br>)+[A-Z, ]+/', '<br>', $text);
-	$text = preg_replace('/[A-Z, ]+(<br>)+/', '<br>', $text);
+	$text = preg_replace('/[A-Z,\. ]+(<br>)+/', '<br>', $text);
+	$text = preg_replace("/[A-Z,\. ]+(\n)+/", "\n", $text);
 
 	// trim different types of characters and special whitespaces / placeholders
 	$text = trim($text, " ., *\t\n\r\0\x0B");
@@ -332,10 +326,10 @@ function getCacheData($keyword, $foodKeyword) {
 		return mb_strlen($b) - mb_strlen($a);
 	});
 
-	$foods = array(); // ingredients
-	$dates = array(); // dates when food was served
-	$compositions = array(); // which thing the food was part of
-	$compositionsAbsolute = array(); // list of compositions without ingredience association
+	$foods = []; // ingredients
+	$dates = []; // dates when food was served
+	$compositions = []; // which thing the food was part of
+	$compositionsAbsolute = []; // list of compositions without ingredience association
 	$datasetSize = 0;
 
 	$result = CacheHandler_MySql::getInstance()->queryCache($keyword, $foodKeyword);
@@ -367,7 +361,7 @@ function getCacheData($keyword, $foodKeyword) {
 				else
 					$foods[$foodSingle] += 1;
 
-				$foodOrig = array();
+				$foodOrig = [];
 				$foodMultiOrig = array_unique(explode_by_array($explodeNewLines, $food));
 				foreach ($foodMultiOrig as $f) {
 					$f = str_ireplace($cacheDataIgnore, '', $f);
@@ -435,7 +429,13 @@ function getCacheData($keyword, $foodKeyword) {
 	arsort($foods);
 	arsort($compositionsAbsolute);
 
-	return array('foods' => $foods, 'dates' => $dates, 'compositions' => $compositions, 'compositionsAbsolute' => $compositionsAbsolute, 'datasetSize' => $datasetSize);
+	return [
+		'foods'                => $foods,
+		'dates'                => $dates,
+		'compositions'         => $compositions,
+		'compositionsAbsolute' => $compositionsAbsolute,
+		'datasetSize'          => $datasetSize,
+	];
 }
 
 function pdftohtml($file) {
@@ -527,6 +527,25 @@ function doctotxt($file) {
 	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
 }
 
+function html_clean($html) {
+	// fix unclean data by replacing tabs with spaces
+	$html = str_replace( ["\t", "\r" ], [ ' ', ' ' ], $html);
+	// adapt paragraphs with a line break to avoid being handled inline
+	$html = str_ireplace( [ '</p>', '< /p>' ], '</p><br />', $html);
+	// strip html tags
+	$html = strip_tags($html, '<br>');
+	// remove unwanted stuff
+	$html = str_replace([ '&nbsp;' ], '', $html);
+	$html = str_ireplace([ "<br />", "<br>", "<br/>" ], "\r\n", $html);
+	$html = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $html);
+	// remove multiple spaces
+	$html = preg_replace('/( )+/', ' ', $html);
+	// remove multiple newlines
+	$html = preg_replace("/(\n)+/i", "\n", $html);
+	// return trimmed data
+	return trim($html);
+}
+
 function html_get_clean($url) {
 	// download html
 	$html = file_get_contents($url);
@@ -535,20 +554,7 @@ function html_get_clean($url) {
 	// utf-8 encode data
 	if (!mb_check_encoding($html, 'UTF-8'))
 		$html = utf8_encode($html);
-	// fix unclean data by replacing tabs with spaces
-	$html = str_replace(array("\t", "\r"), array(' ', ' '), $html);
-	// remove multiple spaces
-	$html = preg_replace('/( )+/', ' ', $html);
-	// strip html tags
-	$html = strip_tags($html, '<br>');
-	// remove unwanted stuff
-	$html = str_replace(array('&nbsp;'), '', $html);
-	$html = str_ireplace(array("<br />","<br>","<br/>"), "\r\n", $html);
-	$html = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $html);
-	// remove multiple newlines
-	$html = preg_replace("/(\n)+/i", "\n", $html);
-	// return trimmed data
-	return trim($html);
+	return html_clean($html);
 }
 
 function pdftotxt_ocr($file, $lang = 'deu') {
@@ -591,10 +597,10 @@ function addressToLatLong($address) {
 	$data = file_get_contents($api_url);
 	$data = json_decode($data);
 	if ($data->status == 'OK') {
-		return array(
+		return [
 			'lat' => str_replace(',', '.', trim($data->results[0]->geometry->location->lat)),
 			'lng' => str_replace(',', '.', trim($data->results[0]->geometry->location->lng))
-		);
+		];
 	}
 	return null;
 }
@@ -704,7 +710,7 @@ function date_from_offset($offset) {
 		return mb_strlen($b) - mb_strlen($a);
 	});
 
-	$replace_pairs = array();
+	$replace_pairs = [];
 	if (count($foodMulti) > 1) {
 		// build replace pairs
 		foreach ($foodMulti as $foodSingle) {
@@ -800,7 +806,7 @@ function html_compress($html) {
 	if (!USE_MINIMZED_JS_CSS_HTML)
 		return $html;
 	// newlines, tabs & carriage return
-	$response = str_replace(array("\n", "\t", "\r"), '', $html);
+	$response = str_replace([ "\n", "\t", "\r" ], '', $html);
 	// convert multiple spaces into one
 	$response = preg_replace('/\s+/', ' ', $response);
 	// cleanup spaces inside tags

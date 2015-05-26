@@ -19,7 +19,6 @@ $cacheDataExplode = array_merge($explodeNewLines, array(
 	' das ', ' des ', ' heute ', '　heutige　', ' bis', '　gleich　', '　lasst　', ' es ', ' euch ', '　schmecken　', '　duo　', '　mittagsmenü　', '　woracziczky　', '　wora　',
 	' gibt ', ' ein ', ' eine ', 'leichter',
 ));
-$cacheDataIgnore = array('1.', '2.', '3.', '4.');
 
 $searchReplace = array(
 	'dazu &' => 'dazu',
@@ -79,10 +78,6 @@ $searchReplace = array(
 	'Bio Spaghetti' => 'Bio-Spaghetti',
 	'Geröstetet' => 'Geröstete',
 	'Seafood Pie -' => 'Seafood Pie',
-	'1 ' => '1. ',
-	'2 ' => '2. ',
-	'3 ' => '3. ',
-	'4 ' => '4. ',
 	'Artischokensalat' => 'Artischockensalat',
 	'Gegrille' => 'Gegrillte',
 	'Szegendiner Krautfleisch' => 'Szegediner Krautfleisch',
