@@ -227,9 +227,6 @@ function cleanText($text) {
 	// fix encoding
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
 
-	// strip invalid chars
-	$text = strip_invalid_chars($text);
-
 	// remove multiple spaces
 	$text = preg_replace('/( )+/', ' ', $text);
 
@@ -237,10 +234,13 @@ function cleanText($text) {
 	$text = preg_replace('/(<)[brBR]+( )*(\/)*(>)/', '<br>', $text);
 
 	// unify strange apostrophes
-	$text = str_replace([ '`', '´' ], '\'', $text);
+	$text = str_replace([ '`', '´', '’', ], '\'', $text);
 
 	// completely remove dirty chars
 	$text = str_replace([ '¸', '–' ], '', $text);
+
+	// strip invalid chars
+	$text = strip_invalid_chars($text);
 
 	// replace configured words
 	$text = str_replace_wrapper($searchReplace, $text);
@@ -473,8 +473,10 @@ function pdftohtml($file) {
 	@unlink($tmpPath);
 	@unlink($tmpPath_html);
 
-	// return utf-8 encoded html
-	return mb_check_encoding($html, 'UTF-8') ? $html : utf8_encode($html);
+	// utf-8 encode data (this sometimes breaks stuff on e.g. RadioCafe)
+	/*if (!mb_check_encoding($html, 'UTF-8'))
+		$html = utf8_encode($html);*/
+	return $html;
 }
 
 function pdftotext($file) {
@@ -500,8 +502,10 @@ function pdftotext($file) {
 	@unlink($tmpPath);
 	@unlink($tmpPath_txt);
 
-	// return utf-8 encoded html
-	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
+	// utf-8 encode data (this sometimes breaks stuff on e.g. RadioCafe)
+	/*if (!mb_check_encoding($txt, 'UTF-8'))
+		$txt = utf8_encode($txt);*/
+	return $txt;
 }
 
 function doctotxt($file) {
@@ -523,8 +527,10 @@ function doctotxt($file) {
 	// cleanups
 	@unlink($tmpPath);
 
-	// return utf-8 txt
-	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
+	// utf-8 encode data (this sometimes breaks stuff on e.g. RadioCafe)
+	/*if (!mb_check_encoding($txt, 'UTF-8'))
+		$txt = utf8_encode($txt);*/
+	return $txt;
 }
 
 function html_clean($html) {
@@ -542,6 +548,9 @@ function html_clean($html) {
 	$html = preg_replace('/( )+/', ' ', $html);
 	// remove multiple newlines
 	$html = preg_replace("/(\n)+/i", "\n", $html);
+	// utf-8 encode data (this sometimes breaks stuff on e.g. RadioCafe)
+	/*if (!mb_check_encoding($html, 'UTF-8'))
+		$html = utf8_encode($html);*/
 	// return trimmed data
 	return trim($html);
 }
@@ -551,9 +560,7 @@ function html_get_clean($url) {
 	$html = file_get_contents($url);
 	if ($html === false)
 		return;
-	// utf-8 encode data
-	if (!mb_check_encoding($html, 'UTF-8'))
-		$html = utf8_encode($html);
+	// return clean data
 	return html_clean($html);
 }
 
@@ -586,8 +593,10 @@ function pdftotxt_ocr($file, $lang = 'deu') {
 	@unlink($tmpPath_tif);
 	@unlink($tmpPath_txt);
 
-	// return utf-8 txt
-	return mb_check_encoding($txt, 'UTF-8') ? $txt : utf8_encode($txt);
+	// utf-8 encode data (this may break stuff, see 'html_clean')
+	/*if (!mb_check_encoding($txt, 'UTF-8'))
+		$txt = utf8_encode($txt);*/
+	return $txt;
 }
 
 // api see https://developers.google.com/maps/documentation/geocoding

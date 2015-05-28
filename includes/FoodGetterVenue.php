@@ -41,7 +41,7 @@ abstract class FoodGetterVenue {
 		$this->addressLat = str_replace(',', '.', $this->addressLat);
 		$this->addressLng = str_replace(',', '.', $this->addressLng);
 
-		$this->CSSid = 'id_' . md5($this->dataSource);
+		$this->CSSid = 'id_' . md5($this->dataSource . $this->title);
 	}
 
 	// overwrite in inherited class
@@ -53,16 +53,10 @@ abstract class FoodGetterVenue {
 	// should parse datasource, set data, date, price, cache it and return it
 	abstract protected function parseDataSource();
 
-	// overwrite in inherited class
-	// should check if the data is from today
+	// checks if the data is from today
 	// used for caching
-	//abstract public function isDataUpToDate();
-
 	protected function isDataUpToDate() {
-		//return false;
-		$today_variants = $this->get_today_variants();
-
-		foreach ($today_variants as $today) {
+		foreach ($this->get_today_variants() as $today) {
 			if ($this->date == $today)
 				return true;
 		}
@@ -76,6 +70,14 @@ abstract class FoodGetterVenue {
 	// reads data from the cache
 	protected function cacheRead() {
 		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache($this->dataSource, $this->date, $this->price, $this->data);
+	}
+
+	private function isStateSpecial() {
+		return in_array(
+			$this->data, [
+				VenueStateSpecial::Urlaub,
+				VenueStateSpecial::UrlaubMaybe,
+			]);
 	}
 
 	private function get_ajax_venue_code($date_GET, $cache = true) {
@@ -108,7 +110,10 @@ abstract class FoodGetterVenue {
 
 	public function parse_check() {
 		// data valid and ok, do nothing
-		if ($this->data && $this->isDataUpToDate())
+		if (
+			$this->data &&
+			($this->isDataUpToDate() || $this->isStateSpecial())
+		)
 			return $this->data;
 
 		// another year, also do nothing. nevery parse another year!
@@ -155,13 +160,26 @@ abstract class FoodGetterVenue {
 
 		//$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 
+		// normalize unicode
+		if (!Normalizer::isNormalized($data))
+			$data = Normalizer::normalize($data);
+
+		// replace html breaks with newlines
+		$data = str_replace($explodeNewLines, "\n", $data);
+
+		// convert special chars
+		$data = htmlspecialchars($data, ENT_HTML5 | ENT_DISALLOWED);
+
 		// replace newlines with html breaks
 		$data = str_replace($explodeNewLines, '<br>', $data);
 
 		// prepare return
 		$return = '';
 
-		if (!empty($this->data) && $this->isDataUpToDate()) {
+		if (
+			!empty($this->data) &&
+			($this->isDataUpToDate() || $this->isStateSpecial())
+		) {
 			// not from cache? => write back
 			if (!$this->dataFromCache)
 				$this->cacheWrite();
@@ -391,9 +409,12 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'kuchen') +
 			mb_substr_count($string, 'torte') +
 			mb_substr_count($string, 'schlag') +
-			mb_substr_count($string, 'schokolade') +
+			mb_substr_count($string, 'schoko') +
+			mb_substr_count($string, 'muffin') +
+			mb_substr_count($string, 'donut') +
 			mb_substr_count($string, 'biskuit') +
-			mb_substr_count($string, 'kompott')
+			mb_substr_count($string, 'kompott') +
+			mb_substr_count($string, 'palatschinke')
 		);
 	}
 
@@ -466,7 +487,7 @@ abstract class FoodGetterVenue {
 			'IV.', 'III.', 'II.', 'I.',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
-			'1', '2', '3', '4',
+			'1 ', '2 ', '3 ', '4 ',
 		];
 
 		$foods_title = [
@@ -516,7 +537,7 @@ abstract class FoodGetterVenue {
 			// nothing/too less found or keywords indicating noise
 			else if (
 				!stringsExist($food, $number_markers) &&
-				(mb_strlen($food) < 10 ||
+				(mb_strlen($food) <= 5 ||
 					mb_strlen(count_chars($food, 3)) <= 5 ||
 					stringsExist($food, [
 						'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'montag',
@@ -531,7 +552,7 @@ abstract class FoodGetterVenue {
 			// keywords indicating end
 			else if (
 				!$foodDone &&
-				stringsExist($food, [ 'Allergen', 'Tisch reservieren' ]) || ($end_on_friday && stringsExist($food, [ 'Freitag' ]))
+				stringsExist($food, [ 'Allergen', 'Tisch reservieren', 'Menü:' ]) || ($end_on_friday && stringsExist($food, [ 'Freitag' ]))
 			) {
 				//error_log("done on ${food}");
 				$foodDone = true;
@@ -590,7 +611,11 @@ abstract class FoodGetterVenue {
 		unset($food);
 
 		// remove empty values
+		$countOld = count($foods);
 		$foods = array_filter($foods);
+		$countNew = count($foods);
+		// adapt foods main count
+		$foodsMainCount -= ($countOld - $countNew);
 
 		// add counts (as long food is no dessert or soup)
 		if ($foodsMainCount > 1) {

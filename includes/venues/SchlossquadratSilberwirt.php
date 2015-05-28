@@ -34,6 +34,8 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 		return [
 			getGermanDayName() . ' ' . date('j.n.', $this->timestamp),
 			getGermanDayName() . ' ' . date('j.n',  $this->timestamp),
+			/*date('j.n.', $this->timestamp),
+			date('j.n',  $this->timestamp),*/
 		];
 	}
 

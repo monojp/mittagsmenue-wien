@@ -41,7 +41,7 @@ class Waldviertlerhof extends FoodGetterVenue {
 			return;
 
 		// get menu data for the chosen day
-		$data = $this->parse_foods_independant_from_days($dataTmp, ', ', $prices, true, false);
+		$data = $this->parse_foods_independant_from_days($dataTmp, "\n", $prices, true, false);
 		if (!$data || is_numeric($data))
 			return ($this->data = $data);
 		//return error_log($data);
