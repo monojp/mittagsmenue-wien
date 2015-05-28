@@ -21,10 +21,10 @@ define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 define('USE_SSL', true);
 
-define('LOCATION_FALLBACK', 'Grohgasse, 1050 Wien');
-define('LOCATION_FALLBACK_LAT', '48.190369');
-define('LOCATION_FALLBACK_LNG', '16.356714');
-define('LOCATION_DEFAULT_DISTANCE', '5000');
+define('LOCATION_FALLBACK', 'Bräuhausgasse 3-5, 1050 Wien');
+define('LOCATION_FALLBACK_LAT', 48.189730);
+define('LOCATION_FALLBACK_LNG', 16.356638);
+define('LOCATION_DEFAULT_DISTANCE', 5000);
 
 $GOOGLE_API_KEYS = array(
 	/* put a list of api keys here (1 is also enough) */
@@ -65,5 +65,3 @@ $changelog = array(
 );
 
 $tracking_code = "";
-
-?>
