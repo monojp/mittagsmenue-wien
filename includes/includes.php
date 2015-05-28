@@ -79,6 +79,10 @@ else
 /*
  * Utils
  */
+function exit_error($string, $error_code = 500, $error_value = 'Internal Server Error') {
+	header("HTTP/1.1 ${error_code} ${error_value}");
+	exit($string);
+}
 function command_exist($cmd) {
 	//$returnVal = shell_exec("which $cmd");
 	//return (empty($returnVal) ? false : true);
