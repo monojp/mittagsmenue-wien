@@ -394,7 +394,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'himmelfahrt') +
 			mb_substr_count($string, 'geschlossen') +
 			mb_substr_count($string, 'pfingsten') +
-			mb_substr_count($string, 'pfingstmontag')
+			mb_substr_count($string, 'pfingstmontag') +
+			mb_substr_count($string, 'fronleichnam')
 		);
 	}
 
@@ -533,8 +534,12 @@ abstract class FoodGetterVenue {
 			}
 
 			// keywords indicating free day, increase foodCount day
-			if ($use_weekday_feature && $this->get_holiday_count($food) != 0)
+			if ($use_weekday_feature && $this->get_holiday_count($food) != 0) {
+				// current day is free day
+				if ($foodCount == $weekday)
+					return VenueStateSpecial::Urlaub;
 				$foodCount++;
+			}
 			// nothing/too less found or keywords indicating noise
 			else if (
 				!stringsExist($food, $number_markers) &&
@@ -542,7 +547,7 @@ abstract class FoodGetterVenue {
 					mb_strlen(count_chars($food, 3)) <= 5 ||
 					stringsExist($food, [
 						'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'montag',
-						'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'gilt in', 'uhr', 'schanigarten',
+						'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag', 'gilt in', 'uhr', 'schanigarten',
 						'bieten', 'fangfrisch', 'ambiente', 'reichhaltig', 'telefonnummer', 'willkommen',
 						'freundlich', 'donnerstag', 'kleistgasse', 'tcpdf',
 					], true))
@@ -580,7 +585,11 @@ abstract class FoodGetterVenue {
 					(!stringsExist($data, $number_markers) || stringsExist($food, $number_markers))
 				) {
 					// we are continuing the old food here
-					if (mb_stripos($food, 'mit') === 0)
+					if (
+						mb_stripos($food, 'mit')  === 0 || endswith($data, 'mit')  ||
+						mb_stripos($food, 'dazu') === 0 || endswith($data, 'dazu') ||
+						mb_stripos($food, 'und')  === 0 || endswith($data, 'und')
+					)
 						$data .= ' ';
 					// we have a food part and title that is already written
 					else if (stringsExist(end(explode_by_array($newline_replacer, $data)), $foods_title) && !stringsExist($food, $foods_title))
@@ -590,9 +599,6 @@ abstract class FoodGetterVenue {
 						$data .= $newline_replacer;
 				}
 				$data .= $food;
-				// increase main food counter if no desert
-				if ($this->get_dessert_count($food) == 0)
-					$foodsMainCount++;
 			}
 			//error_log($food);
 		}
@@ -612,11 +618,18 @@ abstract class FoodGetterVenue {
 		unset($food);
 
 		// remove empty values
-		$countOld = count($foods);
 		$foods = array_filter($foods);
-		$countNew = count($foods);
-		// adapt foods main count
-		$foodsMainCount -= ($countOld - $countNew);
+		
+		// count main foods
+		foreach ($foods as $food) {
+			if (
+				$this->get_starter_count($food) == 0 &&
+				$this->get_dessert_count($food) == 0
+			) {
+				//error_log($food);
+				$foodsMainCount++;
+			}
+		}
 
 		// add counts (as long food is no dessert or soup)
 		if ($foodsMainCount > 1) {
