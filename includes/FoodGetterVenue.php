@@ -383,7 +383,7 @@ abstract class FoodGetterVenue {
 	 * returns the numerical amount of possible holiday strings found in a string
 	 */
 	protected function get_holiday_count($string) {
-		$string = strtolower($string);
+		$string = mb_strtolower($string);
 		return (
 			mb_substr_count($string, 'feiertag') +
 			mb_substr_count($string, 'f e i e r t a g') +
@@ -399,7 +399,7 @@ abstract class FoodGetterVenue {
 	}
 
 	protected function get_dessert_count($string) {
-		$string = strtolower($string);
+		$string = mb_strtolower($string);
 		return (
 			mb_substr_count($string, 'dessert') +
 			mb_substr_count($string, 'yoghurt') +
@@ -414,7 +414,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'donut') +
 			mb_substr_count($string, 'biskuit') +
 			mb_substr_count($string, 'kompott') +
-			mb_substr_count($string, 'palatschinke')
+			mb_substr_count($string, 'palatschinke') +
+			mb_substr_count($string, 'vanilleeis')
 		);
 	}
 
