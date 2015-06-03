@@ -477,14 +477,15 @@ head.ready([ 'jquery' ], function() {
 			alert('Bitte neueren Internet Explorer verwenden!');
 
 		// show latest changelog if not seen yet
-		var changelog_latest = $('#changelog_latest').html();
+		// TODO currently not working with jquery mobile, but maybe not needed
+		/*var changelog_latest = $('#changelog_latest').html();
 		if ($('#changelog').length && $.cookie('changelog_latest') != changelog_latest) {
 			$('#changelog').dialog({title:"Changelog",modal: true,buttons:[{text:'Ok',click:function(){$(this).dialog('close');}}]});
 			$.cookie('changelog_latest', changelog_latest);
 			// piwik track
 			if (typeof _paq != 'undefined')
 				_paq.push(['trackEvent', 'Changelog', 'shown', changelog_latest]);
-		}
+		}*/
 
 		// location ready event
 		var locationReadyFired = false;
@@ -536,11 +537,6 @@ head.ready([ 'jquery' ], function() {
 		if ($('#show_voting').length)
 			vote_get();
 
-		// connect distance input with distance slider
-		$('#distance').on('input change', function() {
-			setDistance($(this).val());
-		});
-
 		// date change handler
 		$('#date').bind('change', function() {
 			var userid = $('#userid').html();
@@ -552,16 +548,15 @@ head.ready([ 'jquery' ], function() {
 
 		// set submit handler for location input form
 		$('#locationForm').submit(function(event) {
-			var location = $('#locationInput').val();
-			setLocation(location, false, 0);
+			setDistance($('#distance').val());
+			setLocation($('#locationInput').val(), false, 0);
 			event.preventDefault();
 			$('#setLocationDialog').dialog('close');
 		});
 
 		// set submit handler for note input form
 		$('#noteForm').submit(function(event) {
-			var note = $('#noteInput').val();
-			vote_set_note(note);
+			vote_set_note($('#noteInput').val());
 			event.preventDefault();
 			$('#setNoteDialog').dialog('close');
 		});
