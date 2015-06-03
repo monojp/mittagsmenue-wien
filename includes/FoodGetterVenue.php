@@ -152,6 +152,10 @@ abstract class FoodGetterVenue {
 		// not valid or old data
 		$data = $this->parse_check();
 
+		// save special data to cache
+		if ($this->isStateSpecial() && !$this->dataFromCache)
+			$this->cacheWrite();
+
 		// special state urlaub
 		if ($data == VenueStateSpecial::Urlaub)
 			return '<span class="error">Geschlossen wegen Urlaub/Feiertag</span><br />';
@@ -178,7 +182,7 @@ abstract class FoodGetterVenue {
 
 		if (
 			!empty($this->data) &&
-			($this->isDataUpToDate() || $this->isStateSpecial())
+			$this->isDataUpToDate()
 		) {
 			// not from cache? => write back
 			if (!$this->dataFromCache)
@@ -505,6 +509,9 @@ abstract class FoodGetterVenue {
 		$foods = explode_by_array([ "\n", "\r" ], $dataTmp);
 		//return error_log(print_r($foods, true));
 
+		// set date
+		$this->date = reset($this->get_today_variants());
+
 		// immediately return if we only have 1 element
 		/*if (count($foods) == 1)
 			return $dataTmp;*/
@@ -651,9 +658,6 @@ abstract class FoodGetterVenue {
 		// check if holiday
 		if ($this->get_holiday_count($data))
 			return VenueStateSpecial::Urlaub;
-
-		// set date
-		$this->date = reset($this->get_today_variants());
 
 		return cleanText($data);
 	}

@@ -34,7 +34,10 @@ class Woracziczky extends FoodGetterVenue {
 		$fb_helper = new FB_Helper($fb_app_id, $fb_app_secret);
 		$all_posts = $fb_helper->get_all_posts(self::FACEBOOK_ID);
 
-		$data = $today = null;
+		$data = null;
+
+		// set date
+		$this->date = reset($this->get_today_variants());
 
 		foreach ((array)$all_posts as $post) {
 			if (!isset($post['message']) || !isset($post['created_time']) || !isset($post['from']))
@@ -70,7 +73,6 @@ class Woracziczky extends FoodGetterVenue {
 
 			// use whole fp post
 			$data = str_replace("\n", "<br />", $message);
-			$today = reset($this->get_today_variants());
 		}
 
 		// all posts scanned, nothing found, but relevant string in a post => maybe vacation!
@@ -78,9 +80,6 @@ class Woracziczky extends FoodGetterVenue {
 			$data = VenueStateSpecial::UrlaubMaybe;
 
 		$this->data = $data;
-
-		// set date
-		$this->date = $today;
 
 		// set price
 		$this->price = [ 8.50 ];
