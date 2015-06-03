@@ -25,6 +25,7 @@ echo "
 					<li><a href='#three' data-ajax='false' data-icon='gear'>Einstellungen</a></li>
 				</ul>
 			</div>
+			" . get_button_vote_summary_toggle_html() . "
 			<div id='dialog_vote_summary' style='${vote_style}'>" . get_vote_div_html() . "</div>
 			<div id='one' style='padding: 1em 0;'>
 				<div id='noVenueFoundNotifier' style='display: none'>

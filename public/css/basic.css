@@ -131,19 +131,18 @@ input {
 .center {
 	text-align: center;
 }
-.dialog_opener_float {
-	float: left;
-	margin-right: 10px;
-}
 .bold {
 	font-weight: bold;
 }
-.raised {
-	vertical-align: top;
-	font-size: 0.8em;
-}
-.ui-dialog, .ui-widget {
-	font-size: 1em ! important;
+
+/* jquery mobile styles */
+
+/* left aligned titles on small devices */
+@media screen and (max-width: 40em) {
+	.ui-title {
+		text-align: left ! important;
+		margin: 0 1em ! important;
+	}
 }
 
 /* DataTable styles */

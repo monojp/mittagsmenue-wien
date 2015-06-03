@@ -299,10 +299,12 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$name_escaped  = str_replace("'", '', $name_escaped);
 
 		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
-		$actions = "<a data-role='button' data-inline='true' data-icon='location' data-iconpos='notext' href='${maps_href}' target='_blank' title='Google Maps Route'>Google Maps Route</a>";
+		$actions = "<a href='${maps_href}' class='no_decoration lat_lng_link' target='_blank'>
+			<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='Google Maps Route'>Google Maps Route</div>
+		</a>";
 		if (show_voting())
-			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"{$name_escaped}\")' data-role='button' data-inline='true' data-icon='plus' data-iconpos='notext' title='Vote Up'>Vote up</a>"
-			          . "<a href='javascript:void(0)' onclick='vote_down(\"{$name_escaped}\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</a>";
+			$actions .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-plus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_up(\"{$name_escaped}\")' title='Vote Up'>Vote up</div>"
+			          . "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"{$name_escaped}\")' title='Vote Down'>Vote Down</div>";
 
 		$response[] = array(
 			'name' => $name,

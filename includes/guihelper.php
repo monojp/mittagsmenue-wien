@@ -57,7 +57,7 @@ function get_header_html() {
 			<meta name="robots" content="INDEX,FOLLOW" />
 			<meta name="keywords" content="' . META_KEYWORDS . '" />
 			<meta name="description" content="' .  META_DESCRIPTION . '" />
-			<meta name="viewport" content="width=device-width" />';
+			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
 	// basic css and javascript
 	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
@@ -296,6 +296,12 @@ function get_vote_setting_html() {
 			' . $custom_userid_gui_output . '
 			<br>
 			<button data-icon="check" onclick="vote_settings_save();">Speichern</button>';
+}
+
+function get_button_vote_summary_toggle_html() {
+	if (!show_voting())
+		return '';
+	return "<button id='button_vote_summary_toggle' data-icon='carat-r' onclick='$(\"#dialog_vote_summary\").toggle(\"\");' style='display: none;'>Voting Anzeigen</button>";
 }
 
 function get_vote_div_html() {

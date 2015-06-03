@@ -277,13 +277,14 @@ abstract class FoodGetterVenue {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a data-role='button' data-inline='true' data-icon='location' data-iconpos='notext' class='lat_lng_link' title='Google Maps Route'
-					href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr={$this->addressLat},{$this->addressLng}' target='_blank'>Google Maps Route</a>";
+			$string .= "<a href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr={$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
+				<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='Google Maps Route'>Google Maps Route</div>
+			</a>";
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {
-			$string .= "<a href='javascript:void(0)' onclick='vote_up(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='plus' data-iconpos='notext' title='Vote Up'>Vote Up</a>";
-			$string .= "<a href='javascript:void(0)' onclick='vote_down(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</a>";
+			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-plus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_up(\"" . get_class($this) . "\")' title='Vote Up'>Vote Up</div>";
+			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</div>";
 		}
 
 		// check no menu days

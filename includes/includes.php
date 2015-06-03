@@ -819,7 +819,7 @@ function html_compress($html) {
 	if (!USE_MINIMZED_JS_CSS_HTML)
 		return $html;
 	// newlines, tabs & carriage return
-	$response = str_replace([ "\n", "\t", "\r" ], '', $html);
+	$response = str_replace([ "\n", "\t", "\r" ], ' ', $html);
 	// convert multiple spaces into one
 	$response = preg_replace('/\s+/', ' ', $response);
 	// cleanup spaces inside tags

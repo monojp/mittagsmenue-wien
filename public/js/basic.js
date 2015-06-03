@@ -5,6 +5,10 @@ var voting_over_interval_multiplier = 1;
 var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
 
+var SHOW_VOTING_BUTTON_WIDTH = 800;
+
+var width_device = (window.innerWidth > 0) ? window.innerWidth : screen.width;
+
 function isMobileDevice() {
 	return /Android|webOS|iPhone|iPad|iPod|BlackBerry|MIDP|Nokia|J2ME/i.test(navigator.userAgent);
 }
@@ -106,10 +110,10 @@ function vote_helper(action, identifier, note, try_count) {
 			// got valid vote result
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				$("#dialog_vote_summary").css('display', 'table');
-				// highlight dialog (only if voting not over)
-				/*if (!result.voting_over)
-					$("#dialog_vote_summary").effect('highlight');*/
+				if (width_device <= SHOW_VOTING_BUTTON_WIDTH)
+					$('#button_vote_summary_toggle').show();
+				else
+					$("#dialog_vote_summary").css('display', 'table');
 			}
 			// no | empty result => hide voting dialog
 			else {
@@ -594,7 +598,9 @@ head.ready([ 'jquery' ], function() {
 						},
 						'fnDrawCallback': function (oSettings) {
 							// update iconized button links
-							$('#table_voting_alt_wrapper a[data-role="button"]').button();
+							$('#table_voting_alt_wrapper div.ui-link').button({
+								enhanced: true
+							});
 						}
 					});
 					$('#div_voting_alt_loader').hide();

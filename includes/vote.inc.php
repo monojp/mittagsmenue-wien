@@ -254,12 +254,15 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 		// table with details
 		uksort($votes, 'ip_username_sort');
 		// note: use inline style here for email
-		$html .= '<table style="border-spacing: 5px"><tr>
-			<th style="text-align: center"><b>Benutzer</b></th>
-			<th style="text-align: center"><b>Vote Ups</b></th>
-			<th style="text-align: center"><b>Vote Downs</b></th>
-			<th style="text-align: center"><b>Notizen</b></th>
-		</tr>';
+		$html .= '<table style="border-spacing: 5px" data-role="table">
+			<thead>
+				<tr>
+					<th style="text-align: center"><b>Benutzer</b></th>
+					<th style="text-align: center"><b>Vote Ups</b></th>
+					<th style="text-align: center"><b>Vote Downs</b></th>
+					<th style="text-align: center"><b>Notizen</b></th>
+				</tr>
+			</thead><tbody>';
 		foreach ($votes as $user => $vote_data) {
 			$upVotes = array_keys($vote_data, 'up');
 			$downVotes = array_keys($vote_data, 'down');
@@ -310,7 +313,7 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 				<td class='convert-emoji' style='$specialVote_style'>{$specialVote}</td>
 			</tr>";
 		}
-		$html .= '</table>';
+		$html .= '</tbody></table>';
 
 		// current ranking
 		$html .= '<table><tbody><tr>';
