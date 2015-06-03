@@ -85,7 +85,7 @@ abstract class FoodGetterVenue {
 		return '
 			$.ajax({
 				type: "GET",
-				url:  "venue.php",
+				url:  "/venue.php",
 				cache: ' . $cache . ',
 				data: {
 					"classname": "' . get_class($this) . '",
@@ -154,9 +154,9 @@ abstract class FoodGetterVenue {
 
 		// special state urlaub
 		if ($data == VenueStateSpecial::Urlaub)
-			return '<br /><span class="error">Geschlossen wegen Urlaub/Feiertag</span><br />';
+			return '<span class="error">Geschlossen wegen Urlaub/Feiertag</span><br />';
 		else if ($data == VenueStateSpecial::UrlaubMaybe)
-			return '<br /><span class="error">Vermutlich geschlossen wegen Urlaub/Feiertag</span><br />';
+			return '<span class="error">Vermutlich geschlossen wegen Urlaub/Feiertag</span><br />';
 
 		//$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 
@@ -228,7 +228,7 @@ abstract class FoodGetterVenue {
 				<script type="text/javascript">
 					function reload_' . $this->CSSid . '() {
 						var id = "' . $this->CSSid . '_data";
-						$("#" + id).html(\'<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />\');
+						$("#" + id).html(\'<div class="throbber middle">Lade...</div>\');
 						' . $this->get_ajax_venue_code($date_GET, false) . '
 					}
 					function set_rand_reload_' . $this->CSSid . '() {
@@ -240,7 +240,6 @@ abstract class FoodGetterVenue {
 				</script>
 				<a href="javascript:void(0)" onclick="reload_' . $this->CSSid . '()">aktualisieren</a>
 			';
-			$return .= '<br />';
 			$return .= '<span class="error">Leider nichts gefunden :(</span>';
 			$return .= '<br />';
 			$return .= "<a href='{$this->dataSource}' target='_blank'>Mittagskarte</a> / <a href='{$this->menu}' target='_blank'>Speisekarte</a>";
@@ -278,12 +277,13 @@ abstract class FoodGetterVenue {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a class='lat_lng_link' href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr=" . $this->addressLat . "," . $this->addressLng . "' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+			$string .= "<a data-role='button' data-inline='true' data-icon='location' data-iconpos='notext' class='lat_lng_link' title='Google Maps Route'
+					href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr={$this->addressLat},{$this->addressLng}' target='_blank'>Google Maps Route</a>";
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {
-			$string .= "<a href='javascript:void(0)' onclick='vote_up(\"" . get_class($this) . "\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>";
-			$string .= "<a href='javascript:void(0)' onclick='vote_down(\"" . get_class($this) . "\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+			$string .= "<a href='javascript:void(0)' onclick='vote_up(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='plus' data-iconpos='notext' title='Vote Up'>Vote Up</a>";
+			$string .= "<a href='javascript:void(0)' onclick='vote_down(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</a>";
 		}
 
 		// check no menu days
@@ -305,18 +305,15 @@ abstract class FoodGetterVenue {
 			// new data getter via ajax
 			else
 				$string .= '
-					<span id="' . $this->CSSid . '_data">
+					<div id="' . $this->CSSid . '_data">
 						<script type="text/javascript">
-							head.ready("scripts", function() {
-								if (jQuery.inArray("' . get_class($this) . '", venues_ajax_query) == -1) {
-									venues_ajax_query.push("' . get_class($this) . '");
-									' . $this->get_ajax_venue_code($date_GET) . '
-								}
+							head.ready([ "jquery", "basic" ], function() {
+								' . $this->get_ajax_venue_code($date_GET) . '
 							});
 						</script>
-						<br />
-						<img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />
-					</span>
+						<br>
+						<div class="throbber middle">Lade...</div>
+					</div>
 				';
 		}
 		$string .= '</div>';
@@ -494,7 +491,8 @@ abstract class FoodGetterVenue {
 
 		$foods_title = [
 			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras', 'Aloo Palak', 'Chicken Masala', 'Beef Bhuna',
-			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma',
+			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas', 'Butter Chicken',
+			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';

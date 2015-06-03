@@ -23,7 +23,7 @@ if ($action == 'user_config_set') {
 			UserHandler_MySql::getInstance()->save($ip, $name, $email, $vote_reminder, $voted_mail_only, null /*TODO*/);
 		else
 			UserHandler_MySql::getInstance()->update($ip, $name, $email, $vote_reminder, $voted_mail_only, null /*TODO*/);
-		echo json_encode(true);
+		echo json_encode(array('alert' => js_message_prepare('Daten wurden gespeichert.')));
 	}
 }
 // invalid action

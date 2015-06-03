@@ -90,7 +90,7 @@ function command_exist($cmd) {
 	return ($returnVal == 0);
 }
 function cacheSafeUrl($file) {
-	return $file . "?" . filemtime($file);
+	return $file . "?" . filemtime(__DIR__ . '/../public/' . $file);
 }
 function strposAfter($haystack, $needle, $offset=0) {
 	$pos = mb_strpos($haystack, $needle, $offset);

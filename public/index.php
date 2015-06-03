@@ -1,93 +1,57 @@
 <?php
 
 require_once(__DIR__ . '/../includes/guihelper.php');
-require_once('header.php');
 
-// minimal site and votes allowed, refresh every 10s
-if (isset($_GET['minimal']) && show_voting())
-	echo '<meta http-equiv="refresh" content="10" />';
+// print header
+echo get_header_html();
 
-// no js fallback to minimal site refresh
-if (!isset($_GET['minimal']))
-	$url = build_minimal_url();
+// main page with header and tabbed content
+$vote_style = isset($_GET['minimal']) ? 'display: table;' : '';
+echo "
+<div id='page_main' data-role='page'>
+	<div data-role='header'>
+		<h1>
+			" . SITE_TITLE . ", <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
+		</h1>
+		<a id='location' href='#setLocationDialog' data-role='button' data-inline='true' data-mini='true' data-icon='location'
+				data-rel='dialog' data-transition='pop' title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
+	</div>
+	<div data-role='main' class='ui-content'>
+		<div data-role='tabs' id='tabs'>
+			<div data-role='navbar'>
+				<ul>
+					<li><a href='#one' class='ui-btn-active' data-ajax='false' data-icon='home'>Lokale</a></li>
+					<li><a href='#two' data-ajax='false' data-icon='cloud'>Alternativen</a></li>
+					<li><a href='#three' data-ajax='false' data-icon='gear'>Einstellungen</a></li>
+				</ul>
+			</div>
+			<div id='dialog_vote_summary' style='${vote_style}'>" . get_vote_div_html() . "</div>
+			<div id='one' style='padding: 1em 0;'>
+				<div id='noVenueFoundNotifier' style='display: none'>
+					Es wurde leider nichts gefunden :(<br />Bitte ändern Sie den Ausgangsort und/oder den Umkreis.
+				</div>
+				<div id='venueContainer'>" . get_venues_html() ."</div>
+			</div>
+			<div id='two' style='padding: 1em 0;'>
+				<div id='setAlternativeVenuesDialog'>" . get_alt_venue_html() ."</div>
+			</div>
+			<div id='three' style='padding: 1em 0;'>
+				<div id='setVoteSettingsDialog'>" . get_vote_setting_html() ."</div>
+			</div>
+		</div>
+	</div>
+	<div data-role='footer'>" . get_footer_html() . "</div>
+</div>";
 
-echo '</head><body>';
-
+// other pages used as dialogs
 if (!isset($_GET['minimal'])) {
-	// default values for reset actions
-	//echo get_default_location_values_html();
 	// location dialog
-	echo get_location_dialog_html();
+	echo get_page_location();
 	// note dialog
-	echo get_note_dialog_html();
-	// voting setting dialog
-	echo get_alt_venue_and_vote_setting_dialog();
-	// piwik user id script
-	echo get_piwik_user_id_script();
+	echo get_page_note();
 }
 
-// write voteable for JS
-if (show_voting())
-	echo '<div style="display: none" id="show_voting"></div>';
-
-// header text
-$dayName = getGermanDayName();
-$date = date_offsetted('Y-m-d');
-$dayText = "<label for='date'>$dayName</label> <input type='date' id='date' title='' value='$date' />";
-echo "<span style='font-weight: bold; font-size: 2em'>Mittagsmenü Wien, $dayText</span><br />";
-
-// show minimal (no JS) site notice
-if (isset($_GET['minimal'])) {
-	echo get_minimal_site_notice_html();
-	// also show the current voting status if voting allowed
-	if (show_voting()) {
-		$votes = getAllVotes();
-		if (!empty($votes))
-			echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes, false) . '</div>';
-	}
-}
-else {
-	// location and alt_venue_and_vote_setting opener
-	echo '<div class="dialog_opener_float">' . get_location_opener_html() . get_alt_venue_and_vote_setting_opener_html() . '</div>';
-	if (show_voting())
-		echo get_vote_div_html();
-}
-
-echo '<div style="clear: both"></div>';
-
-echo '<div id="venueContainer">';
-$venues = array(
-	new SchlossquadratMargareta(),
-	new SchlossquadratSilberwirt(),
-	new AltesFassl(),
-	new HaasBeisl(),
-	new TasteOfIndia(),
-	new DeliciousMonster(),
-	new Ausklang(),
-	new NamNamDeli(),
-	new Waldviertlerhof(),
-	new MensaFreihaus(),
-	new MensaSchroedinger(),
-	new Woracziczky(),
-	//new CoteSud(),
-	new FalkensteinerStueberl(),
-	new Lambrecht(),
-	new CafeAmacord(),
-	//new Gondola(),
-	new RadioCafe(),
-);
-foreach ($venues as $venue) {
-	echo $venue;
-}
-echo '</div>';
-
-echo '<div style="clear: both"></div>';
-
-// loading container because venues are shown via JS when dom ready
-if (!isset($_GET['minimal']))
-	echo get_loading_container_html();
-
-echo '<div id="noVenueFoundNotifier" style="display: none"><p>Es wurde leider nichts gefunden :(<br />Bitte ändern Sie den Ausgangsort und/oder den Umkreis.</p></div>';
+//echo '<div style="clear: both"></div>';
 
 // changelog
 if (!empty($changelog)) {
@@ -102,4 +66,5 @@ if (!empty($changelog)) {
 	echo '</div>';
 }
 
-require_once('footer.php');
+// close html
+echo "</body></html>";

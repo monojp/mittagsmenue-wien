@@ -12,42 +12,132 @@ $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
 
-function get_allergen_info() {
-	return '
-		<div style="font-weight: smaller">
-			<span>Allergeninformation gemäß Codex-Empfehlung:</span>
-			<div>
-				<div class="allergenDiv">A) glutenhaltiges Getreide</div>
-				<div class="allergenDiv">B) Krebstiere</div>
-				<div class="allergenDiv">C) Ei</div>
-				<div class="allergenDiv">D) Fisch</div>
-				<div class="allergenDiv">E) Erdnuss</div>
-				<div class="allergenDiv">F) Soja</div>
-				<div class="allergenDiv">G) Milch oder Laktose</div>
-				<div class="allergenDiv">H) Schalenfrüchte</div>
-				<div class="allergenDiv">L) Sellerie</div>
-				<div class="allergenDiv">M) Senf</div>
-				<div class="allergenDiv">N) Sesam</div>
-				<div class="allergenDiv">O) Sulfite</div>
-				<div class="allergenDiv">P) Lupinen</div>
-				<div class="allergenDiv">R) Weichtiere</div>
-			</div>
-		</div>
-	';
+function get_venues_html() {
+	$response = '';
+
+	// loading container because venues are shown via JS when dom ready
+	if (!isset($_GET['minimal']))
+		$response .= get_loading_container_html();
+
+	$venues = [
+		new SchlossquadratMargareta(),
+		new SchlossquadratSilberwirt(),
+		new AltesFassl(),
+		new HaasBeisl(),
+		new TasteOfIndia(),
+		new DeliciousMonster(),
+		new Ausklang(),
+		new NamNamDeli(),
+		new Waldviertlerhof(),
+		new MensaFreihaus(),
+		new MensaSchroedinger(),
+		new Woracziczky(),
+		//new CoteSud(),
+		new 	FalkensteinerStueberl(),
+		new Lambrecht(),
+		new CafeAmacord(),
+		//new Gondola(),
+		new RadioCafe(),
+	];
+	foreach ($venues as $venue) {
+		$response .= $venue;
+	}
+	return $response;
 }
 
-function get_location_opener_html() {
-	global $city;
+function get_header_html() {
+	// start output buffering with custom html compress handler
+	ob_start('html_compress');
 
-	return '
-		<div class="subheader_div">
-			Lokale rund um <a href="javascript:void(0)" onclick="setLocationDialog(this)" title="Adresse festlegen">
-				<span id="location">' . $city . '</span></a>
-		</div>
-	';
+	$response = '<!DOCTYPE html>
+		<html lang="de">
+		<head>
+			<title>' . META_KEYWORDS . '</title>
+			<meta charset="UTF-8" />
+			<meta name="robots" content="INDEX,FOLLOW" />
+			<meta name="keywords" content="' . META_KEYWORDS . '" />
+			<meta name="description" content="' .  META_DESCRIPTION . '" />
+			<meta name="viewport" content="width=device-width" />';
+
+	// basic css and javascript
+	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
+	$basic_css    = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
+	$basic_js     = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js'   : '/js/basic.js';
+	// css
+	$response .='
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($basic_css) . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.textcomplete.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/emojione.min.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/sprites/emojione.sprites.css') . '" />';
+	// javascript
+	if (!isset($_GET['minimal']))
+		$response .= '<script src="' . cacheSafeUrl('/js/head.load.min.js') . '" type="text/javascript"></script>
+			<script type="text/javascript">
+				head.js(
+					{jquery: "' . cacheSafeUrl('/js/jquery-2.1.4.min.js') . '"},
+					{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
+					{basic: "' . cacheSafeUrl($basic_js) . '"},
+					{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
+					{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
+					{textcomplete: "' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '"},
+					{emojione: "' . cacheSafeUrl('/emojione/emojione.min.js') . '"}
+				);
+			</script>';
+
+	// minimal site and votes allowed, refresh every 10s
+	if (isset($_GET['minimal']) && show_voting())
+		$response .= '<meta http-equiv="refresh" content="10" />';
+
+	// no js fallback to minimal site refresh
+	if (!isset($_GET['minimal']))
+		$url = build_minimal_url();
+
+	$response .= '</head><body>';
+
+	// header
+	/*$response .= "<div data-role='header'>
+		<h1>
+			" . SITE_TITLE . ", <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
+		</h1>
+		<a id='location' href='javascript:void(0)' onclick='setLocationDialog(this)' data-role='button' data-inline='true' data-mini='true' data-icon='location'
+				title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
+	</div>";
+
+	$response .= "<div role='main' class='ui-content'>";*/
+
+	return $response;
+}
+function get_footer_html() {
+	global $tracking_code;
+
+	//$response = "</div>";
+	$response = '';
+
+	if (CONTACT_HREF)
+		$outputs[] = '<a href="' . htmlspecialchars(CONTACT_HREF) . '" target="_blank" data-rel="dialog">Kontakt</a>';
+	if (IMPRESSUM_HREF)
+		$outputs[] = '<a href="' . htmlspecialchars(IMPRESSUM_HREF) . '" target="_blank" data-rel="dialog">Impressum</a>';
+	if (PRIVACY_INFO)
+		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
+	if (!isset($_GET['minimal'])) {
+		$url = build_minimal_url();
+		$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an'>Minimal-Version</a>";
+	}
+	$outputs[] = '<a href="https://github.com/monojp/mittagsmenue-wien/" target="_blank" data-rel="dialog">Open Source</a>';
+
+	$response .= '<div data-role="footer">
+		<h2>' . implode(' | ', $outputs) . '</h2>
+	</div>';
+
+	$response .= "${tracking_code}" . get_piwik_user_id_script();
+
+	return $response;
 }
 
-function get_location_dialog_html() {
+function get_page_location() {
 	global $lat, $lng, $city, $distance;
 
 	return '
@@ -55,57 +145,58 @@ function get_location_dialog_html() {
 		<div style="display: none" id="lng">' . $lng . '</div>
 		<div style="display: none" id="distance_default">' . $distance . '</div>
 
-		<div id="setLocationDialog" class="hidden">
-			<form id="locationForm" action="index.php">
-				<fieldset>
-					<label for="locationInput">Adresse</label>
-					<br />
-					<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%" />
-					<br />
-					<a href="javascript:void(0)" onclick="setLocation(\'' . $city . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a> | <a href="javascript:void(0)" onclick="setLocation(null, true);$(\'#setLocationDialog\').dialog(\'close\')">Standort bestimmen</a>
-				</fieldset>
-				<br />
-				<fieldset>
-					<label for="distance">Umkreis</label>
-					<table style="border-spacing: 0px">
-						<tr>
-							<td>
-								<div id="sliderDistance" style="width: 100px"></div>
-							</td>
-							<td>
-								<input type="number" id="distance" style="width: 50px; margin-left: 10px" />
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a>
-							</td>
-						</tr>
-					</table>
-				</fieldset>
-			</form>
+		<div id="setLocationDialog" data-role="page">
+			<div data-role="header">
+				<h1>Adresse festlegen</h1>
+			</div>
+			<div data-role="content">
+				<form id="locationForm" action="index.php">
+					<fieldset>
+						<label for="locationInput">Adresse</label>
+						<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%" />
+						<a href="javascript:void(0)" onclick="setLocation(\'' . $city . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a> | <a href="javascript:void(0)" onclick="setLocation(null, true);$(\'#setLocationDialog\').dialog(\'close\')">Standort bestimmen</a>
+					</fieldset>
+					<br>
+					<fieldset>
+						<label for="distance">Umkreis</label>
+						<input type="range" name="distance" id="distance" value="' . $distance . '" min="0" max="10000" step="100" />
+						<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a>
+					</fieldset>
+					<br>
+					<button data-icon="check">Speichern</button>
+				</form>
+			</div>
+			<div data-role="footer"></div>
 		</div>
 	';
 }
 
-function get_note_dialog_html() {
+function get_page_note() {
 	global $timestamp;
 	$ip        = get_identifier_ip();
 	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip);
 	$note      = isset($vote_data[$ip]['special']) ? $vote_data[$ip]['special'] : '';
 	return '
-		<div id="setNoteDialog" class="hidden">
-			<form id="noteForm" action="index.php">
-				<fieldset>
-					<label for="noteInput">Notiz</label>
-					<br />
-					<input type="text" name="note" id="noteInput" title="Emojis werden durch Eingabe von \':\' gesucht/vorgeschlagen" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
-					<br /><br />
-					<span>Vorschau</span>
-					<br />
-					<div id="notePreview" style="margin: .5em 0"></div>
-				</fieldset>
-			</form>
+		<div id="setNoteDialog" data-role="page">
+			<div data-role="header">
+				<h1>Notiz erstellen</h1>
+			</div>
+			<div data-role="content">
+				<form id="noteForm" action="index.php">
+					<fieldset>
+						<label for="noteInput">
+							Notiz / <a href="http://emojione.com/" target="_blank">Emoji</a>
+						</label>
+						<input type="text" name="note" id="noteInput" title="Emojis werden durch Eingabe von \':\' gesucht/vorgeschlagen" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+						<br>
+						<span>Vorschau</span>
+						<div id="notePreview" style="margin: .5em 0"></div>
+						<br>
+						<button data-icon="check">Speichern</button>
+					</fieldset>
+				</form>
+			</div>
+			<div data-role="footer"></div>
 		</div>
 	';
 }
@@ -113,18 +204,9 @@ function get_note_dialog_html() {
 function get_special_vote_actions_html() {
 	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Verweigerung\')">Verweigerung</a>';
 	$actions[] = '<a href="javascript:void(0)" onclick="vote_special(\'Egal\')">Egal</a>';
-	$actions[] = '<a href="javascript:void(0)" onclick="setNoteDialog()">Notiz</a>';
+	$actions[] = '<a href="#setNoteDialog" data-rel="dialog" data-transition="pop">Notiz</a>';
 	$actions[] = '<a href="javascript:void(0)" onclick="vote_delete()">Löschen</a>';
 	return implode(' | ', $actions);
-}
-
-function get_alt_venue_and_vote_setting_opener_html() {
-	$data[] = '<a href="javascript:void(0)" onclick="setAlternativeVenuesDialog()">Weitere Lokale in der Nähe</a>';
-	if (is_intern_ip())
-		$data[] = '<a href="javascript:void(0)" onclick="setVoteSettingsDialog()">Spezial-Votes &amp; Einstellungen</a>';
-
-	$data = implode(' | ', $data);
-	return "<div class='subheader_div'>$data</div>";
 }
 
 function get_piwik_user_id_script() {
@@ -139,7 +221,21 @@ function get_piwik_user_id_script() {
 	';
 }
 
-function get_alt_venue_and_vote_setting_dialog() {
+function get_alt_venue_html() {
+	return "<fieldset>
+		<div id='div_voting_alt_loader'>
+			Lade Restaurants in der Umgebung
+			<br>
+			<div class='throbber middle'>Lade...</div>
+		</div>
+		<table id='table_voting_alt' data-role='table' class='ui-responsive'>
+			<thead></thead>
+			<tbody></tbody>
+		</table>
+	</fieldset>";
+}
+
+function get_vote_setting_html() {
 	global $voting_over_time;
 
 	$ip = get_identifier_ip();
@@ -165,7 +261,7 @@ function get_alt_venue_and_vote_setting_dialog() {
 		$custom_userid_url = custom_userid_access_url_get($custom_userid);
 		$custom_userid_url = empty($custom_userid_url) ? 'nicht gesetzt' : $custom_userid_url;
 		$custom_userid_gui_output = '
-			<br />
+			<br>
 			<fieldset>
 				<label>Externe Zugriffs-URL</label>
 				<p id="custom_userid_url">
@@ -178,36 +274,13 @@ function get_alt_venue_and_vote_setting_dialog() {
 
 	return '
 		<div style="display: none" id="userid">' . $custom_userid . '</div>
-		<div id="setAlternativeVenuesDialog" class="hidden">
 			<fieldset>
-				<p id="div_voting_alt_loader">
-					Lade Restaurants in der Umgebung <br /><img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />
-				</p>
-				<br />
-				<table id="table_voting_alt" style="width: 100% ! important">
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Distanz</th>
-							<th>Rating</th>
-							<th data-dynatable-no-sort="data-dynatable-no-sort">Aktionen</th>
-						</tr>
-					</thead>
-				</table>
-			</fieldset>
-		</div>
-		<div id="setVoteSettingsDialog" class="hidden">
-			<fieldset>
-				<label>Spezial-Votes</label>
-				<p>
-				' . get_special_vote_actions_html() . '
-				</p>
 				<label for="name">Benutzername</label>
 				<p>
 					<input type="text" name="name" id="name" value="' . ip_anonymize() . '" style="width: 100%" />
 				</p>
 			</fieldset>
-			<br />
+			<br>
 			<fieldset>
 				<label for="email">Email-Benachrichtigung an</label>
 				<p>
@@ -216,14 +289,13 @@ function get_alt_venue_and_vote_setting_dialog() {
 				<label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
 					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
 				</label>
-				<br />
 				<label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
 					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Email(s) nur versenden, wenn selbst gevoted
 				</label>
 			</fieldset>
 			' . $custom_userid_gui_output . '
-		</div>
-	';
+			<br>
+			<button data-icon="check" onclick="vote_settings_save();">Speichern</button>';
 }
 
 function get_vote_div_html() {
@@ -232,37 +304,48 @@ function get_vote_div_html() {
 
 	$vote_loader = '';
 
+	if (!show_voting())
+		return '';
+
+	// show minimal (no JS) site notice
+	if (isset($_GET['minimal'])) {
+		echo get_minimal_site_notice_html();
+		// also show the current voting status
+		$votes = getAllVotes();
+		if (!empty($votes))
+			return vote_summary_html($votes, false);
+	}
+
 	if (!vote_allowed())
 		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
 	else {
 		$vote_loader = '
 		<div style="margin: 0px 5px">
 			Warte auf weitere Stimmen
-			<img src="imagesCommon/loader_small.gif" width="100" height="15" alt="" style="vertical-align: middle" />
+			<div class="throbber middle">Lade...</div>
 		</div>
 		';
 		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time_print!";
 	}
 
 	return '
+		<div style="display: none" id="show_voting"></div>
 		<div id="voting_over_time" class="hidden">' . $voting_over_time . '</div>
 		<div id="voting_over_time_print" class="hidden">' . $voting_over_time_print . '</div>
 		<div style="clear: both"></div>
-		<div id="dialog_vote_summary">
-			<div id="dialog_ajax_data"></div>
-			<div style="margin: 5px">' . get_special_vote_actions_html() . '</div>
-			' . $vote_loader . '
-			<div class="error" style="margin: 5px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
-				' . $voting_info_text . '
-			</div>
+		<div id="dialog_ajax_data"></div>
+		<div style="margin: 5px">' . get_special_vote_actions_html() . '</div>
+		' . $vote_loader . '
+		<div class="error" style="margin: 5px" title="In den Einstellungen kann eine Email-Benachrichtigung aktiviert werden, welche zur gegebenen Zeit versandt wird.">
+			' . $voting_info_text . '
 		</div>
 	';
 }
 
 function get_loading_container_html() {
-	return '
-		<div id="loadingContainer"><img src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" /></div>
-	';
+	return '<div id="loadingContainer">
+			<div class="throbber middle">Lade...</div>
+		</div>';
 }
 
 function get_minimal_site_notice_html() {

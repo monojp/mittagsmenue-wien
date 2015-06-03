@@ -1,15 +1,10 @@
 <?php
 
-require_once('../includes/guihelper.php');
-require_once('header.php');
+require_once(__DIR__ . '/../includes/guihelper.php');
 
 define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
 
-?>
-</head>
-<body>
-
-<?php
+echo get_header_html();
 
 // get keyword
 $keyword = '';
@@ -82,7 +77,7 @@ echo "Stichwort-Suche: <form action='{$action}' method='post'>
 if (!empty($datasetSize)) {
 	// loader for javascript
 	if (!isset($_GET['minimal']))
-		echo '<img id="loader_stats" src="imagesCommon/loader.gif" width="160" height="24" alt="" style="vertical-align: middle" />';
+		echo '<div id="loader_stats" class="throbber middle">Lade...</div>';
 
 	if (empty($foodKeyword))
 		echo '<h2>Häufigkeiten</h2>';
@@ -160,16 +155,19 @@ else {
 
 ?>
 <script type="text/javascript">
-	head.ready('scripts', function() {
-		$('#table_ingredients').dataTable({"order": [[ 2, "desc" ]]});
-		$('#table_ingredients').show();
-		$('#table_compositions').dataTable({"order": [[ 2, "desc" ]]});
-		$('#table_compositions').show();
+	head.ready([ 'jquery', 'jquery_datatables' ], function() {
+		$(document).ready(function() {
+			$('#table_ingredients').dataTable({"order": [[ 2, "desc" ]]});
+			$('#table_ingredients').show();
+			$('#table_compositions').dataTable({"order": [[ 2, "desc" ]]});
+			$('#table_compositions').show();
 
-		$('#loader_stats').hide();
+			$('#loader_stats').hide();
+		});
 	});
 </script>
 
 <?php
 
-require_once('footer.php');
+echo '<br><br>';
+echo get_footer_html();

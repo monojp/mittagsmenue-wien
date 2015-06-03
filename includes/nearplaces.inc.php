@@ -276,7 +276,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
 			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry',
 			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5',
-			'Cafe Amacord', 'Ristorante Gondola',
+			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos'
 		), '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
@@ -299,16 +299,16 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$name_escaped  = str_replace("'", '', $name_escaped);
 
 		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
-		$actions = "<a href='$maps_href' target='_blank'><span class='icon sprite sprite-icon_pin_map' title='Google Maps Route'></span></a>";
+		$actions = "<a data-role='button' data-inline='true' data-icon='location' data-iconpos='notext' href='${maps_href}' target='_blank' title='Google Maps Route'>Google Maps Route</a>";
 		if (show_voting())
-			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"{$name_escaped}\")'><span class='icon sprite sprite-icon_hand_pro' title='Vote Up'></span></a>"
-			          . "<a href='javascript:void(0)' onclick='vote_down(\"{$name_escaped}\")'><span class='icon sprite sprite-icon_hand_contra' title='Vote Down'></span></a>";
+			$actions .= "<a href='javascript:void(0)' onclick='vote_up(\"{$name_escaped}\")' data-role='button' data-inline='true' data-icon='plus' data-iconpos='notext' title='Vote Up'>Vote up</a>"
+			          . "<a href='javascript:void(0)' onclick='vote_down(\"{$name_escaped}\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</a>";
 
 		$response[] = array(
 			'name' => $name,
 			$href,
 			round(distance($lat_orig, $lng_orig, $lat, $lng, false) * 1000),
-			(!$rating) ? '-' : $rating,
+			//(!$rating) ? '-' : (string)$rating,
 			$actions,
 		);
 	}

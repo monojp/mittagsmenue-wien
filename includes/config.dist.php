@@ -35,10 +35,11 @@ $fb_app_secret = '<your fb app secret>';
 
 define('USE_MINIMZED_JS_CSS', true);
 
+define('SITE_TITLE', 'Mittagsmenü Wien');
 define('SITE_URL', '<url>');
 define('SITE_FROM_MAIL', 'Your Name <<email>>');
-define('META_KEYWORDS', '<keywords>');
-define('META_DESCRIPTION', META_KEYWORDS);
+define('META_KEYWORDS', SITE_TITLE);
+define('META_DESCRIPTION', SITE_TITLE);
 define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
 define('PRIVACY_INFO', '<text>');
