@@ -16,4 +16,5 @@ java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/throbber.css -o $C
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/basic.css -o $CSSDIR/basic.min.css
 
 # minimize js
+java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/head.load.js -o $JSDIR/head.load.min.js
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/basic.js -o $JSDIR/basic.min.js

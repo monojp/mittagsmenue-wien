@@ -62,6 +62,7 @@ function get_header_html() {
 	// basic css and javascript
 	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
 	$basic_css    = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
+	$head_load_js = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js'   : '/js/head.load.js';
 	$basic_js     = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js'   : '/js/basic.js';
 	// css
 	$response .='
@@ -74,7 +75,7 @@ function get_header_html() {
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/sprites/emojione.sprites.css') . '" />';
 	// javascript
 	if (!isset($_GET['minimal']))
-		$response .= '<script src="' . cacheSafeUrl('/js/head.load.min.js') . '" type="text/javascript"></script>
+		$response .= '<script src="' . cacheSafeUrl($head_load_js) . '" type="text/javascript"></script>
 			<script type="text/javascript">
 				head.js(
 					{jquery: "' . cacheSafeUrl('/js/jquery-2.1.4.min.js') . '"},
