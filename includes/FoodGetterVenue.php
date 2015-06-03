@@ -312,7 +312,6 @@ abstract class FoodGetterVenue {
 								' . $this->get_ajax_venue_code($date_GET) . '
 							});
 						</script>
-						<br>
 						<div class="throbber middle">Lade...</div>
 					</div>
 				';
