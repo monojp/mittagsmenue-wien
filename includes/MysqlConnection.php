@@ -27,7 +27,7 @@ class MySqlConnection {
 			$this->db = null;
 			return;
 		}
-		$this->db->query("SET NAMES 'utf8'");
+		$this->db->query("SET NAMES 'utf8mb4'");
 	}
 
 	function __destruct() {
