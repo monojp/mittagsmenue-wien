@@ -318,6 +318,9 @@ function setDistance(distance) {
 	if (typeof distance != 'undefined') {
 		// set in ui
 		$('#distance').val(distance);
+		// update slider
+		if ($('#distance').hasClass('ui-slider-input'))
+			$('#distance').slider('refresh');
 
 		// save distance in cookie
 		$.cookie('distance', distance, { expires: 7 });
@@ -350,10 +353,14 @@ function get_venues_distance() {
 			distanceString = "~ " + distanceMetersRound + " m";
 
 		// hide too far locations
-		if (distanceMetersRound > distance)
+		if (distanceMetersRound > distance) {
 			$(this).hide();
-		else
+			$(this).attr('data-inreach', false);
+		}
+		else {
 			$(this).show();
+			$(this).attr('data-inreach', true);
+		}
 
 		// remove old distance object if existing
 		obj.children('.distance').remove();
@@ -361,8 +368,9 @@ function get_venues_distance() {
 		obj.append("<div class='distance'>Distanz: " + distanceString + "</div>");
 
 	});
-	// notifier if no venues found
-	if ($('[class="venueDiv"]:visible').length < 1)
+
+	// update no venue found notifier
+	if ($('[class="venueDiv"][data-inreach="true"]').length < 1)
 		$('#noVenueFoundNotifier').show();
 	else
 		$('#noVenueFoundNotifier').hide();
@@ -436,14 +444,6 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 	});
 }
 
-// updates the gui on user changes
-function updateVoteSettingsDialog() {
-	// disable reminder checkbox if "send mail only if already voted" checkbox is checked
-	if ($('#voted_mail_only').is(':checked'))
-		$('#vote_reminder').attr('disabled', true);
-	else
-		$('#vote_reminder').removeAttr('disabled');
-}
 function vote_settings_save() {
 	$.ajax({
 		type: 'POST',
@@ -468,8 +468,8 @@ function vote_settings_save() {
 }
 
 // INIT
-head.ready([ 'jquery' ], function() {
-	$(document).ready(function() {
+head.ready([ 'jquery', 'jquery_ui' ], function() {
+	$(document).on('pagecreate', function() {
 
 		// old ie warning (not supported by jquery 2.*)
 		var ie_version = detectIE();
@@ -500,11 +500,9 @@ head.ready([ 'jquery' ], function() {
 				if (typeof distance == 'undefined')
 					distance = $('#distance_default').html();
 
-				// show social shares
-				$('#socialShare').show();
+				setDistance(distance);
 
 				$('#loadingContainer').hide();
-				setDistance(distance);
 			});
 
 			// replace @@lat_lng@@ placeholder in google maps hrefs
@@ -548,17 +546,17 @@ head.ready([ 'jquery' ], function() {
 
 		// set submit handler for location input form
 		$('#locationForm').submit(function(event) {
-			setDistance($('#distance').val());
-			setLocation($('#locationInput').val(), false, 0);
 			event.preventDefault();
 			$('#setLocationDialog').dialog('close');
+			setDistance($('#distance').val());
+			setLocation($('#locationInput').val(), false, 0);
 		});
 
 		// set submit handler for note input form
 		$('#noteForm').submit(function(event) {
-			vote_set_note($('#noteInput').val());
 			event.preventDefault();
 			$('#setNoteDialog').dialog('close');
+			vote_set_note($('#noteInput').val());
 		});
 
 		// tab activate handles
