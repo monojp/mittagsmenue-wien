@@ -4,8 +4,7 @@ require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
 
 abstract class VenueStateSpecial {
-	const Urlaub      = 100;
-	const UrlaubMaybe = 101;
+	const Urlaub = 100;
 }
 
 /*
@@ -76,7 +75,6 @@ abstract class FoodGetterVenue {
 		return in_array(
 			$this->data, [
 				VenueStateSpecial::Urlaub,
-				VenueStateSpecial::UrlaubMaybe,
 			]);
 	}
 
@@ -159,8 +157,6 @@ abstract class FoodGetterVenue {
 		// special state urlaub
 		if ($data == VenueStateSpecial::Urlaub)
 			return '<span class="error">Geschlossen wegen Urlaub/Feiertag</span><br />';
-		else if ($data == VenueStateSpecial::UrlaubMaybe)
-			return '<span class="error">Vermutlich geschlossen wegen Urlaub/Feiertag</span><br />';
 
 		//$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
 

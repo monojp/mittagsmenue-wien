@@ -75,10 +75,6 @@ class Woracziczky extends FoodGetterVenue {
 			$data = str_replace("\n", "<br />", $message);
 		}
 
-		// all posts scanned, nothing found, but relevant string in a post => maybe vacation!
-		if (empty($data) && $this->get_holiday_count(print_r($all_posts, true)))
-			$data = VenueStateSpecial::UrlaubMaybe;
-
 		$this->data = $data;
 
 		// set price
