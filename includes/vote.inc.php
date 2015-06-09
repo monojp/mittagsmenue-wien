@@ -123,11 +123,13 @@ function getTitleFromVenueClass($venue_class) {
 		return $venue_class;
 }
 
-function votes_adapt($votes, $user, $show_js_actions = true) {
+function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'text-decoration: none ! important; color: inherit ! important;') {
 	foreach ($votes as &$venue_class) {
 		$website = getWebsiteFromVenueClass($venue_class);
 		$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-		$venue_title = "<a href='{$website}' class='no_decoration' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
+		$venue_title = "<a href='{$website}' target='_blank' title='Homepage' style='{$style_custom}'>
+				<span style='{$style_custom}'>{$title}</span>
+			</a>";
 		// current user => add delete functionality
 		if ($show_js_actions && $user == get_identifier_ip())
 			$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
@@ -189,7 +191,7 @@ function vote_get_rankings($votes, $preserve_only_top=3) {
 	return $venue_rating_final;
 }
 
-function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_actions=true) {
+function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_actions=true, $style_custom='text-decoration: none ! important; color: inherit ! important;') {
 	$html = '<table style="border-spacing: 5px">';
 	$html .= "<tr><td><b>${title}</b></td></tr>";
 	$cnt = 1;
@@ -203,7 +205,9 @@ function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_
 		foreach ($venues as &$venue_class) {
 			$website = getWebsiteFromVenueClass($venue_class);
 			$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
-			$venue_class = "<a href='{$website}' target='_blank' title='Homepage' style='color: inherit ! important'>{$title}</a>";
+			$venue_class = "<a href='{$website}' target='_blank' title='Homepage' style='{$style_custom}'>
+					<span style='{$style_custom}'>{$title}</span>
+				</a>";
 		}
 		unset($venue_class);
 
@@ -279,8 +283,12 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 			else
 				$row_style = '';
 
-			$upVotes   = votes_adapt($upVotes, $user, $show_js_actions);
-			$downVotes = votes_adapt($downVotes, $user, $show_js_actions);
+			$upVotes_style     = ($upVotes     == '-') ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; color: #008000;';
+			$downVotes_style   = ($downVotes   == '-') ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; color: #FF0000;';
+			$specialVote_style = ($specialVote == '-') ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; text-align: left;';
+
+			$upVotes   = votes_adapt($upVotes, $user, $show_js_actions, $upVotes_style);
+			$downVotes = votes_adapt($downVotes, $user, $show_js_actions, $downVotes_style);
 
 			// cleanup other data for output
 			$specialVote = htmlspecialchars($specialVote);
@@ -291,7 +299,7 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 				if (!empty($specialVote))
 					$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
 				else
-					$specialVote = '<a href="javascript:void(0)" title="Notiz setzen" onclick="setNoteDialog()">setzen</a>';
+					$specialVote = '<a href="#setNoteDialog" data-rel="dialog" data-transition="pop" class="ui-link">Notiz</a>';
 			}
 			// otherwise => add "me too" functionality
 			else if ($show_js_actions && !empty($specialVote))
@@ -301,10 +309,6 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 			$upVotes     = empty($upVotes)     ? '-' : implode(', ', $upVotes);
 			$downVotes   = empty($downVotes)   ? '-' : implode(', ', $downVotes);
 			$specialVote = empty($specialVote) ? '-' : $specialVote;
-
-			$upVotes_style     = ($upVotes     == '-') ? 'color: #999; text-align: center;' : 'color: #008000;';
-			$downVotes_style   = ($downVotes   == '-') ? 'color: #999; text-align: center;' : 'color: #FF0000;';
-			$specialVote_style = ($specialVote == '-') ? 'color: #999; text-align: center;' : 'text-align: left;';
 
 			$html .= "<tr style='$row_style'>
 				<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>

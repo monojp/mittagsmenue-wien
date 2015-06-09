@@ -492,7 +492,8 @@ abstract class FoodGetterVenue {
 		$foods_title = [
 			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras', 'Aloo Palak', 'Chicken Masala', 'Beef Bhuna',
 			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas', 'Butter Chicken',
-			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry',
+			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry', 'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
+			'Chicken Malai', 'Beef Vindaloo',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';

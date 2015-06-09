@@ -24,6 +24,10 @@ class HaasBeisl extends FoodGetterVenue {
 		$today_variants[] = getGermanDayName() . ', ' . date('d', $this->timestamp)  . ' ' . $month;
 		$today_variants[] = getGermanDayName() . ', ' . date('d.', $this->timestamp) . ' ' . $month;
 		$today_variants[] = getGermanDayName() . ', ' . date('j.', $this->timestamp) . ' ' . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('j', $this->timestamp) . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('d', $this->timestamp) . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('d.', $this->timestamp) . $month;
+		$today_variants[] = getGermanDayName() . ', ' . date('j.', $this->timestamp) . $month;
 
 		if ($month == 'Februar') {
 			for ($i = 0; $i < count($today_variants); $i++) {

@@ -11,7 +11,7 @@ echo "
 <div id='page_main' data-role='page'>
 	<div data-role='header'>
 		<h1>
-			" . SITE_TITLE . ", <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
+			" . SITE_TITLE . ', ' . getGermanDayName() . " <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
 		</h1>
 		<a id='location' href='#setLocationDialog' data-role='button' data-inline='true' data-mini='true' data-icon='location'
 				data-rel='dialog' data-transition='pop' title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
@@ -20,7 +20,7 @@ echo "
 		<div data-role='tabs' id='tabs'>
 			<div data-role='navbar'>
 				<ul>
-					<li><a href='#one' class='ui-btn-active' data-ajax='false' data-icon='home'>Lokale</a></li>
+					<li><a href='#one' data-ajax='false' data-icon='home'>Lokale</a></li>
 					<li><a href='#two' data-ajax='false' data-icon='cloud'>Alternativen</a></li>
 					<li><a href='#three' data-ajax='false' data-icon='gear'>Einstellungen</a></li>
 				</ul>

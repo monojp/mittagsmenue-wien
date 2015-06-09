@@ -255,7 +255,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			continue;
 
 		// clean name from unwanted stuff
-		$name = trim(str_ireplace(array(
+		$name = trim(str_ireplace([
 			'silberwirt', 'margareta', 'altes fassl', 'aus:klang', 'delicious monster', 'haas beisl', 'Haasbeisl', 'kunsthallencafé', 'taste of india',
 			'zum schwarzer adler', 'schlossquadrat', 'Nam Nam', 'Restaurant Waldviertlerhof Josef Krenn Ges.m.b.H.',
 			'Schloss Schönbrunn Konzerte', 'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
@@ -274,10 +274,11 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Café Rüdigerhof', 'Cafe Siebenbrunnen', 'Café Wortner Kaffeehaus', 'Wieden Bräu', 'Cafe Savoy', 'Frascati Pizzeria Gelateria', 'Café Ritter',
 			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub', 'Restaurant Goldene Glocke', 'Tchibo Filiale',
 			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
-			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry',
-			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5',
-			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos'
-		), '', $result['name']), ',.;_.-:"& ');
+			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry', 'Hotel NH Wien Atterseehaus',
+			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5', 'Restaurant Maria Rosa',
+			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos', 'Tien Tsin, Chinarestaurant', 'Restaurant z d 3 Buchteln',
+			'Tapasta, Leben zwischendurch',
+		], '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
 		), '', $name));
