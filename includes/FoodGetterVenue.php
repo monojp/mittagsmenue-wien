@@ -185,7 +185,7 @@ abstract class FoodGetterVenue {
 				$this->cacheWrite();
 
 			$return .= "<div class='menu '>
-					<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle'>Angebot:</a>
+					<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle' style='color: inherit ! important;'>Angebot:</a>
 					<span> </span>
 					<span class='menuData '>{$data}</span>
 				</div>";
@@ -211,7 +211,7 @@ abstract class FoodGetterVenue {
 						$price = array_filter($price);
 						if (count($price) > 1) {
 							$price_imploded = implode(' / ', $price);
-							$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}<br>{$price_imploded}\")'>({$price_imploded})<span class='raised'>i</span></a>";
+							$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}<br>{$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
 						}
 						else if (!empty($price))
 							$price = '<span>' . reset($price) . '</span>';
@@ -219,7 +219,7 @@ abstract class FoodGetterVenue {
 				}
 				// remove empty values
 				$price = implode(' / ', array_filter($this->price));
-				$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank'>Speisekarte</a>)";
+				$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank' style='color: inherit ! important;'>Speisekarte</a>)";
 			}
 		}
 		else {
