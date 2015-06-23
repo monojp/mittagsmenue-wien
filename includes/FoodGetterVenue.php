@@ -174,7 +174,7 @@ abstract class FoodGetterVenue {
 		$data = str_replace($explodeNewLines, '<br>', $data);
 
 		// prepare return
-		$return = '';
+		$return = isset($_GET['minimal']) ? '<br>' : '';
 
 		if (
 			!empty($this->data) &&
@@ -367,12 +367,18 @@ abstract class FoodGetterVenue {
 	 * returns the numerical amount of possible starters found in a string
 	 */
 	protected function get_starter_count($string) {
-		$string = strtolower($string);
+		$string = mb_strtolower($string);
+		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
 		return (
 			mb_substr_count($string, 'suppe') +
 			mb_substr_count($string, 'minestrone') +
 			mb_substr_count($string, 'salatteller') +
-			mb_substr_count($string, 'vorspeise')
+			mb_substr_count($string, 'vorspeise') +
+			mb_substr_count($string, 'rindfleischsalat') +
+			mb_substr_count($string, 'rohkostteller') +
+			mb_substr_count($string, 'caesars salad') +
+			mb_substr_count($string, 'brokkolisalat') +
+			mb_substr_count($string, 'mozzarella mit paradeiser')
 		);
 	}
 
@@ -381,6 +387,7 @@ abstract class FoodGetterVenue {
 	 */
 	protected function get_holiday_count($string) {
 		$string = mb_strtolower($string);
+		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
 		return (
 			mb_substr_count($string, 'feiertag') +
 			mb_substr_count($string, 'f e i e r t a g') +
@@ -398,6 +405,7 @@ abstract class FoodGetterVenue {
 
 	protected function get_dessert_count($string) {
 		$string = mb_strtolower($string);
+		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
 		return (
 			mb_substr_count($string, 'dessert') +
 			mb_substr_count($string, 'yoghurt') +
@@ -413,7 +421,10 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'biskuit') +
 			mb_substr_count($string, 'kompott') +
 			mb_substr_count($string, 'palatschinke') +
-			mb_substr_count($string, 'vanilleeis')
+			mb_substr_count($string, 'vanille') +
+			mb_substr_count($string, 'topfencreme') +
+			mb_substr_count($string, 'parfait') +
+			mb_substr_count($string, 'eisbecher')
 		);
 	}
 
@@ -493,7 +504,7 @@ abstract class FoodGetterVenue {
 			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras', 'Aloo Palak', 'Chicken Masala', 'Beef Bhuna',
 			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas', 'Butter Chicken',
 			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry', 'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
-			'Chicken Malai', 'Beef Vindaloo',
+			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';

@@ -11,7 +11,7 @@ echo "
 <div id='page_main' data-role='page'>
 	<div data-role='header'>
 		<h1>
-			" . SITE_TITLE . ', ' . getGermanDayName() . " <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
+			" . SITE_TITLE . ', ' . getGermanDayName() . " <input type='text' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-inline='false' data-role='date' />
 		</h1>
 		<a id='location' href='#setLocationDialog' data-role='button' data-inline='true' data-mini='true' data-icon='location'
 				data-rel='dialog' data-transition='pop' title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
@@ -33,10 +33,10 @@ echo "
 				</div>
 				<div id='venueContainer'>" . get_venues_html() ."</div>
 			</div>
-			<div id='two' style='padding: 1em 0;'>
+			<div id='two' class='hidden' style='padding: 1em 0;'>
 				<div id='setAlternativeVenuesDialog'>" . get_alt_venue_html() ."</div>
 			</div>
-			<div id='three' style='padding: 1em 0;'>
+			<div id='three' class='hidden' style='padding: 1em 0;'>
 				<div id='setVoteSettingsDialog'>" . get_vote_setting_html() ."</div>
 			</div>
 		</div>

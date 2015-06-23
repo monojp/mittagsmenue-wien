@@ -70,6 +70,19 @@ $custom_venues = array(
 		'website' => 'http://www.flying-diner.com/cms/flying-diner-stores/filiale-1050/',
 		'reference' => -1,
 	)
+	,
+	array(
+		'id' => -6,
+		'geometry' => array(
+			'location' => array(
+				'lat' => 48.195292,
+				'lng' => 16.363092,
+			),
+		),
+		'name' => 'Zweitbester',
+		'website' => 'http://www.zweitbester.at/',
+		'reference' => -1,
+	)
 );
 
 // searches for venue data in the nearplaces cache

@@ -29,15 +29,15 @@ function get_venues_html() {
 		new Ausklang(),
 		new NamNamDeli(),
 		new Waldviertlerhof(),
-		new MensaFreihaus(),
-		new MensaSchroedinger(),
+		//new MensaFreihaus(),
+		//new MensaSchroedinger(),
 		new Woracziczky(),
 		//new CoteSud(),
-		new 	FalkensteinerStueberl(),
+		new FalkensteinerStueberl(),
 		new Lambrecht(),
 		new CafeAmacord(),
 		//new Gondola(),
-		new RadioCafe(),
+		//new RadioCafe(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
@@ -60,15 +60,22 @@ function get_header_html() {
 			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
 	// basic css and javascript
-	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
-	$basic_css    = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
-	$head_load_js = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js'   : '/js/head.load.js';
-	$basic_js     = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js'   : '/js/basic.js';
+	$mobile_datepicker_css       = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.css'        : '/datepicker/jquery.mobile.datepicker.css';
+	$mobile_datepicker_theme_css = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.theme.min.css'  : '/datepicker/jquery.mobile.datepicker.theme.css';
+	$throbber_css                = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css'                               : '/css/throbber.css';
+	$basic_css                   = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css'                                  : '/css/basic.css';
+	$head_load_js                = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js'                                : '/js/head.load.js';
+	$datepicker_js               = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/datepicker.min.js'                       : '/datepicker/datepicker.js';
+	$mobile_datepicker_js        = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.js'         : '/datepicker/jquery.mobile.datepicker.js';
+	$basic_js                    = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js'                                    : '/js/basic.js';
+
 	// css
 	$response .='
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($basic_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($mobile_datepicker_css) . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($mobile_datepicker_theme_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.textcomplete.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/emojione.min.css') . '" />
@@ -80,6 +87,8 @@ function get_header_html() {
 				head.js(
 					{jquery: "' . cacheSafeUrl('/js/jquery-2.1.4.min.js') . '"},
 					{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
+					{datepicker: "' . cacheSafeUrl($datepicker_js) . '"},
+					{mobile_datepicker: "' . cacheSafeUrl($mobile_datepicker_js) . '"},
 					{basic: "' . cacheSafeUrl($basic_js) . '"},
 					{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
 					{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
@@ -142,11 +151,11 @@ function get_page_location() {
 	global $lat, $lng, $city, $distance;
 
 	return '
-		<div style="display: none" id="lat">' . $lat . '</div>
-		<div style="display: none" id="lng">' . $lng . '</div>
-		<div style="display: none" id="distance_default">' . $distance . '</div>
+		<div class="hidden" id="lat">' . $lat . '</div>
+		<div class="hidden" id="lng">' . $lng . '</div>
+		<div class="hidden" id="distance_default">' . $distance . '</div>
 
-		<div id="setLocationDialog" data-role="page">
+		<div id="setLocationDialog" class="hidden" data-role="page">
 			<div data-role="header">
 				<h1>Adresse festlegen</h1>
 			</div>
@@ -178,7 +187,7 @@ function get_page_note() {
 	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip);
 	$note      = isset($vote_data[$ip]['special']) ? $vote_data[$ip]['special'] : '';
 	return '
-		<div id="setNoteDialog" data-role="page">
+		<div id="setNoteDialog" class="hidden" data-role="page">
 			<div data-role="header">
 				<h1>Notiz erstellen</h1>
 			</div>
@@ -288,10 +297,10 @@ function get_vote_setting_html() {
 					<input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
 				</p>
 				<label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
-					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende, falls nicht gevoted
+					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende
 				</label>
 				<label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
-					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Email(s) nur versenden, wenn selbst gevoted
+					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Ergebnis-Email nur versenden, wenn teilgenommen wurde
 				</label>
 			</fieldset>
 			' . $custom_userid_gui_output . '

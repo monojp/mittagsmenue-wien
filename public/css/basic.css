@@ -135,6 +135,18 @@ input {
 	font-weight: bold;
 }
 
+/* fix header div inputs */
+div.ui-header div.ui-input-text {
+	display: inline-block ! important;
+	border: none ! important;
+	padding: 0 ! important;
+	margin: 0 ! important;
+	box-shadow: none ! important;
+	text-decoration: none ! important;
+	background-color: inherit ! important;
+	vertical-align: middle ! important;
+}
+
 /* jquery mobile styles */
 
 /* left aligned titles on small devices */

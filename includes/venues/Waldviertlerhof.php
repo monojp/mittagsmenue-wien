@@ -9,8 +9,8 @@ class Waldviertlerhof extends FoodGetterVenue {
 		$this->addressLat        = 48.193692;
 		$this->addressLng        = 16.358687;
 		$this->url               = 'http://www.waldviertlerhof.at/';
-		$this->dataSource        = 'http://www.waldviertlerhof.at/assets/w4h_mittagsmenue.pdf';
-		$this->menu              = 'http://www.waldviertlerhof.at/assets/w4h_speisen_getränke2.pdf';
+		$this->dataSource        = 'http://www.waldviertlerhof.at/Mittagsmenue';
+		$this->menu              = 'http://www.waldviertlerhof.at/Speisekarte';
 		$this->statisticsKeyword = 'waldviertlerhof';
 		$this->no_menu_days      = [ 0, 6 ];
 		$this->lookaheadSafe     = true;
@@ -27,7 +27,8 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		//$dataTmp = pdftotxt_ocr($this->dataSource);
-		$dataTmp = pdftotext($this->dataSource);
+		//$dataTmp = pdftotext($this->dataSource);
+		$dataTmp = html_get_clean($this->dataSource);
 		if (!$dataTmp)
 			return;
 		//return error_log($dataTmp);
@@ -41,7 +42,8 @@ class Waldviertlerhof extends FoodGetterVenue {
 			return;
 
 		// get menu data for the chosen day
-		$data = $this->parse_foods_independant_from_days($dataTmp, "\n", $prices, true, false);
+		//$data = $this->parse_foods_independant_from_days($dataTmp, "\n", $prices, true, false);
+		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'Preise');
 		if (!$data || is_numeric($data))
 			return ($this->data = $data);
 		//return error_log($data);

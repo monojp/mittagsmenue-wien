@@ -5,7 +5,7 @@ var voting_over_interval_multiplier = 1;
 var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
 
-var SHOW_VOTING_BUTTON_WIDTH = 800;
+var SHOW_DETAILS_MIN_WIDTH = 800;
 
 var width_device = (window.innerWidth > 0) ? window.innerWidth : screen.width;
 
@@ -110,7 +110,7 @@ function vote_helper(action, identifier, note, try_count) {
 			// got valid vote result
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				if (width_device <= SHOW_VOTING_BUTTON_WIDTH)
+				if (width_device <= SHOW_DETAILS_MIN_WIDTH)
 					$('#button_vote_summary_toggle').show();
 				else
 					$("#dialog_vote_summary").css('display', 'table');
@@ -470,6 +470,10 @@ function vote_settings_save() {
 // INIT
 head.ready([ 'jquery', 'jquery_ui' ], function() {
 	$(document).on('pagecreate', function() {
+
+		// hide location info on small screens
+		if (width_device <= SHOW_DETAILS_MIN_WIDTH)
+			$('#location').hide();
 
 		// old ie warning (not supported by jquery 2.*)
 		var ie_version = detectIE();

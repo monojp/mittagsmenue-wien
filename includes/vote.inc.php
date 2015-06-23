@@ -96,7 +96,7 @@ function getWebsiteFromVenueClass($venue_class) {
 	if (class_exists($venue_class)) {
 		$venueTmp = new $venue_class;
 		return $venueTmp->url;
-		$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important">' . htmlspecialchars($venueTmp->title) . '</a>';
+		$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important; font-weight: inherit ! important;">' . htmlspecialchars($venueTmp->title) . '</a>';
 	}
 	else {
 		// query nearplace cache (finds fake venues)
@@ -123,7 +123,7 @@ function getTitleFromVenueClass($venue_class) {
 		return $venue_class;
 }
 
-function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'text-decoration: none ! important; color: inherit ! important;') {
+function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'text-decoration: none ! important; color: inherit ! important; font-weight: inherit ! important;') {
 	foreach ($votes as &$venue_class) {
 		$website = getWebsiteFromVenueClass($venue_class);
 		$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
@@ -191,7 +191,7 @@ function vote_get_rankings($votes, $preserve_only_top=3) {
 	return $venue_rating_final;
 }
 
-function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_actions=true, $style_custom='text-decoration: none ! important; color: inherit ! important;') {
+function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_actions=true, $style_custom='text-decoration: none ! important; color: inherit ! important; font-weight: inherit ! important;') {
 	$html = '<table style="border-spacing: 5px">';
 	$html .= "<tr><td><b>${title}</b></td></tr>";
 	$cnt = 1;
@@ -214,7 +214,7 @@ function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_
 		// mark venues which got >= 50% sane ratings
 		// but only if there are multiple venues
 		if (count($rankings) > 1 && ($rating / $all_sane_rating_cnt) >= 0.5)
-			$html .= "<tr><td title='Votes >= 50%' style='font-weight: bold'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
+			$html .= "<tr><td title='Votes >= 50%' style='font-weight: bold;'>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
 		else
 			$html .= "<tr><td>$cnt. " . implode(', ', $venues) . " [$rating]</td></tr>";
 		$cnt++;
