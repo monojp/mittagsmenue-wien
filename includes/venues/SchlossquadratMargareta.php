@@ -46,7 +46,7 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 		$dataTmp = html_clean($dataTmp);
 
 		// get menu data for the chosen day
-		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1));
+		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), [], ' ');
 		if (!$dataTmp || is_numeric($dataTmp))
 			return ($this->data = $dataTmp);
 		//return error_log($dataTmp);

@@ -187,7 +187,7 @@ abstract class FoodGetterVenue {
 			$return .= "<div class='menu '>
 					<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle' style='color: inherit ! important;'>Angebot:</a>
 					<span> </span>
-					<span class='menuData '>{$data}</span>
+					<span class='menuData convert-emoji'>{$data}</span>
 				</div>";
 
 			if ($this->price && strpos($this->data, '€') === FALSE) {
@@ -378,7 +378,9 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'rohkostteller') +
 			mb_substr_count($string, 'caesars salad') +
 			mb_substr_count($string, 'brokkolisalat') +
-			mb_substr_count($string, 'mozzarella mit paradeiser')
+			mb_substr_count($string, 'mozzarella mit paradeiser') +
+			mb_substr_count($string, 'frischkäse-tartar') +
+			mb_substr_count($string, 'rindfleisch auf blattsalat')
 		);
 	}
 
@@ -424,13 +426,17 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'vanille') +
 			mb_substr_count($string, 'topfencreme') +
 			mb_substr_count($string, 'parfait') +
-			mb_substr_count($string, 'eisbecher')
+			mb_substr_count($string, 'eisbecher') +
+			mb_substr_count($string, 'bananenschnitte')
 		);
 	}
 
 	protected function parse_foods_inbetween_days($data, $string_next_day, $string_last_day_next = [], $newline_replacer = "\n") {
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today_variants, true));
+
+		// replace some strings that may interfer with day parsing
+		$data = str_replace([ 'Montag-Samstag', 'Montag-Freitag' ], '', $data);
 
 		foreach ($today_variants as $today) {
 			$posStart = strposAfter($data, $today);
@@ -504,7 +510,7 @@ abstract class FoodGetterVenue {
 			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras', 'Aloo Palak', 'Chicken Masala', 'Beef Bhuna',
 			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas', 'Butter Chicken',
 			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry', 'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
-			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna',
+			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri', 'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
@@ -601,7 +607,8 @@ abstract class FoodGetterVenue {
 					if (
 						mb_stripos($food, 'mit')  === 0 || endswith($data, 'mit')  ||
 						mb_stripos($food, 'dazu') === 0 || endswith($data, 'dazu') ||
-						mb_stripos($food, 'und')  === 0 || endswith($data, 'und')
+						mb_stripos($food, 'und')  === 0 || endswith($data, 'und') ||
+						mb_stripos($food, 'auf')  === 0 || endswith($data, 'auf')
 					)
 						$data .= ' ';
 					// we have a food part and title that is already written
