@@ -417,7 +417,7 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'kuchen') +
 			mb_substr_count($string, 'torte') +
 			mb_substr_count($string, 'schlag') +
-			mb_substr_count($string, 'schoko') +
+			(mb_substr_count($string, 'schoko') && !mb_substr_count($string, 'letschoko')) +
 			mb_substr_count($string, 'muffin') +
 			mb_substr_count($string, 'donut') +
 			mb_substr_count($string, 'biskuit') +
@@ -628,7 +628,7 @@ abstract class FoodGetterVenue {
 		$data = str_replace($number_markers, '', $data);
 
 		$foods = explode_by_array([ "\n", "\r" ], $data);
-		//return error_log(print_r($foods, true));
+		//return error_log(print_r($foods, true)) && false;
 
 		// strip price infos from foods
 		foreach ($foods as &$food) {
@@ -639,6 +639,7 @@ abstract class FoodGetterVenue {
 
 		// remove empty values
 		$foods = array_filter($foods);
+		//return error_log(print_r($foods, true)) && false;
 		
 		// count main foods
 		foreach ($foods as $food) {
@@ -649,6 +650,9 @@ abstract class FoodGetterVenue {
 				//error_log($food);
 				$foodsMainCount++;
 			}
+			/*else {
+				error_log($food);
+			}*/
 		}
 
 		// add counts (as long food is no dessert or soup)
@@ -668,7 +672,7 @@ abstract class FoodGetterVenue {
 		}
 
 		$data = implode("\n", $foods);
-		//return error_log($data);
+		//return error_log($data) && false;
 
 		// check if holiday
 		if ($this->get_holiday_count($data))
