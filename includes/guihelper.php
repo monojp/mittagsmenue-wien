@@ -34,7 +34,7 @@ function get_venues_html() {
 		new Woracziczky(),
 		//new CoteSud(),
 		new FalkensteinerStueberl(),
-		new Lambrecht(),
+		//new Lambrecht(),
 		new CafeAmacord(),
 		//new Gondola(),
 		//new RadioCafe(),

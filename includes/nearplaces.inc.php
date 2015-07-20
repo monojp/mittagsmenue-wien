@@ -9,81 +9,92 @@ define('LOG_API_REQUESTS', false);
 // imitate google api data for custom venues
 // use negative ids to distinguish between google nearplace
 // and custom nearplace venue entries
-$custom_venues = array(
-	array(
+$custom_venues = [
+	[
 		'id' => -1,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.192134,
 				'lng' => 16.348653,
-			),
-		),
+			],
+		],
 		'name' => 'le Pho',
 		'website' => 'http://www.le-pho.at/',
 		'reference' => -1,
-	),
-	array(
+	],
+	[
 		'id' => -2,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.191429,
 				'lng' => 16.347603,
-			),
-		),
+			],
+		],
 		'name' => 'Disco Volante',
 		'website' => 'http://www.disco-volante.at/',
 		'reference' => -1,
-	),
-	array(
+	],
+	[
 		'id' => -3,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.197427,
 				'lng' => 16.359181,
-			),
-		),
+			],
+		],
 		'name' => 'Kuishimbo',
 		'website' => 'https://www.facebook.com/pages/Kuishimbo/67343688168',
 		'reference' => -1,
-	),
-	array(
+	],
+	[
 		'id' => -4,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.198927,
 				'lng' => 16.364725,
-			),
-		),
+			],
+		],
 		'name' => 'Kojiro - Sushi-Bar',
 		'website' => 'https://plus.google.com/106777516565797933298/about',
 		'reference' => -1,
-	),
-	array(
+	],
+	[
 		'id' => -5,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.192429,
 				'lng' => 16.360060,
-			),
-		),
+			],
+		],
 		'name' => 'Flying Diner',
 		'website' => 'http://www.flying-diner.com/cms/flying-diner-stores/filiale-1050/',
 		'reference' => -1,
-	)
-	,
-	array(
+	],
+	[
 		'id' => -6,
-		'geometry' => array(
-			'location' => array(
+		'geometry' => [
+			'location' => [
 				'lat' => 48.195292,
 				'lng' => 16.363092,
-			),
-		),
+			],
+		],
 		'name' => 'Zweitbester',
 		'website' => 'http://www.zweitbester.at/',
 		'reference' => -1,
-	)
-);
+	],
+	[
+		'id' => -7,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.197340,
+				'lng' => 16.358725,
+			],
+		],
+		'name' => 'Chinazentrum',
+		'website' => 'http://www.chinazentrum-naschmarkt.at/',
+		'reference' => -1,
+	]
+];
 
 // searches for venue data in the nearplaces cache
 // returns null if nothing found
@@ -290,7 +301,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry', 'Hotel NH Wien Atterseehaus',
 			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5', 'Restaurant Maria Rosa',
 			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos', 'Tien Tsin, Chinarestaurant', 'Restaurant z d 3 Buchteln',
-			'Tapasta, Leben zwischendurch',
+			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
+			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN',
 		], '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'

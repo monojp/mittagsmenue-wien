@@ -415,7 +415,7 @@ abstract class FoodGetterVenue {
 			//mb_substr_count($string, 'jogurt') +
 			mb_substr_count($string, 'mousse') +
 			mb_substr_count($string, 'kuchen') +
-			mb_substr_count($string, 'torte') +
+			(mb_substr_count($string, 'torte') && !mb_substr_count($string, 'tortelloni')) +
 			mb_substr_count($string, 'schlag') +
 			(mb_substr_count($string, 'schoko') && !mb_substr_count($string, 'letschoko')) +
 			mb_substr_count($string, 'muffin') +
