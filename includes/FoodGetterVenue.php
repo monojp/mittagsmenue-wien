@@ -380,7 +380,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'brokkolisalat') +
 			mb_substr_count($string, 'mozzarella mit paradeiser') +
 			mb_substr_count($string, 'frischkäse-tartar') +
-			mb_substr_count($string, 'rindfleisch auf blattsalat')
+			mb_substr_count($string, 'rindfleisch auf blattsalat') +
+			mb_substr_count($string, 'selleriesalat')
 		);
 	}
 
