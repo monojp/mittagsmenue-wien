@@ -472,7 +472,7 @@ abstract class FoodGetterVenue {
 		//return error_log($posEnd);
 
 		$data = mb_substr($data, $posStart, $posEnd - $posStart);
-		//error_log($data);
+		//return error_log($data) && false;
 
 		// check if holiday
 		if ($this->get_holiday_count($data))
@@ -486,7 +486,7 @@ abstract class FoodGetterVenue {
 		// this also prevents some of the following menu autonumber magic
 		$data = preg_replace("/[\r\n]{1,}/", $newline_replacer, $data);
 
-		//return error_log($data);
+		//return error_log($data) && false;
 
 		// menu magic via common parser helper (auto numbering and stuff)
 		return $this->parse_foods_helper($data, $newline_replacer);
@@ -504,7 +504,7 @@ abstract class FoodGetterVenue {
 			'IV.', 'III.', 'II.', 'I.',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
-			'1 ', '2 ', '3 ', '4 ',
+			//'1 ', '2 ', '3 ', '4 ', // macht probleme mit dingen wie "1/2 Brathuhn"
 		];
 
 		$foods_title = [
@@ -522,7 +522,7 @@ abstract class FoodGetterVenue {
 		//return error_log($dataTmp);
 		// split per new line
 		$foods = explode_by_array([ "\n", "\r" ], $dataTmp);
-		//return error_log(print_r($foods, true));
+		//return error_log(print_r($foods, true)) && false;
 
 		// set date
 		$this->date = reset($this->get_today_variants());
@@ -623,7 +623,7 @@ abstract class FoodGetterVenue {
 			}
 			//error_log($food);
 		}
-		//return error_log($data);
+		//return error_log($data) && false;
 
 		// replace common noise strings
 		$data = str_replace($number_markers, '', $data);
