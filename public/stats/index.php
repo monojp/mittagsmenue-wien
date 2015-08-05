@@ -1,40 +1,24 @@
 <?php
 
-require_once(__DIR__ . '/../includes/guihelper.php');
+require_once(__DIR__ . '/../../includes/guihelper.php');
 
 define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
 
 echo get_header_html();
 
-// get keyword
-$keyword = '';
-if (isset($_POST['keyword']))
-	$keyword = mb_strtolower(trim($_POST['keyword']));
-else if (isset($_GET['keyword']))
-	$keyword = mb_strtolower(trim($_GET['keyword']));
-// no (venue) keyword => redirect
-if (empty($keyword)) {
-	header("HTTP/1.0 403 Forbidden");
-	header("Location: http://{$_SERVER['SERVER_NAME']}");
-	exit;
-}
-// get food keyword (search term)
-$foodKeyword = '';
-if (isset($_POST['food']))
-	$foodKeyword = mb_strtolower(trim($_POST['food']));
-else if (isset($_GET['food']))
-	$foodKeyword = mb_strtolower(trim($_GET['food']));
-$foodKeyword = htmlspecialchars($foodKeyword);
+// get venue and food keyword
+$venue = mb_strtolower(get_var('venue'));
+$foodKeyword = htmlspecialchars(mb_strtolower(get_var('food')));
 
 $errors = array();
 // input checks
-if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $keyword))
+if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $venue))
 	$errors[] = htmlspecialchars('Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, č, ć, ê, è, é, û, <, >)');
 
 // get data from cache
 if (empty($errors)) {
 	$start = microtime(true);
-	$data = getCacheData($keyword, $foodKeyword);
+	$data = getCacheData($venue, $foodKeyword);
 	$stop = microtime(true);
 	$diff = $stop - $start;
 
@@ -53,25 +37,23 @@ if (empty($errors)) {
 		shuffle_assoc($compositionsAbsolute);
 }
 
-echo "<h1>Statistik für <span style='color: red'>{$keyword}</span>:</h1>";
+echo "<h1>Mittagsmenü-Statistik</h1>";
 
 // show minimal (no JS) site notice
 if (isset($_GET['minimal'])) {
 	echo get_minimal_site_notice_html();
 	echo '<br /><br />';
 }
-else {
-	// piwik user id script
-	echo get_piwik_user_id_script();
-}
 
 $date = date_from_offset($dateOffset);
-echo "<a href='/?date={$date}'>Zurück zur Übersicht</a>";
+echo "<a href='/?date={$date}' data-ajax='false'>Zurück zur Übersicht</a>";
 echo '<br /><br />';
 
 $action = htmlspecialchars($_SERVER['REQUEST_URI']);
-echo "Stichwort-Suche: <form action='{$action}' method='post'>
-	<input type='search' name='food' value='{$foodKeyword}' />
+echo "<form action='{$action}' method='post' data-ajax='false'>
+	<label for='venue'>Lokal-Stichwort:</label> <input type='search' id='venue' name='venue' value='{$venue}' /> <br />
+	<label for='food'>Stichwort:</label> <input type='search' id='food' name='food' value='{$foodKeyword}' />
+	<input type='submit' name='submit' value='submit' />
 </form>";
 
 if (!empty($datasetSize)) {
@@ -95,7 +77,7 @@ if (!empty($datasetSize)) {
 	</tr></thead><tbody>';
 	foreach ($foods as $food => $amount) {
 		$food_dates = 'Daten: ' . implode(', ', format_date($dates[$food], 'd.m.Y'));
-		$url = htmlspecialchars('statistics.php?date=' . $date . '&keyword=' . urlencode($keyword) . '&food=' . urlencode($food));
+		$url = htmlspecialchars('?date=' . $date . '&venue=' . urlencode($venue) . '&food=' . urlencode($food));
 		$food_clean = htmlspecialchars($food);
 		echo "<tr>
 			<td>
@@ -126,7 +108,7 @@ if (!empty($datasetSize)) {
 		$dates = 'Daten: ' . implode(', ', format_date($data['dates'], 'd.m.Y'));
 
 		// mark each ingredient by an href linking to search
-		//$food = create_ingredient_hrefs($food, $keyword, '', true);
+		//$food = create_ingredient_hrefs($food, $venue, '', true);
 		echo "<tr>
 			<td>
 				{$food}

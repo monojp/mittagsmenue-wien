@@ -134,7 +134,7 @@ function get_footer_html() {
 		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
 	if (!isset($_GET['minimal'])) {
 		$url = build_minimal_url();
-		$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an'>Minimal-Version</a>";
+		$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an' data-ajax='false'>Minimal-Version</a>";
 	}
 	$outputs[] = '<a href="https://github.com/monojp/mittagsmenue-wien/" target="_blank" data-rel="dialog">Open Source</a>';
 

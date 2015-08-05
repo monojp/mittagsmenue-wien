@@ -320,10 +320,14 @@ function getCacheData($keyword, $foodKeyword) {
 	global $cacheDataExplode;
 	global $cacheDataIgnore;
 
-	if (empty($keyword) || empty($foodKeyword))
+	// input type checks
+	if (!is_string($keyword) || !is_string($foodKeyword)) {
+		throw new Exception('keywords need to be of type string');
+	} else if (empty($keyword) || empty($foodKeyword)) {
 		return null;
-	if (mb_strlen($keyword) < 3 || mb_strlen($foodKeyword) < 3)
+	} else if (mb_strlen($keyword) < 3 || mb_strlen($foodKeyword) < 3) {
 		return null;
+	}
 
 	// sort cacheDataExplode (longer stuff first)
 	usort($cacheDataExplode, function($a,$b) {
