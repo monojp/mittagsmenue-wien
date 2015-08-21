@@ -1,10 +1,19 @@
 <?php
 
 require_once(__DIR__ . '/../../includes/guihelper.php');
+require_once(__DIR__ . '/../../includes/CacheHandler_MySql.php');
 
 define('REGEX_INPUT', '/^[a-zA-z0-9äöüÄÖÜßčćêèéû<>\/ -]*$/');
 
 echo get_header_html();
+
+echo "<div id='page_main' data-role='page'>
+	<div data-role='header'>
+		<h1>Mittagsmenü-Statistiken</h1>
+		<a href='" . build_url('/') . "' data-ajax='false' data-role='button' data-inline='true'
+				data-mini='true' data-icon='back' class='ui-btn-left'>Zurück zur Übersicht</a>
+	</div>
+	<div data-role='main' class='ui-content'>";
 
 // get venue and food keyword
 $venue = mb_strtolower(get_var('venue'));
@@ -12,13 +21,14 @@ $foodKeyword = htmlspecialchars(mb_strtolower(get_var('food')));
 
 $errors = array();
 // input checks
-if (!preg_match(REGEX_INPUT, $foodKeyword) || !preg_match(REGEX_INPUT, $venue))
+if (!preg_match(REGEX_INPUT, $foodKeyword)/* || !preg_match(REGEX_INPUT, $venue)*/)
 	$errors[] = htmlspecialchars('Ungültiges Stichwort! Folgende Zeichen sind erlaubt: Buchstaben, Ziffern, Umlaute, Bindestrich, Leerzeichen, Slash und ausgewählte Sonderzeichen (ß, č, ć, ê, è, é, û, <, >)');
 
 // get data from cache
 if (empty($errors)) {
 	$start = microtime(true);
-	$data = getCacheData($venue, $foodKeyword);
+	$data = getCacheData(/*$venue*/null, $foodKeyword);
+	$stats = is_intern_ip() ? CacheHandler_MySql::getInstance()->get_stats() : [];
 	$stop = microtime(true);
 	$diff = $stop - $start;
 
@@ -37,23 +47,43 @@ if (empty($errors)) {
 		shuffle_assoc($compositionsAbsolute);
 }
 
-echo "<h1>Mittagsmenü-Statistik</h1>";
-
 // show minimal (no JS) site notice
 if (isset($_GET['minimal'])) {
 	echo get_minimal_site_notice_html();
-	echo '<br /><br />';
 }
 
 $date = date_from_offset($dateOffset);
-echo "<a href='/?date={$date}' data-ajax='false'>Zurück zur Übersicht</a>";
-echo '<br /><br />';
+
+if (is_intern_ip()) {
+	if (!isset($_GET['minimal']))
+		echo '<table id="table_stats" class="stats" style="display: none">';
+	else
+		echo '<table id="table_stats" class="stats">';
+	echo '<thead><tr style="text-align: left">
+		<th>category</th>
+		<th>cnt_up</th>
+		<th>cnt_down</th>
+		<th>ratio</th>
+		<th>diff</th>
+	</tr></thead><tbody>';
+	foreach ($stats as $stat_entry) {
+		echo "<tr>
+			<td>{$stat_entry['category']}</td>
+			<td class='center'>{$stat_entry['cnt_up']}</td>
+			<td class='center'>{$stat_entry['cnt_down']}</td>
+			<td class='center'>{$stat_entry['ratio']}</td>
+			<td class='center'>{$stat_entry['diff']}</td>
+		</tr>";
+	}
+	echo '</tbody></table>';
+	echo '<br />';
+ }
+
 
 $action = htmlspecialchars($_SERVER['REQUEST_URI']);
 echo "<form action='{$action}' method='post' data-ajax='false'>
-	<label for='venue'>Lokal-Stichwort:</label> <input type='search' id='venue' name='venue' value='{$venue}' /> <br />
-	<label for='food'>Stichwort:</label> <input type='search' id='food' name='food' value='{$foodKeyword}' />
-	<input type='submit' name='submit' value='submit' />
+	<label for='food'>Menü-Stichwort:</label> <input type='search' id='food' name='food' value='{$foodKeyword}' autofocus />
+	<input type='submit' name='submit' value='Suchen' />
 </form>";
 
 if (!empty($datasetSize)) {
@@ -70,7 +100,7 @@ if (!empty($datasetSize)) {
 		echo '<table id="table_ingredients" class="stats" style="display: none">';
 	else
 		echo '<table id="table_ingredients" class="stats">';
-	echo '<thead><tr style="text-align: left">
+	echo '<thead><tr>
 		<th>Bestandteil</th>
 		<th data-dynatable-no-sort="data-dynatable-no-sort">Daten</th>
 		<th class="center">Anzahl</th>
@@ -81,7 +111,7 @@ if (!empty($datasetSize)) {
 		$food_clean = htmlspecialchars($food);
 		echo "<tr>
 			<td>
-				<a href='$url'>{$food_clean}</a>
+				<a href='$url' data-ajax='false'>{$food_clean}</a>
 			</td>
 			<td>
 				<a href='javascript:void(0)' title='{$food_dates}' onclick='alert($(this).attr(\"title\"))'>Anzeigen</a>
@@ -92,13 +122,14 @@ if (!empty($datasetSize)) {
 		</tr>";
 	}
 	echo '</tbody></table>';
+	echo '<br /><br />';
 
 	arsort($compositionsAbsolute);
 	if (!isset($_GET['minimal']))
 		echo '<table id="table_compositions" class="stats" style="display: none">';
 	else
-		echo '<br /><table id="table_compositions" border="1" class="stats">';
-	echo '<thead><tr style="text-align: left">
+		echo '<br /><table id="table_compositions" class="stats">';
+	echo '<thead><tr>
 		<th>Kombination</th>
 		<th data-dynatable-no-sort="data-dynatable-no-sort">Daten</th>
 		<th class="center">Anzahl</th>
@@ -122,8 +153,6 @@ if (!empty($datasetSize)) {
 		</tr>";
 	}
 	echo '</tbody></table>';
-	echo '<div style="clear: both"></div>';
-	echo '<small>Cache-Abfrage erfolgte in ' . round($diff, 3) . ' Sekunden</small>';
 }
 else {
 	if (strlen($foodKeyword) > 0 && strlen($foodKeyword) < 3)
@@ -135,13 +164,38 @@ else {
 		echo '<br /><b>' . implode('<br />', $errors) . '</b><br />';
 }
 
+echo '<br />';
+echo '<small>Abfrage erfolgte in ' . round($diff, 2) . ' Sekunden</small>';
+
 ?>
 <script type="text/javascript">
 	head.ready([ 'jquery', 'jquery_datatables' ], function() {
 		$(document).ready(function() {
-			$('#table_ingredients').dataTable({"order": [[ 2, "desc" ]]});
+			$('#table_stats').dataTable({
+				'order': [[ 4, 'desc' ]],
+				'dom': '<lfpti>',
+				'lengthChange': false,
+				'searching': true,
+				'fnDrawCallback': function (oSettings) {
+					$('#table_stats_filter input').attr('type', 'text')
+							.attr('data-type', 'search');
+					$('#table_stats_filter input').textinput();
+				}
+			});
+			$('#table_stats').show();
+			$('#table_ingredients').dataTable({
+				'order': [[ 2, 'desc' ]],
+				'dom': '<lfpti>',
+				'lengthChange': false,
+				'searching': false
+			});
 			$('#table_ingredients').show();
-			$('#table_compositions').dataTable({"order": [[ 2, "desc" ]]});
+			$('#table_compositions').dataTable({
+				'order': [[ 2, 'desc' ]],
+				'dom': '<lfpti>',
+				'lengthChange': false,
+				'searching': false
+			});
 			$('#table_compositions').show();
 
 			$('#loader_stats').hide();
@@ -151,5 +205,6 @@ else {
 
 <?php
 
-echo '<br><br>';
-echo get_footer_html();
+echo "	</div>";
+echo "	<div data-role='footer'>" . get_footer_html() . "</div>";
+echo "</div>";

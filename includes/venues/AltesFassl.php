@@ -31,8 +31,8 @@ class AltesFassl extends FoodGetterVenue {
 
 	protected function get_today_variants() {
 		return [
-			date('d.m.', $this->timestamp),
 			date('d.m', $this->timestamp),
+			date('d,m', $this->timestamp),
 		];
 	}
 

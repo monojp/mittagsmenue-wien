@@ -31,6 +31,10 @@ class DeliciousMonster extends FoodGetterVenue {
 			return;
 		//return error_log($dataTmp);
 
+		// check if holiday
+		if ($this->get_holiday_count($dataTmp))
+			return VenueStateSpecial::Urlaub;
+
 		$dataTmp = html_clean($dataTmp);
 		//return error_log($dataTmp);
 

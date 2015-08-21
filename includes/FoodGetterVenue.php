@@ -371,6 +371,7 @@ abstract class FoodGetterVenue {
 		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
 		return (
 			mb_substr_count($string, 'suppe') +
+			mb_substr_count($string, 'bouillon') +
 			mb_substr_count($string, 'minestrone') +
 			mb_substr_count($string, 'salatteller') +
 			mb_substr_count($string, 'vorspeise') +
@@ -641,7 +642,7 @@ abstract class FoodGetterVenue {
 		// remove empty values
 		$foods = array_filter($foods);
 		//return error_log(print_r($foods, true)) && false;
-		
+
 		// count main foods
 		foreach ($foods as $food) {
 			if (

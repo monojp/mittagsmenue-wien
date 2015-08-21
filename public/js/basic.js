@@ -42,34 +42,6 @@ $.extend({
 	}
 });
 
-function custom_userid_generate(try_count) {
-	$.ajax({
-		type: "POST",
-		url:  '/customuserid.php',
-		data: { "action": "custom_userid_generate", 'userid' : $('#userid').html() },
-		dataType: "json",
-		success: function(result) {
-			// alert from server (e.g. error)
-			if (typeof result.alert != 'undefined') {
-				alert(result.alert);
-			}
-			// got valid access url
-			else if (typeof result.access_url != 'undefined') {
-				$("#custom_userid_url").html(result.access_url);
-			}
-			else
-				alert('Fehler beim Erstellen der externen Zugriffs-URL.');
-		},
-		error: function() {
-			// retry on error
-			if (try_count < ajax_retry_count_max)
-				window.setTimeout(function() { custom_userid_generate(try_count+1) }, (Math.random()*ajax_retry_time_max)+1);
-			else
-				alert('Fehler beim Erstellen der externen Zugriffs-URL.');
-		}
-	});
-}
-
 // sends vote action (vote_up, vote_down, vote_get) and identifier (delete, restaurant name, ..) to server
 function vote_helper(action, identifier, note, try_count) {
 	// piwik track
@@ -110,10 +82,10 @@ function vote_helper(action, identifier, note, try_count) {
 			// got valid vote result
 			else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				if (width_device <= SHOW_DETAILS_MIN_WIDTH)
+				/*if (width_device <= SHOW_DETAILS_MIN_WIDTH)
 					$('#button_vote_summary_toggle').show();
 				else
-					$("#dialog_vote_summary").css('display', 'table');
+					$("#dialog_vote_summary").css('display', 'table');*/
 			}
 			// no | empty result => hide voting dialog
 			else {
@@ -136,19 +108,27 @@ function vote_helper(action, identifier, note, try_count) {
 // vote up
 function vote_up(identifier) {
 	vote_helper('vote_up', identifier, null, 0);
+	$('#dialog_vote_summary').show();
+	adapt_button_vote_summary_toggle();
 }
 // vote down
 function vote_down(identifier) {
 	vote_helper('vote_down', identifier, null, 0);
+	$('#dialog_vote_summary').show();
+	adapt_button_vote_summary_toggle();
 }
 // vote special
 function vote_special(identifier) {
 	$('#noteInput').val(identifier);
 	vote_helper('vote_special', identifier, null, 0);
+	$('#dialog_vote_summary').show();
+	adapt_button_vote_summary_toggle();
 }
 // set note
 function vote_set_note(note) {
 	vote_helper('vote_set_note', null, note, 0);
+	$('#dialog_vote_summary').show();
+	adapt_button_vote_summary_toggle();
 }
 // get votes
 function vote_get() {
@@ -447,12 +427,13 @@ function vote_settings_save() {
 		type: 'POST',
 		url: '/users.php',
 		data: {
-			'action'         : 'user_config_set',
-			'name'           : $('#name').val(),
-			'email'          : $('#email').val(),
-			'vote_reminder'  : $('#vote_reminder').is(':checked'),
+			'action': 'user_config_set',
+			'name': $('#name').val(),
+			'email': $('#email').val(),
+			'vote_reminder': $('#vote_reminder').is(':checked'),
 			'voted_mail_only': $('#voted_mail_only').is(':checked'),
-			'userid'         : $('#userid').html()
+			'vote_always_show': $('#vote_always_show').is(':checked'),
+			'userid': $('#userid').html()
 		},
 		dataType: "json",
 		success: function(result) {
@@ -470,6 +451,14 @@ function emoji_update() {
 	$('.convert-emoji').each(function() {
 		$(this).html(emojione.toImage($(this).html()));
 	});
+}
+
+function adapt_button_vote_summary_toggle() {
+	if ($('#dialog_vote_summary').is(':visible')) {
+		$('#button_vote_summary_toggle').val('Voting Ausblenden').html('Voting Ausblenden');
+	} else {
+		$('#button_vote_summary_toggle').val('Voting Anzeigen').html('Voting Anzeigen');
+	}
 }
 
 // INIT
@@ -547,10 +536,11 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 		// date change handler
 		$('#date').bind('change', function() {
 			var userid = $('#userid').html();
-			if (userid.length)
+			if (userid && userid.length) {
 				document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val() + "&userid=" + userid;
-			else
+			} else {
 				document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
+			}
 		});
 
 		// set submit handler for location input form
@@ -567,6 +557,23 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 			$('#setNoteDialog').dialog('close');
 			vote_set_note($('#noteInput').val());
 		});
+
+		// button_vote_summary_toggle click handler
+		$('#button_vote_summary_toggle').click(function() {
+			var el_dialog_vote_summary = $('#dialog_vote_summary');
+			if (el_dialog_vote_summary.is(':visible')) {
+				el_dialog_vote_summary.hide();
+			} else {
+				el_dialog_vote_summary.show();
+			}
+			adapt_button_vote_summary_toggle();
+		});
+		if ($('#vote_always_show').is(':checked')) {
+			$('#dialog_vote_summary').show();
+			setTimeout(function() {
+				adapt_button_vote_summary_toggle();
+			}, 0);
+		}
 
 		// tab activate handles
 		$('#tabs').on('tabsactivate', function(event, ui) {
@@ -603,7 +610,10 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 							$('#table_voting_alt_wrapper div.ui-link').button({
 								enhanced: true
 							});
-						}
+						},
+						'dom': '<lfpti>',
+						'lengthChange': false,
+						'searching': false
 					});
 					$('#div_voting_alt_loader').hide();
 					$('#table_voting_alt').show();

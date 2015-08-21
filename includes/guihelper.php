@@ -38,6 +38,7 @@ function get_venues_html() {
 		new CafeAmacord(),
 		//new Gondola(),
 		//new RadioCafe(),
+		new Stoeger(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
@@ -98,12 +99,14 @@ function get_header_html() {
 			</script>';
 
 	// minimal site and votes allowed, refresh every 10s
-	if (isset($_GET['minimal']) && show_voting())
+	if (isset($_GET['minimal']) && show_voting()) {
 		$response .= '<meta http-equiv="refresh" content="10" />';
+	}
 
 	// no js fallback to minimal site refresh
-	if (!isset($_GET['minimal']))
-		$url = build_minimal_url();
+	if (!isset($_GET['minimal'])) {
+		$url = build_url('?minimal');
+	}
 
 	$response .= '</head><body>';
 
@@ -121,22 +124,30 @@ function get_header_html() {
 	return $response;
 }
 function get_footer_html() {
-	global $tracking_code;
+	global $tracking_code, $dateOffset;
 
 	//$response = "</div>";
 	$response = '';
 
-	if (CONTACT_HREF)
-		$outputs[] = '<a href="' . htmlspecialchars(CONTACT_HREF) . '" target="_blank" data-rel="dialog">Kontakt</a>';
-	if (IMPRESSUM_HREF)
-		$outputs[] = '<a href="' . htmlspecialchars(IMPRESSUM_HREF) . '" target="_blank" data-rel="dialog">Impressum</a>';
-	if (PRIVACY_INFO)
-		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
-	if (!isset($_GET['minimal'])) {
-		$url = build_minimal_url();
-		$outputs[] = "<a href='$url' title='Zeigt eine Version dieser Seite ohne JavaScript an' data-ajax='false'>Minimal-Version</a>";
+	if ($_SERVER['REQUEST_URI'] === '/stats/') {
+		$outputs[] = "<a href='/' data-ajax='false'>Home</a>";
+	} else {
+		$outputs[] = "<a href='" . build_url('/stats/') . "' data-ajax='false'>Stats</a>";
 	}
-	$outputs[] = '<a href="https://github.com/monojp/mittagsmenue-wien/" target="_blank" data-rel="dialog">Open Source</a>';
+
+	if (CONTACT_HREF) {
+		$outputs[] = '<a href="' . htmlspecialchars(CONTACT_HREF) . '" target="_blank" data-rel="dialog">Kontakt</a>';
+	}
+	if (IMPRESSUM_HREF) {
+		$outputs[] = '<a href="' . htmlspecialchars(IMPRESSUM_HREF) . '" target="_blank" data-rel="dialog">Impressum</a>';
+	}
+	if (PRIVACY_INFO) {
+		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
+	}
+	if (!isset($_GET['minimal'])) {
+		$outputs[] = "<a href='" . build_url('?minimal') . "' title='Zeigt eine Version dieser Seite ohne JavaScript an' data-ajax='false'>Minimal</a>";
+	}
+	$outputs[] = '<a href="https://github.com/monojp/mittagsmenue-wien/" target="_blank" data-rel="dialog">Source</a>';
 
 	$response .= '<div data-role="footer">
 		<h2>' . implode(' | ', $outputs) . '</h2>
@@ -248,6 +259,9 @@ function get_alt_venue_html() {
 function get_vote_setting_html() {
 	global $voting_over_time;
 
+	if (!is_intern_ip())
+		return;
+
 	$ip = get_identifier_ip();
 
 	$user_config = UserHandler_MySql::getInstance()->get($ip);
@@ -259,6 +273,8 @@ function get_vote_setting_html() {
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
+	$vote_always_show = isset($user_config['vote_always_show']) ? $user_config['vote_always_show'] : false;
+	$vote_always_show = filter_var($vote_always_show, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
 	$custom_userid_gui_output = '';
 	$custom_userid = custom_userid_get();
@@ -267,7 +283,7 @@ function get_vote_setting_html() {
 
 	// only show the custom_userid GUI intern
 	// otherwise users could lock themselves out from extern
-	if (!custom_userid_current() && is_intern_ip()) {
+	if (!custom_userid_current()) {
 		$custom_userid_url = custom_userid_access_url_get($custom_userid);
 		$custom_userid_url = empty($custom_userid_url) ? 'nicht gesetzt' : $custom_userid_url;
 		$custom_userid_gui_output = '
@@ -275,9 +291,8 @@ function get_vote_setting_html() {
 			<fieldset>
 				<label>Externe Zugriffs-URL</label>
 				<p id="custom_userid_url">
-				' . $custom_userid_url . '
+					<a href="' . $custom_userid_url . '" target="_blank" data-ajax="false">' . $custom_userid_url . '</a>
 				</p>
-				<a href="javascript:void(0)" onclick="custom_userid_generate()">Neue URL generieren</a>
 			</fieldset>
 		';
 	}
@@ -302,6 +317,9 @@ function get_vote_setting_html() {
 				<label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
 					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Ergebnis-Email nur versenden, wenn teilgenommen wurde
 				</label>
+				<label for="vote_always_show" title="Zeigt den Voting-Dialog immer offen an. Erspart evtl. einen Klick.">
+					<input type="checkbox" name="vote_always_show" id="vote_always_show" ' . $vote_always_show . ' /> Voting immer offen anzeigen
+				</label>
 			</fieldset>
 			' . $custom_userid_gui_output . '
 			<br>
@@ -311,7 +329,7 @@ function get_vote_setting_html() {
 function get_button_vote_summary_toggle_html() {
 	if (!show_voting())
 		return '';
-	return "<button id='button_vote_summary_toggle' data-icon='carat-r' onclick='$(\"#dialog_vote_summary\").toggle(\"\");' style='display: none;'>Voting Anzeigen</button>";
+	return "<button id='button_vote_summary_toggle' data-icon='carat-r'>Voting Anzeigen</button>";
 }
 
 function get_vote_div_html() {
@@ -376,7 +394,7 @@ function get_minimal_site_notice_html() {
 
 	return '
 		<span class="error">
-			Hinweis: Aktuell sehen Sie eine vereinfachte Version dieser Seite. Bitte aktivieren Sie JavaScript und besuchen Sie die Vollversion <a href="' . $url . '">hier</a>.
+			Hinweis: Aktuell sehen Sie eine vereinfachte Version dieser Seite. Bitte aktivieren Sie JavaScript und besuchen Sie die Vollversion <a href="' . $url . '" data-ajax="false">hier</a>.
 		</span>
 	';
 }

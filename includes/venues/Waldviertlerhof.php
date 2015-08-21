@@ -29,23 +29,28 @@ class Waldviertlerhof extends FoodGetterVenue {
 		//$dataTmp = pdftotxt_ocr($this->dataSource);
 		//$dataTmp = pdftotext($this->dataSource);
 		$dataTmp = html_get_clean($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		// check date range
-		if (!$this->in_date_range_string($dataTmp, $this->timestamp))
+		if (!$this->in_date_range_string($dataTmp, $this->timestamp)) {
 			return;
+		}
 
 		// check menu food count
-		if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) != 5)
+		// 7 weil "Sonn- u. Feiertag geschlossen" im text vorkommt
+		if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) != 7 ) {
 			return;
+		}
 
 		// get menu data for the chosen day
 		//$data = $this->parse_foods_independant_from_days($dataTmp, "\n", $prices, true, false);
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'Preise');
-		if (!$data || is_numeric($data))
+		if (!$data || is_numeric($data)) {
 			return ($this->data = $data);
+		}
 		//return error_log($data);
 
 		// set price

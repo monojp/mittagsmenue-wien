@@ -255,8 +255,17 @@ function cleanText($text) {
 	$text = preg_replace('/[A-Z,\. ]+(<br>)+/', '<br>', $text);
 	$text = preg_replace("/[A-Z,\. ]+(\n)+/", "\n", $text);
 
+	$words_trim = [ 'oder' ];
+	foreach ($words_trim as $word) {
+		// remove word on beginning after numbering
+		// e.g. "2. oder Kabeljaufilet" => "2. Kabeljaufilet"
+		$text = preg_replace("/([0-9]*)([\. ]*)(${word})/", '${1}${2}', $text);
+		// remove word on ending
+		$text = preg_replace("/(${word})(\n)/", '${2}', $text);
+	}
+
 	// trim different types of characters and special whitespaces / placeholders
-	$text = trim($text, " ., *\t\n\r\0\x0B");
+	$text = trim($text, " ., *á\t\n\r\0\x0B");
 
 	return $text;
 }
@@ -321,11 +330,20 @@ function getCacheData($keyword, $foodKeyword) {
 	global $cacheDataIgnore;
 
 	// input type checks
-	if (!is_string($keyword) || !is_string($foodKeyword)) {
+	if (
+		!is_string($keyword) && $keyword !== null ||
+		!is_string($foodKeyword) && $foodKeyword !== null
+	) {
 		throw new Exception('keywords need to be of type string');
-	} else if (empty($keyword) || empty($foodKeyword)) {
+	} else if (
+		empty($keyword) && $keyword !== null ||
+		empty($foodKeyword) && $foodKeyword !== null
+	) {
 		return null;
-	} else if (mb_strlen($keyword) < 3 || mb_strlen($foodKeyword) < 3) {
+	} else if (
+		mb_strlen($keyword) < 3  && $keyword !== null||
+		mb_strlen($foodKeyword) < 3 && $foodKeyword !== null
+	) {
 		return null;
 	}
 
@@ -839,20 +857,31 @@ function endswith($haystack, $needle) {
 	return substr_compare($haystack, $needle, -$needlelen) === 0;
 }
 
-function build_minimal_url() {
+function build_url($url_base) {
 	global $dateOffset;
-	$url = '?minimal';
-	if (isset($dateOffset))
-		$url .= '&amp;date=' . urlencode(date_from_offset($dateOffset));
-	if (isset($_GET['keyword']))
-		$url .= '&amp;keyword=' . urlencode($_GET['keyword']);
-	if (isset($_GET['food']))
-		$url .= '&amp;food=' . urlencode($_GET['food']);
-	if (isset($_GET['action']))
-		$url .= '&amp;action=' . urlencode($_GET['action']);
-	if (isset($_GET['html']) || isset($_GET['html/']))
-		$url .= '&amp;html';
-	return $url;
+
+	$url_data = [];
+	if (isset($_GET['userid'])) {
+		$url_data['userid'] = $_GET['userid'];
+	}
+	if (isset($dateOffset)) {
+		$url_data['date'] = date_from_offset($dateOffset);
+	}
+	if (isset($_GET['keyword'])) {
+		$url_data['keyword'] = $_GET['keyword'];
+	}
+	if (isset($_GET['food'])) {
+		$url_data['food'] = $_GET['food'];
+	}
+	if (isset($_GET['action'])) {
+		$url_data['action'] = $_GET['action'];
+	}
+
+	if (strpos($url_base, '?') === false) {
+		return $url_base . '?' . http_build_query($url_data, '', '&amp;');
+	} else {
+		return $url_base . '&amp;' . http_build_query($url_data, '', '&amp;');
+	}
 }
 
 // prüft ob url erreichbar via header check

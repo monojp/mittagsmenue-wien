@@ -96,22 +96,6 @@ a:hover {
 	margin-top: 1em;
 	padding: .3em;
 }
-.tagCloudElement {
-	margin-right: 10px;
-}
-#table_ingredients, #table_ingredients td, #table_ingredients th, #table_compositions, #table_compositions td, #table_compositions th {
-	border: 1px solid gray;
-}
-#table_ingredients_wrapper, #table_compositions_wrapper {
-	float: left;
-	padding: 10px;
-}
-.stats {
-	width: auto ! important;
-}
-table.stats td, table.stats th {
-	padding: 5px;
-}
 img {
 	border-width: 0;
 }
@@ -123,10 +107,6 @@ img {
 }
 input {
 	background-color: inherit;
-}
-.locationMapLegend {
-	margin-top: 10px;
-	font-size: 0.9em;
 }
 .center {
 	text-align: center;
@@ -158,9 +138,21 @@ div.ui-header div.ui-input-text {
 }
 
 /* DataTable styles */
-.dataTables_length {
-	display: none; /* disables all page length selects (default is 10) */
+.dataTables_paginate {
+	float: left ! important;
+	text-align: left ! important;
 }
+.dataTables_filter {
+	float: right ! important;
+	text-align: right ! important;
+}
+.paginate_button.previous {
+	padding-left: 0 ! important;
+}
+/*table {
+	margin: 0 ! important;
+	width: auto ! important;
+}*/
 
 /* AutoComplete styles for Emoji One */
 .dropdown-menu {
