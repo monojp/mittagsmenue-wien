@@ -99,4 +99,5 @@ $searchReplace = array(
 	'Gebackens' => 'Gebackenes',
 	'Vegetarisch' => '',
 	'Salateller' => 'Salatteller',
+	'Mitwoch' => 'Mittwoch',
 );

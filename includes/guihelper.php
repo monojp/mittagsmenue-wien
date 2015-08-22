@@ -39,6 +39,7 @@ function get_venues_html() {
 		//new Gondola(),
 		new RadioCafe(),
 		new Stoeger(),
+		new MINIRESTAURANT(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
