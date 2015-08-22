@@ -591,6 +591,19 @@ function html_get_clean($url, $from_encoding = null) {
 	return html_clean($html, $from_encoding);
 }
 
+function curl_post_helper($url, $post_vars) {
+	$ch = curl_init();
+
+	curl_setopt($ch, CURLOPT_URL, $url);
+	curl_setopt($ch, CURLOPT_POST, 1);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_vars));
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+	$data = curl_exec($ch);
+	curl_close($ch);
+	return $data;
+}
+
 function pdftotxt_ocr($file, $lang = 'deu') {
 	$fileUniq = $file . uniqid();
 
