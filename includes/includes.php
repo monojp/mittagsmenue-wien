@@ -215,7 +215,7 @@ function strip_invalid_chars($text) {
 	(?: [\x00-\x7F]                 # single-byte sequences   0xxxxxxx
 	|   [\xC0-\xDF][\x80-\xBF]      # double-byte sequences   110xxxxx 10xxxxxx
 	|   [\xE0-\xEF][\x80-\xBF]{2}   # triple-byte sequences   1110xxxx 10xxxxxx * 2
-	|   [\xF0-\xF7][\x80-\xBF]{3}   # quadruple-byte sequence 11110xxx 10xxxxxx * 3 
+	|   [\xF0-\xF7][\x80-\xBF]{3}   # quadruple-byte sequence 11110xxx 10xxxxxx * 3
 	){1,100}                        # ...one or more times
   )
 | .                                 # anything else
@@ -559,7 +559,7 @@ function doctotxt($file) {
 	return $txt;
 }
 
-function html_clean($html) {
+function html_clean($html, $from_encoding = null) {
 	// fix unclean data by replacing tabs with spaces
 	$html = str_replace( ["\t", "\r" ], [ ' ', ' ' ], $html);
 	// adapt paragraphs with a line break to avoid being handled inline
@@ -574,20 +574,21 @@ function html_clean($html) {
 	$html = preg_replace('/( )+/', ' ', $html);
 	// remove multiple newlines
 	$html = preg_replace("/(\n)+/i", "\n", $html);
-	// utf-8 encode data (this sometimes breaks stuff on e.g. RadioCafe)
-	/*if (!mb_check_encoding($html, 'UTF-8'))
-		$html = utf8_encode($html);*/
+	// convert data to utf-8
+	if ($from_encoding !== null) {
+		$html = mb_convert_encoding($html, 'UTF-8', $from_encoding);
+	}
 	// return trimmed data
 	return trim($html);
 }
 
-function html_get_clean($url) {
+function html_get_clean($url, $from_encoding = null) {
 	// download html
 	$html = file_get_contents($url);
 	if ($html === false)
 		return;
 	// return clean data
-	return html_clean($html);
+	return html_clean($html, $from_encoding);
 }
 
 function pdftotxt_ocr($file, $lang = 'deu') {

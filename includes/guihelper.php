@@ -37,7 +37,7 @@ function get_venues_html() {
 		//new Lambrecht(),
 		new CafeAmacord(),
 		//new Gondola(),
-		//new RadioCafe(),
+		new RadioCafe(),
 		new Stoeger(),
 	];
 	foreach ($venues as $venue) {

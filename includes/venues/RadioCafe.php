@@ -3,17 +3,18 @@
 class RadioCafe extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'RadioCafe';
-		//$this->title_notifier  = 'NEU';
-		$this->address           = 'Argentinierstraße 30a, 1040 Wien';
-		$this->addressLat        = 48.194522;
-		$this->addressLng        = 16.373029;
-		$this->url               = 'http://www.kulturcafe.eu/index.php?home';
-		$this->dataSource        = 'http://www.kulturcafe.eu/index.php?wochenkarte';
-		$this->menu              = 'http://www.kulturcafe.eu/index.php?speisen';
+		$this->title = 'RadioCafe';
+		//$this->title_notifier = 'NEU';
+		$this->address = 'Argentinierstraße 30a, 1040 Wien';
+		$this->addressLat = 48.194522;
+		$this->addressLng = 16.373029;
+		$this->url = 'http://www.kulturcafe.eu/index.php?home';
+		$this->dataSource = 'http://www.kulturcafe.eu/index.php?wochenkarte';
+		$this->menu = 'http://www.kulturcafe.eu/index.php?speisen';
 		$this->statisticsKeyword = 'kulturcafe';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
+		$this->price_nested_info = 'Menü 1 / Menü 2 / Menü 2 BIO';
 
 		parent::__construct();
 	}
@@ -34,15 +35,17 @@ class RadioCafe extends FoodGetterVenue {
 	}
 
 	protected function parseDataSource() {
-		$dataTmp = html_get_clean($this->dataSource);
-		if (!$dataTmp)
+		$dataTmp = html_get_clean($this->dataSource, 'ISO-8859-1');
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen da
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'Änderungen');
-		if (!$data || is_numeric($data))
+		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
+		}
 		//return error_log($data);
 
 		// set price
