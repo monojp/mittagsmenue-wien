@@ -5,31 +5,33 @@ require_once(__DIR__ . '/../MensaHelper.php');
 class MensaFreihaus extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Mensa Freihaus';
-		//$this->title_notifier  = 'NEU';
-		$this->address           = 'Wiedner Hauptstraße 8-10, 1040 Wien';
-		$this->addressLat        = 48.198710;
-		$this->addressLng        = 16.367576;
-		$this->url               = 'http://menu.mensen.at/index/index/locid/9';
-		$this->dataSource        = 'http://menu.mensen.at/index/index/locid/9';
-		$this->menu              = $this->dataSource;
+		$this->title = 'Mensa Freihaus';
+		//$this->title_notifier = 'NEU';
+		$this->address = 'Wiedner Hauptstraße 8-10, 1040 Wien';
+		$this->addressLat = 48.198710;
+		$this->addressLng = 16.367576;
+		$this->url = 'http://menu.mensen.at/index/index/locid/9';
+		$this->dataSource = 'http://menu.mensen.at/index/index/locid/9';
+		$this->menu = $this->dataSource;
 		$this->statisticsKeyword = 'mensen';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'kleine / große Portion';
 
 		parent::__construct();
 	}
 
 	protected function get_today_variants() {
-		$today_variants[] = date('d.m.', $this->timestamp);
-		return $today_variants;
+		return [
+			date('d.m.', $this->timestamp),
+		];
 	}
 
 	protected function parseDataSource() {
 		$dataTmp = file_get_contents($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 
 		$dataTmp = html_entity_decode($dataTmp);
 		$dataTmp = htmlentities($dataTmp);
@@ -46,15 +48,24 @@ class MensaFreihaus extends FoodGetterVenue {
 			if ($posStart !== false)
 				break;
 		}
-		if ($posStart === false)
+		if ($posStart === false) {
 			return;
+		}
 		//return error_log($posStart);
 
 		// get menus via helper function
 		$price_return = null;
-		$data[] = '1. ' . mensa_menu_get($dataTmp, '<h2>Menü Classic 1</h2>', $this->timestamp, $price_return);
-		$data[] = '2. ' . mensa_menu_get($dataTmp, '<h2>Menü Classic 2</h2>', $this->timestamp, $price_return);
-		$data[] = '3. ' . mensa_menu_get($dataTmp, '<h2>Brainfood</h2>', $this->timestamp, $price_return);
+		$data_raw[] = mensa_menu_get($dataTmp, '<h2>Menü Classic 1</h2>', $this->timestamp, $price_return);
+		$data_raw[] = mensa_menu_get($dataTmp, '<h2>Menü Classic 2</h2>', $this->timestamp, $price_return);
+		$data_raw[] = mensa_menu_get($dataTmp, '<h2>Brainfood</h2>', $this->timestamp, $price_return);
+		$data = [];
+		$data_cnt = 1;
+		foreach ($data_raw as $data_raw_element) {
+			if (!empty($data_raw_element)) {
+				$data[] = "{$data_cnt}. $data_raw_element";
+				$data_cnt++;
+			}
+		}
 		$data = implode('<br />', $data);
 		//var_export($price);
 		//return;

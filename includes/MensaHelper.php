@@ -1,9 +1,14 @@
 <?php
 
 function mensa_menu_get($dataTmp, $title_search, $timestamp, &$price_return=null) {
-	$posStart = strnposAfter($dataTmp, 'menu-item-text">', strrpos($dataTmp, $title_search), date('N', $timestamp));
-	if ($posStart === false)
+	$title_pos = strrpos($dataTmp, $title_search);
+	if ($title_pos === false) {
 		return null;
+	}
+	$posStart = strnposAfter($dataTmp, 'menu-item-text">', $title_pos, date('N', $timestamp));
+	if ($posStart === false) {
+		return null;
+	}
 
 	$posEnd = mb_stripos($dataTmp, '</div>', $posStart);
 	$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
@@ -22,17 +27,20 @@ function mensa_menu_get($dataTmp, $title_search, $timestamp, &$price_return=null
 	foreach ($foods as $food) {
 		$food = cleanText($food);
 		if (!empty($food)) {
-			if ($cnt == 1)
+			if ($cnt == 1) {
 				$data .= $food;
-			else if (
+			} else if (
 				($cnt == 2 && mb_stripos($data, 'suppe') !== false) || // suppe, xx
 				$cnt == count($foods) // xx, dessert
-			)
+			) {
 				$data .= ", $food";
-			else if (strpos($food, '€') !== false)
-				$price_return = $food;
-			else
+			} else if (strpos($food, '€') !== false) {
+				if ($price_return !== null) {
+					$price_return = $food;
+				}
+			} else {
 				$data .= " $food";
+			}
 			$cnt++;
 		}
 	}
