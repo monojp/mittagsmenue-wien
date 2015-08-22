@@ -30,8 +30,9 @@ class RadioCafe extends FoodGetterVenue {
  */
 
 	protected function get_today_variants() {
-		$today_variants[] = getGermanDayName() . date(', d.m.Y', $this->timestamp);
-		return $today_variants;
+		return [
+			getGermanDayName() . date(', d.m.Y', $this->timestamp),
+		];
 	}
 
 	protected function parseDataSource() {
@@ -49,7 +50,7 @@ class RadioCafe extends FoodGetterVenue {
 		//return error_log($data);
 
 		// set price
-		$this->price = $this->parse_prices_regex($dataTmp, [ '/\d{1},\d{2}/' ]);
+		$this->price = [ $this->parse_prices_regex($dataTmp, [ '/\d{1},\d{2}/' ]) ];
 		//return error_log(print_r($this->price, true));
 
 		return ($this->data = $data);
