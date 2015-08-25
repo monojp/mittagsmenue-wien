@@ -100,4 +100,6 @@ $searchReplace = array(
 	'Vegetarisch' => '',
 	'Salateller' => 'Salatteller',
 	'Mitwoch' => 'Mittwoch',
+	'Rieltte' => 'Rillette',
+	'von Schwein' => 'vom Schwein',
 );
