@@ -12,7 +12,7 @@ class Stoeger extends FoodGetterVenue {
 		$this->dataSource        = 'http://www.zumstoeger.at/heute.php';
 		$this->menu              = 'http://www.zumstoeger.at/speisekarte.pdf';
 		$this->statisticsKeyword = 'stoeger';
-		$this->no_menu_days      = [ 0, 6 ];
+		$this->no_menu_days      = [ 0, 1, 6 ];
 		$this->lookaheadSafe     = true;
 		//$this->price_nested_info = 'Mittagsteller mit Suppe / Tagessuppe / Mittagsteller';
 
