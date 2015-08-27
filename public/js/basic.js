@@ -62,35 +62,42 @@ function vote_helper(action, identifier, note, try_count) {
 		success: function(result) {
 
 			// increase interval multiplier to reduce server load
-			if (intervalVotes)
+			if (intervalVotes) {
 				clearInterval(intervalVotes);
-			if (typeof result.voting_over != 'undefined' && result.voting_over || !result || typeof result.alert != 'undefined')
+			}
+			if (typeof result.voting_over != 'undefined' && result.voting_over || !result || typeof result.alert != 'undefined') {
 				voting_over_interval_multiplier += 0.1;
-			else
+			} else {
 				voting_over_interval_multiplier = 1;
+			}
 			intervalVotes = setInterval(function(){vote_get()}, Math.floor(5000 * voting_over_interval_multiplier));
 
 			// exit, if we got the same as before
 			// except it is a server alert
-			if (typeof JSON != 'undefined' && JSON.stringify(oldVoteData) == JSON.stringify(result) && typeof result.alert == 'undefined')
+			if (
+				typeof JSON != 'undefined' &&
+				JSON.stringify(oldVoteData) == JSON.stringify(result) &&
+				typeof result.alert == 'undefined'
+			) {
 				return;
+			}
 
 			// alert from server (e.g. error)
 			if (typeof result.alert != 'undefined') {
 				alert(result.alert);
-			}
 			// got valid vote result
-			else if (typeof result.html != 'undefined') {
+			} else if (typeof result.html != 'undefined') {
 				$("#dialog_ajax_data").html(result.html);
-				/*if (width_device <= SHOW_DETAILS_MIN_WIDTH)
+				/*if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
 					$('#button_vote_summary_toggle').show();
-				else
-					$("#dialog_vote_summary").css('display', 'table');*/
-			}
+				} else {
+					$("#dialog_vote_summary").css('display', 'table');
+				}*/
 			// no | empty result => hide voting dialog
-			else {
-				if (intervalVotes)
+			} else {
+				if (intervalVotes) {
 					$("#dialog_vote_summary").hide();
+				}
 			}
 			oldVoteData = result;
 			// handle emoji replaces
@@ -98,10 +105,11 @@ function vote_helper(action, identifier, note, try_count) {
 		},
 		error: function() {
 			// retry on error
-			if (try_count < ajax_retry_count_max)
+			if (try_count < ajax_retry_count_max) {
 				window.setTimeout(function() { vote_helper(action, identifier, note, try_count+1) }, (Math.random()*ajax_retry_time_max)+1);
-			else
+			} else {
 				alert('Fehler beim Setzen des Votes.');
+			}
 		}
 	});
 }
@@ -141,8 +149,9 @@ function vote_delete() {
 }
 // delete vote part
 function vote_delete_part(identifier) {
-	if (identifier == 'special')
+	if (identifier == 'special') {
 		$('#noteInput').val('');
+	}
 	vote_helper('vote_delete_part', identifier, null, 0);
 }
 // got (lat / long) location => get address from it
@@ -224,11 +233,9 @@ function sortVenuesAfterPosition(lat, lng) {
 
 		if (diffA > diffB) {
 			return 1;
-		}
-		else if (diffA < diffB) {
+		} else if (diffA < diffB) {
 			return -1;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	});
@@ -244,9 +251,9 @@ function setLocation(location, force_geolocation, try_count) {
 	// location via geolocation
 	if (!location || force_geolocation) {
 		// use geolocation via client
-		if ((isMobileDevice() || force_geolocation) && navigator.geolocation)
+		if ((isMobileDevice() || force_geolocation) && navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(positionHandler, positionErrorHandler, {timeout: 5000});
-		else {
+		} else {
 			// sort venues
 			sortVenuesAfterPosition($('#lat').html(), $('#lng').html());
 
@@ -277,18 +284,18 @@ function setLocation(location, force_geolocation, try_count) {
 
 				// save custom location in cookie
 				$.cookie('location', location, { expires: 7 });
-			}
-			else {
+			} else {
 				$('#locationInput').val($('#location').html());
 				alert('Keine Geo-Daten zu dieser Adresse gefunden.');
 			}
 		},
 		error: function() {
 			// retry
-			if (try_count < ajax_retry_count_max)
+			if (try_count < ajax_retry_count_max) {
 				window.setTimeout(function() { setLocation(location, force_geolocation, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
-			else
+			} else {
 				alert('Fehler beim Abrufen der Geo-Position. Bitte Internetverbindung überprüfen.');
+			}
 		}
 	});
 }
@@ -325,17 +332,17 @@ function get_venues_distance() {
 		var distanceValue = distanceLatLng(lat, lng, latVenue, lngVenue);
 		var distanceMetersRound = Math.floor(Number((distanceValue).toFixed(2)) * 1000);
 
-		if (distanceValue >= 1)
+		if (distanceValue >= 1) {
 			distanceString = "~ " + distanceValue.toFixed(1) + " km";
-		else
+		} else {
 			distanceString = "~ " + distanceMetersRound + " m";
+		}
 
 		// hide too far locations
 		if (distanceMetersRound > distance) {
 			$(this).hide();
 			$(this).attr('data-inreach', false);
-		}
-		else {
+		} else {
 			$(this).show();
 			$(this).attr('data-inreach', true);
 		}
@@ -348,10 +355,11 @@ function get_venues_distance() {
 	});
 
 	// update no venue found notifier
-	if ($('[class="venueDiv"][data-inreach="true"]').length < 1)
+	if ($('[class="venueDiv"][data-inreach="true"]').length < 1) {
 		$('#noVenueFoundNotifier').show();
-	else
+	} else {
 		$('#noVenueFoundNotifier').hide();
+	}
 }
 
 function updateNotePreview() {
@@ -372,22 +380,25 @@ function handle_href_reference_details(id, reference, name, try_count) {
 		dataType: 'json',
 		async: false,
 		success: function(result) {
-			if (typeof result.alert != 'undefined')
+			if (typeof result.alert != 'undefined') {
 				alert(result.alert);
+			}
 
 			// got website via details api
-			if (typeof result.result.website != 'undefined')
+			if (typeof result.result.website != 'undefined') {
 				window.open(result.result.website, '_blank');
 			// now website open google search
-			else
+			} else {
 				window.open('https://www.google.com/search?q=' + name, '_blank');
+			}
 		},
 		error: function() {
 			// retry
-			if (try_count < ajax_retry_count_max)
+			if (try_count < ajax_retry_count_max) {
 				window.setTimeout(function() { handle_href_reference_details(id, reference, name, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
-			else
+			} else {
 				alert('Fehler beim Abholen der Restaurants in der Nähe.');
+			}
 		}
 	});
 }
@@ -408,16 +419,18 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 		},
 		dataType: "json",
 		success: function(result) {
-			if (typeof result.alert != 'undefined')
+			if (typeof result.alert != 'undefined') {
 				alert(result.alert);
-			else
+			} else {
 				return success_function(result);
+			}
 		},
 		error: function() {
-			if (try_count < ajax_retry_count_max)
+			if (try_count < ajax_retry_count_max) {
 				window.setTimeout(function() { get_alt_venues(lat, lng, radius, radius_max, success_function, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
-			else
+			} else {
 				alert('Fehler beim Abholen der Restaurants in der Nähe.');
+			}
 		}
 	});
 }
@@ -437,8 +450,9 @@ function vote_settings_save() {
 		},
 		dataType: "json",
 		success: function(result) {
-			if (typeof result.alert != 'undefined')
+			if (typeof result.alert != 'undefined') {
 				alert(result.alert);
+			}
 		},
 		error: function() {
 			alert('Fehler beim Setzen der Vote-Einstellungen.');
@@ -466,13 +480,15 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 	$(document).on('pagecreate', function() {
 
 		// hide location info on small screens
-		if (width_device <= SHOW_DETAILS_MIN_WIDTH)
+		if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
 			$('#location').hide();
+		}
 
 		// old ie warning (not supported by jquery 2.*)
 		var ie_version = detectIE();
-		if (ie_version && ie_version <= 8)
+		if (ie_version && ie_version <= 8) {
 			alert('Bitte neueren Internet Explorer verwenden!');
+		}
 
 		// show latest changelog if not seen yet
 		// TODO currently not working with jquery mobile, but maybe not needed
@@ -495,8 +511,9 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 				var distance = $.cookie('distance');
 
 				// default distance
-				if (typeof distance == 'undefined')
+				if (typeof distance == 'undefined') {
 					distance = $('#distance_default').html();
+				}
 
 				setDistance(distance);
 
@@ -517,9 +534,8 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 			// custom location from cookie
 			if (typeof location != 'undefined' && location && location.length) {
 				setLocation(location, false, 0);
-			}
 			// location via geolocation
-			else {
+			} else {
 				setLocation(null, false, 0);
 			}
 		});
@@ -530,8 +546,9 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 		}, 10000);
 
 		// show voting
-		if ($('#show_voting').length)
+		if ($('#show_voting').length) {
 			vote_get();
+		}
 
 		// date change handler
 		$('#date').bind('change', function() {
@@ -606,6 +623,10 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 							$('#table_voting_alt_wrapper input').textinput();
 						},
 						'fnDrawCallback': function (oSettings) {
+							// change input type of the search field because of jquerymobile
+							$('#table_voting_alt_filter input').attr('type', 'text')
+									.attr('data-type', 'search');
+							$('#table_voting_alt_filter input').textinput();
 							// update iconized button links
 							$('#table_voting_alt_wrapper div.ui-link').button({
 								enhanced: true
@@ -613,7 +634,7 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 						},
 						'dom': '<lfpti>',
 						'lengthChange': false,
-						'searching': false
+						'searching': true
 					});
 					$('#div_voting_alt_loader').hide();
 					$('#table_voting_alt').show();
@@ -630,8 +651,9 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 			emojione.sprites = true;
 
 			// stop inits if input not found
-			if (!$("#noteInput").length)
+			if (!$("#noteInput").length) {
 				return;
+			}
 
 			// note input handles
 			$("#noteInput").on('keyup change input',function(e) {
@@ -656,18 +678,18 @@ head.ready([ 'jquery', 'jquery_ui' ], function() {
 						var results2 = [];
 						var results3 = [];
 						$.each(emojiStrategy,function(shortname,data) {
-							if(shortname.indexOf(term) > -1) { results.push(shortname); }
-							else {
-								if((data.aliases !== null) && (data.aliases.indexOf(term) > -1)) {
+							if (shortname.indexOf(term) > -1) {
+								results.push(shortname);
+							} else {
+								if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
 									results2.push(shortname);
-								}
-								else if((data.keywords !== null) && (data.keywords.indexOf(term) > -1)) {
+								} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
 									results3.push(shortname);
 								}
 							}
 						});
 
-						if(term.length >= 3) {
+						if (term.length >= 3) {
 							results.sort(function(a,b) { return (a.length > b.length); });
 							results2.sort(function(a,b) { return (a.length > b.length); });
 							results3.sort();

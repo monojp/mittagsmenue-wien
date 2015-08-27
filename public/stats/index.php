@@ -177,6 +177,7 @@ echo '<small>Abfrage erfolgte in ' . round($diff, 2) . ' Sekunden</small>';
 				'lengthChange': false,
 				'searching': true,
 				'fnDrawCallback': function (oSettings) {
+					// change input type of the search field because of jquerymobile
 					$('#table_stats_filter input').attr('type', 'text')
 							.attr('data-type', 'search');
 					$('#table_stats_filter input').textinput();
