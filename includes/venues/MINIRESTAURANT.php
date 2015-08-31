@@ -52,6 +52,11 @@ class MINIRESTAURANT extends FoodGetterVenue {
 		}
 		//return error_log($dataTmp);
 
+		// check date range
+		if (!$this->in_date_range_string($dataTmp, $this->timestamp, '%d.%m.%Y', '%d.%m.%Y')) {
+			return;
+		}
+
 		// get menu data for the chosen da
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'Mo-Fr');
 		if (!$data || is_numeric($data)) {
