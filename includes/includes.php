@@ -925,7 +925,8 @@ function strtotimep($time, $format, $timestamp = null) {
 	$sec   = empty($date['tm_sec']) ? date('s', $timestamp) : $date['tm_sec'];
 	$day   = empty($date['tm_mday']) ? date('j', $timestamp) : $date['tm_mday'];
 	$month = empty($date['tm_mon']) ? date('n', $timestamp) : ($date['tm_mon'] + 1);
-	$year  = empty($date['tm_year']) ? date('Y', $timestamp) : $date['tm_year'];
+	// we need the offset because "tm_year" are the years since 1900 as of definition
+	$year  = 1900 + empty($date['tm_year']) ? date('Y', $timestamp) : $date['tm_year'];
 
 	return mktime($hour, $min, $sec, $month, $day, $year);
 }
