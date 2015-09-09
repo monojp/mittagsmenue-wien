@@ -240,8 +240,11 @@ function cleanText($text) {
 	// unify strange apostrophes
 	$text = str_replace([ '`', '´', '’', ], '\'', $text);
 
+	// unify strange dashes
+	$text = str_replace([ '–' ], '-', $text);
+
 	// completely remove dirty chars
-	$text = str_replace([ '¸', '–' ], '', $text);
+	$text = str_replace([ '¸' ], '', $text);
 
 	// strip invalid chars
 	$text = strip_invalid_chars($text);
@@ -255,7 +258,7 @@ function cleanText($text) {
 	$text = preg_replace('/[A-Z,\. ]+(<br>)+/', '<br>', $text);
 	$text = preg_replace("/[A-Z,\. ]+(\n)+/", "\n", $text);
 
-	$words_trim = [ 'oder' ];
+	$words_trim = [ 'oder', 'Vegan' ];
 	foreach ($words_trim as $word) {
 		// remove word on beginning after numbering
 		// e.g. "2. oder Kabeljaufilet" => "2. Kabeljaufilet"

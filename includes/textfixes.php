@@ -26,7 +26,6 @@ $searchReplace = array(
 	'gegrilltes Hühnerfilets' => 'Gegrilltes Hühnerfilet',
 	'gegrillte Hühnerfilets' => 'Gegrilltes Hühnerfilet',
 	'gegrilltes Hühnerfilets' => 'Gegrilltes Hühnerfilet',
-	'Cashewnuss – Mandel – Obersauce' => 'Cashewnuss-Mandel-Oberssauce',
 	'milder-Currysauce' => 'milder Currysauce',
 	'in milde Currysauce' => 'in milder Currysauce',
 	'milde-Currysauce' => 'milder Currysauce',
