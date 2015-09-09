@@ -477,7 +477,7 @@ function adapt_button_vote_summary_toggle() {
 
 // INIT
 head.ready([ 'jquery', 'jquery_ui' ], function() {
-	$(document).on('pagecreate', function() {
+	$(document).on('pagecreate', '#page_main', function() {
 
 		// hide location info on small screens
 		if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
