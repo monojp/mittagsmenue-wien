@@ -14,12 +14,6 @@ $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
 $ip = get_identifier_ip();
 $action = get_var('action');
 
-// --------------
-// handle actions
-if (!$action) {
-	exit(json_encode([ 'alert' => js_message_prepare('Es wurde keine Aktion übertragen!') ]));
-}
-
 // delete vote
 if ($action == 'vote_delete') {
 	check_voting_time();
@@ -95,6 +89,8 @@ if ($action == 'vote_delete') {
 		VoteHandler_MySql::getInstance($timestamp)->update(date(VOTE_DATE_FORMAT, $timestamp), $ip,
 				'special', $note);
 	}
+} else if ($action != 'vote_get') {
+	exit(json_encode([ 'alert' => js_message_prepare('Es wurde keine gültige Aktion übertragen!') ]));
 }
 
 // return all votes

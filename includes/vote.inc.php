@@ -18,54 +18,22 @@ function ip_username_sort($a, $b) {
 
 function returnVotes($votes) {
 	global $voting_over_time;
-	$html_return = (get_var('html') !== null) || (get_var('html/') !== null);
 
 	if (!empty($votes)) {
 		if (is_array($votes)) {
 			uksort($votes, 'ip_username_sort');
 		}
 
-		if ($html_return) {
-			require_once('guihelper.php');
-			require_once('header.php');
-			if (show_voting() && isset($_GET['minimal'])) {
-				echo '<meta http-equiv="refresh" content="10" />';
-				echo get_minimal_site_notice_html();
-				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes) . '</div>';
-			} else if (show_voting()) {
-				echo '<div style="display: none" id="show_voting"></div>';
-				echo get_vote_div_html();
-				echo get_noscript_html();
-			}
-			//echo vote_summary_html($votes);
-			require_once('footer.php');
-		} else {
-			echo json_encode([
-				'voting_over' => (time() >= $voting_over_time),
-				'html' => vote_summary_html($votes),
-			]);
-		}
+		echo json_encode([
+			'voting_over' => (time() >= $voting_over_time),
+			'html' => vote_summary_html($votes),
+		]);
 	// no voting data
 	} else {
-		if ($html_return) {
-			require_once('guihelper.php');
-			require_once('header.php');
-			if (show_voting() && isset($_GET['minimal'])) {
-				echo '<meta http-equiv="refresh" content="10" />';
-				echo get_minimal_site_notice_html();
-				echo '<div id="dialog_vote_summary" style="display: table">' . vote_summary_html($votes) . '</div>';
-			} else if (show_voting()) {
-				echo '<div style="display: none" id="show_voting"></div>';
-				echo get_vote_div_html();
-				echo get_noscript_html();
-			}
-			require_once('footer.php');
-		} else {
-			echo json_encode([
-				'voting_over' => (time() >= $voting_over_time),
-				'html' => vote_summary_html($votes),
-			]);
-		}
+		echo json_encode([
+			'voting_over' => (time() >= $voting_over_time),
+			'html' => vote_summary_html($votes),
+		]);
 	}
 }
 
