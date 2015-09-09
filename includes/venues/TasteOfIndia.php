@@ -53,16 +53,20 @@ class TasteOfIndia extends FoodGetterVenue {
 		$data = trim($data);
 
 		$foods = explode("\n", $data);
-		//unset($foods[0]);	// date
-		$data = cleanText($foods[0]);	// soup
+		//unset($foods[0]); // date
+		$data = cleanText($foods[0]); // soup
 		unset($foods[0]);
 		for ($i=1; $i<=count($foods); $i++) {
+			$foods[$i] = cleanText($foods[$i]);
+			if (empty($foods[$i])) {
+				continue;
+			}
+
 			if ($i % 2 == 1) {
 				$nr = round($i / 2);
-				$data .= "\n$nr. ".cleanText($foods[$i]);
-			}
-			else {
-				$data .= ': ' . cleanText($foods[$i]);
+				$data .= "\n$nr. " . $foods[$i];
+			} else {
+				$data .= ': ' . $foods[$i];
 			}
 		}
 
