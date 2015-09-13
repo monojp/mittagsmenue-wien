@@ -413,6 +413,16 @@ abstract class FoodGetterVenue {
 	protected function get_dessert_count($string) {
 		$string = mb_strtolower($string);
 		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
+
+		// re-check if it's not a main food
+		if (
+			mb_strpos($string, 'tortelloni') !== false ||
+			mb_strpos($string, 'letscho') !== false ||
+			mb_strpos($string, 'nudeln') !== false
+		) {
+			return 0;
+		}
+
 		return (
 			mb_substr_count($string, 'dessert') +
 			mb_substr_count($string, 'yoghurt') +
@@ -420,9 +430,9 @@ abstract class FoodGetterVenue {
 			//mb_substr_count($string, 'jogurt') +
 			mb_substr_count($string, 'mousse') +
 			mb_substr_count($string, 'kuchen') +
-			(mb_substr_count($string, 'torte') && !mb_substr_count($string, 'tortelloni')) +
+			mb_substr_count($string, 'torte') +
 			mb_substr_count($string, 'schlag') +
-			(mb_substr_count($string, 'schoko') && !mb_substr_count($string, 'letschoko')) +
+			mb_substr_count($string, 'schoko') +
 			mb_substr_count($string, 'muffin') +
 			mb_substr_count($string, 'donut') +
 			mb_substr_count($string, 'biskuit') +
@@ -432,7 +442,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'topfencreme') +
 			mb_substr_count($string, 'parfait') +
 			mb_substr_count($string, 'eisbecher') +
-			mb_substr_count($string, 'bananenschnitte')
+			mb_substr_count($string, 'bananenschnitte') +
+			mb_substr_count($string, 'topfenstrudel')
 		);
 	}
 
@@ -452,8 +463,9 @@ abstract class FoodGetterVenue {
 				break;
 			}
 		}
-		if ($posStart === false)
+		if ($posStart === false) {
 			return;
+		}
 		$posEnd = mb_stripos($data, $string_next_day, $posStart);
 		//error_log("'${string_next_day}' search returned ${posEnd}");
 		// last day of the week (string)
@@ -471,16 +483,18 @@ abstract class FoodGetterVenue {
 				}
 			}
 		}
-		if ($posEnd === false)
+		if ($posEnd === false) {
 			return;
+		 }
 		//return error_log($posEnd);
 
 		$data = mb_substr($data, $posStart, $posEnd - $posStart);
 		//return error_log($data) && false;
 
 		// check if holiday
-		if ($this->get_holiday_count($data))
+		if ($this->get_holiday_count($data)) {
 			return VenueStateSpecial::Urlaub;
+		}
 
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
@@ -508,7 +522,7 @@ abstract class FoodGetterVenue {
 			'IV.', 'III.', 'II.', 'I.',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
-			//'1 ', '2 ', '3 ', '4 ', // macht probleme mit dingen wie "1/2 Brathuhn"
+			'1 ', '2 ', '3 ', '4 ', // macht probleme mit dingen wie "1/2 Brathuhn"
 		];
 
 		$foods_title = [

@@ -570,7 +570,7 @@ function html_clean($html, $from_encoding = null) {
 	// strip html tags
 	$html = strip_tags($html, '<br>');
 	// remove unwanted stuff
-	$html = str_replace([ '&nbsp;' ], '', $html);
+	$html = str_replace([ '&nbsp;' ], ' ', $html);
 	$html = str_ireplace([ "<br />", "<br>", "<br/>" ], "\r\n", $html);
 	$html = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $html);
 	// remove multiple spaces

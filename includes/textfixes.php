@@ -101,4 +101,5 @@ $searchReplace = array(
 	'Mitwoch' => 'Mittwoch',
 	'Rieltte' => 'Rillette',
 	'von Schwein' => 'vom Schwein',
+	'Nuß' => 'Nuss',
 );
