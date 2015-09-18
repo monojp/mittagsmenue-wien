@@ -19,7 +19,6 @@ $DB_CONFIGS = array(
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
-define('USE_SSL', true);
 
 define('LOCATION_FALLBACK', 'Bräuhausgasse 4, 1050 Wien');
 define('LOCATION_FALLBACK_LAT', 48.190341);

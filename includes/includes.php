@@ -11,7 +11,7 @@ mb_internal_encoding('UTF-8');
 
 // valid session for 3 hours
 $server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
-session_set_cookie_params(3 * 60, '/', $server_name, USE_SSL, true);
+session_set_cookie_params(3 * 60, '/', $server_name, !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', true);
 $session_name = session_name('MENU_SESSID') ? 'MENU_SESSID' : session_name();
 
 // cleanup client session id if invalid
@@ -249,7 +249,8 @@ function cleanText($text) {
 	// strip invalid chars
 	$text = strip_invalid_chars($text);
 
-	// replace configured words
+	// replace configured words (make a sort before to avoid replacing substuff and breaking things)
+	arsort($searchReplace);
 	$text = str_replace_wrapper($searchReplace, $text);
 
 	// remove EU allergy warnings
