@@ -3,16 +3,16 @@
 class DeliciousMonster extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Delicious Monster';
-		$this->address           = 'Gußhausstraße 12, 1040 Wien';
-		$this->addressLat        = 48.1975648;
-		$this->addressLng        = 16.3720652;
-		$this->url               = 'http://www.deliciousmonster.at/';
-		$this->dataSource        = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/wochenkarte-delicious-monster-restaurant-wien.pdf';
-		$this->menu              = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/speisekarte-lokal-1040-wien-delicious-monster.pdf';
+		$this->title = 'Delicious Monster';
+		$this->address = 'Gußhausstraße 12, 1040 Wien';
+		$this->addressLat = 48.1975648;
+		$this->addressLng = 16.3720652;
+		$this->url = 'http://www.deliciousmonster.at/';
+		$this->dataSource = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/wochenkarte-delicious-monster-restaurant-wien.pdf';
+		$this->menu = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/speisekarte-lokal-1040-wien-delicious-monster.pdf';
 		$this->statisticsKeyword = 'deliciousmonster';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -27,20 +27,18 @@ class DeliciousMonster extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = pdftohtml($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
-
-		// check if holiday
-		if ($this->get_holiday_count($dataTmp))
-			return VenueStateSpecial::Urlaub;
 
 		$dataTmp = html_clean($dataTmp);
 		//return error_log($dataTmp);
 
 		$data = $this->parse_foods_inbetween_days($dataTmp, '*', [ 'Alle', 'Al e' ]);
-		if (!$data || is_numeric($data))
+		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
+		}
 		//return error_log($data);
 
 		// set price
