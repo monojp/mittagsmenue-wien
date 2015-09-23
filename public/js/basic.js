@@ -4,6 +4,8 @@ var oldVoteData = null;
 var voting_over_interval_multiplier = 1;
 var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
+var init_done = false;
+var init_max_delay = 30000;
 
 var SHOW_DETAILS_MIN_WIDTH = 800;
 
@@ -475,242 +477,260 @@ function adapt_button_vote_summary_toggle() {
 	}
 }
 
-// INIT
-head.ready([ 'jquery', 'jquery_ui' ], function() {
-	$(document).on('pagecreate', '#page_main', function() {
+function init() {
+	// reset init flag
+	init_unhandled = false;
+	init_done = true;
 
-		// hide location info on small screens
-		if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
-			$('#location').hide();
-		}
+	// hide location info on small screens
+	if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
+		$('#location').hide();
+	}
 
-		// old ie warning (not supported by jquery 2.*)
-		var ie_version = detectIE();
-		if (ie_version && ie_version <= 8) {
-			alert('Bitte neueren Internet Explorer verwenden!');
-		}
+	// old ie warning (not supported by jquery 2.*)
+	var ie_version = detectIE();
+	if (ie_version && ie_version <= 8) {
+		alert('Bitte neueren Internet Explorer verwenden!');
+	}
 
-		// show latest changelog if not seen yet
-		// TODO currently not working with jquery mobile, but maybe not needed
-		/*var changelog_latest = $('#changelog_latest').html();
-		if ($('#changelog').length && $.cookie('changelog_latest') != changelog_latest) {
-			$('#changelog').dialog({title:"Changelog",modal: true,buttons:[{text:'Ok',click:function(){$(this).dialog('close');}}]});
-			$.cookie('changelog_latest', changelog_latest);
-			// piwik track
-			if (typeof _paq != 'undefined')
-				_paq.push(['trackEvent', 'Changelog', 'shown', changelog_latest]);
-		}*/
+	// show latest changelog if not seen yet
+	// TODO currently not working with jquery mobile, but maybe not needed
+	/*var changelog_latest = $('#changelog_latest').html();
+	if ($('#changelog').length && $.cookie('changelog_latest') != changelog_latest) {
+		$('#changelog').dialog({title:"Changelog",modal: true,buttons:[{text:'Ok',click:function(){$(this).dialog('close');}}]});
+		$.cookie('changelog_latest', changelog_latest);
+		// piwik track
+		if (typeof _paq != 'undefined')
+			_paq.push(['trackEvent', 'Changelog', 'shown', changelog_latest]);
+	}*/
 
-		// location ready event
-		var locationReadyFired = false;
-		$(document).on('locationReady', function() {
-			locationReadyFired = true;
-			// add distance user-venue to each venue
-			// also hides venues which are too far away
-			head.ready([ 'jquery_cookie' ], function() {
-				var distance = $.cookie('distance');
-
-				// default distance
-				if (typeof distance == 'undefined') {
-					distance = $('#distance_default').html();
-				}
-
-				setDistance(distance);
-
-				$('#loadingContainer').hide();
-			});
-
-			// replace @@lat_lng@@ placeholder in google maps hrefs
-			$('.lat_lng_link').each(function(index, value) {
-				var href = $(this).prop('href');
-				href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
-				$(this).prop('href', href);
-			});
-		});
-
-		// start location stuff
+	// location ready event
+	var locationReadyFired = false;
+	$(document).on('locationReady', function() {
+		locationReadyFired = true;
+		// add distance user-venue to each venue
+		// also hides venues which are too far away
 		head.ready([ 'jquery_cookie' ], function() {
-			var location = $.cookie('location');
-			// custom location from cookie
-			if (typeof location != 'undefined' && location && location.length) {
-				setLocation(location, false, 0);
-			// location via geolocation
-			} else {
-				setLocation(null, false, 0);
-			}
-		});
-		// fallback with timer if location ready event not fired
-		setTimeout(function() {
-			if (!locationReadyFired)
-				$(document).trigger('locationReady');
-		}, 10000);
+			var distance = $.cookie('distance');
 
-		// show voting
-		if ($('#show_voting').length) {
-			vote_get();
+			// default distance
+			if (typeof distance == 'undefined') {
+				distance = $('#distance_default').html();
+			}
+
+			setDistance(distance);
+
+			$('#loadingContainer').hide();
+		});
+
+		// replace @@lat_lng@@ placeholder in google maps hrefs
+		$('.lat_lng_link').each(function(index, value) {
+			var href = $(this).prop('href');
+			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
+			$(this).prop('href', href);
+		});
+	});
+
+	// start location stuff
+	head.ready([ 'jquery_cookie' ], function() {
+		var location = $.cookie('location');
+		// custom location from cookie
+		if (typeof location != 'undefined' && location && location.length) {
+			setLocation(location, false, 0);
+		// location via geolocation
+		} else {
+			setLocation(null, false, 0);
 		}
+	});
+	// fallback with timer if location ready event not fired
+	setTimeout(function() {
+		if (!locationReadyFired)
+			$(document).trigger('locationReady');
+	}, 10000);
 
-		// date change handler
-		$('#date').bind('change', function() {
-			var userid = $('#userid').html();
-			if (userid && userid.length) {
-				document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val() + "&userid=" + userid;
-			} else {
-				document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
-			}
-		});
+	// show voting
+	if ($('#show_voting').length) {
+		vote_get();
+	}
 
-		// set submit handler for location input form
-		$('#locationForm').submit(function(event) {
-			event.preventDefault();
-			$('#setLocationDialog').dialog('close');
-			setDistance($('#distance').val());
-			setLocation($('#locationInput').val(), false, 0);
-		});
+	// date change handler
+	$('#date').bind('change', function() {
+		var userid = $('#userid').html();
+		if (userid && userid.length) {
+			document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val() + "&userid=" + userid;
+		} else {
+			document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
+		}
+	});
 
-		// set submit handler for note input form
-		$('#noteForm').submit(function(event) {
-			event.preventDefault();
-			$('#setNoteDialog').dialog('close');
-			vote_set_note($('#noteInput').val());
-		});
+	// set submit handler for location input form
+	$('#locationForm').submit(function(event) {
+		event.preventDefault();
+		$('#setLocationDialog').dialog('close');
+		setDistance($('#distance').val());
+		setLocation($('#locationInput').val(), false, 0);
+	});
 
-		// button_vote_summary_toggle click handler
-		$('#button_vote_summary_toggle').click(function() {
-			var el_dialog_vote_summary = $('#dialog_vote_summary');
-			if (el_dialog_vote_summary.is(':visible')) {
-				el_dialog_vote_summary.hide();
-			} else {
-				el_dialog_vote_summary.show();
-			}
+	// set submit handler for note input form
+	$('#noteForm').submit(function(event) {
+		event.preventDefault();
+		$('#setNoteDialog').dialog('close');
+		vote_set_note($('#noteInput').val());
+	});
+
+	// button_vote_summary_toggle click handler
+	$('#button_vote_summary_toggle').click(function() {
+		var el_dialog_vote_summary = $('#dialog_vote_summary');
+		if (el_dialog_vote_summary.is(':visible')) {
+			el_dialog_vote_summary.hide();
+		} else {
+			el_dialog_vote_summary.show();
+		}
+		adapt_button_vote_summary_toggle();
+	});
+	if ($('#vote_always_show').is(':checked')) {
+		$('#dialog_vote_summary').show();
+		setTimeout(function() {
 			adapt_button_vote_summary_toggle();
-		});
-		if ($('#vote_always_show').is(':checked')) {
-			$('#dialog_vote_summary').show();
-			setTimeout(function() {
-				adapt_button_vote_summary_toggle();
+		}, 0);
+	}
+
+	// tab activate handles
+	$('#tabs').on('tabsactivate', function(event, ui) {
+		// alternative venues
+		if (ui.newTab.index() == 1) {
+			var lat = $('#lat').html();
+			var lng = $('#lng').html();
+
+			$('#table_voting_alt').hide();
+			$('#div_voting_alt_loader').show();
+
+			// get venues in 500 - 1000 distance radius
+			var results = new Array();
+			get_alt_venues(lat, lng, 500, 1000, function (results) {
+				// destroy old table
+				if ($.fn.DataTable.isDataTable('#table_voting_alt'))
+					$('#table_voting_alt').dataTable().fnDestroy();
+				$('#table_voting_alt').dataTable({
+					'data': results,
+					'columns': [
+						{ 'title': 'Name' },
+						{ 'title': 'Distanz' },
+						//{ 'title': 'Rating' },
+						{ 'title': 'Aktionen' }
+					],
+					'order': [[ 1, 'asc' ]],
+					'initComplete': function(settings, json) {
+						// style select with jquery mobile selectmenu
+						$('#table_voting_alt_wrapper select').selectmenu();
+						$('#table_voting_alt_wrapper input').textinput();
+					},
+					'fnDrawCallback': function (oSettings) {
+						// change input type of the search field because of jquerymobile
+						$('#table_voting_alt_filter input').attr('type', 'text')
+								.attr('data-type', 'search');
+						$('#table_voting_alt_filter input').textinput();
+						// update iconized button links
+						$('#table_voting_alt_wrapper div.ui-link').button({
+							enhanced: true
+						});
+					},
+					'dom': '<lfpti>',
+					'lengthChange': false,
+					'searching': true
+				});
+				$('#div_voting_alt_loader').hide();
+				$('#table_voting_alt').show();
 			}, 0);
 		}
+	});
 
-		// tab activate handles
-		$('#tabs').on('tabsactivate', function(event, ui) {
-			// alternative venues
-			if (ui.newTab.index() == 1) {
-				var lat = $('#lat').html();
-				var lng = $('#lng').html();
+	// emojione inits
+	head.ready([ 'textcomplete', 'emojione' ], function() {
+		// default options
+		emojione.ascii = true;
+		emojione.imageType = 'png';
+		//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
+		emojione.sprites = true;
 
-				$('#table_voting_alt').hide();
-				$('#div_voting_alt_loader').show();
+		// stop inits if input not found
+		if (!$("#noteInput").length) {
+			return;
+		}
 
-				// get venues in 500 - 1000 distance radius
-				var results = new Array();
-				get_alt_venues(lat, lng, 500, 1000, function (results) {
-					// destroy old table
-					if ($.fn.DataTable.isDataTable('#table_voting_alt'))
-						$('#table_voting_alt').dataTable().fnDestroy();
-					$('#table_voting_alt').dataTable({
-						'data': results,
-						'columns': [
-							{ 'title': 'Name' },
-							{ 'title': 'Distanz' },
-							//{ 'title': 'Rating' },
-							{ 'title': 'Aktionen' }
-						],
-						'order': [[ 1, 'asc' ]],
-						'initComplete': function(settings, json) {
-							// style select with jquery mobile selectmenu
-							$('#table_voting_alt_wrapper select').selectmenu();
-							$('#table_voting_alt_wrapper input').textinput();
-						},
-						'fnDrawCallback': function (oSettings) {
-							// change input type of the search field because of jquerymobile
-							$('#table_voting_alt_filter input').attr('type', 'text')
-									.attr('data-type', 'search');
-							$('#table_voting_alt_filter input').textinput();
-							// update iconized button links
-							$('#table_voting_alt_wrapper div.ui-link').button({
-								enhanced: true
-							});
-						},
-						'dom': '<lfpti>',
-						'lengthChange': false,
-						'searching': true
-					});
-					$('#div_voting_alt_loader').hide();
-					$('#table_voting_alt').show();
-				}, 0);
-			}
-		});
-
-		// emojione inits
-		head.ready([ 'textcomplete', 'emojione' ], function() {
-			// default options
-			emojione.ascii = true;
-			emojione.imageType = 'png';
-			//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
-			emojione.sprites = true;
-
-			// stop inits if input not found
-			if (!$("#noteInput").length) {
-				return;
-			}
-
-			// note input handles
-			$("#noteInput").on('keyup change input',function(e) {
-				updateNotePreview();
-			});
+		// note input handles
+		$("#noteInput").on('keyup change input',function(e) {
 			updateNotePreview();
+		});
+		updateNotePreview();
 
-			// handle emoji replaces
-			emoji_update();
+		// handle emoji replaces
+		emoji_update();
 
-			// emoji shortname textcomplete for note input
-			$.getJSON('emojione/emoji.json', function (emojiStrategy) {
-				// append custom keywords
-				emojiStrategy.toilet.keywords.push('heisl');
-				emojiStrategy.spaghetti.keywords.push('pasta');
+		// emoji shortname textcomplete for note input
+		$.getJSON('emojione/emoji.json', function (emojiStrategy) {
+			// append custom keywords
+			emojiStrategy.toilet.keywords.push('heisl');
+			emojiStrategy.spaghetti.keywords.push('pasta');
 
-				// init input
-				$("#noteInput").textcomplete([ {
-					match: /\B:([\-+\w]*)$/,
-					search: function (term, callback) {
-						var results = [];
-						var results2 = [];
-						var results3 = [];
-						$.each(emojiStrategy,function(shortname,data) {
-							if (shortname.indexOf(term) > -1) {
-								results.push(shortname);
-							} else {
-								if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
-									results2.push(shortname);
-								} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
-									results3.push(shortname);
-								}
+			// init input
+			$("#noteInput").textcomplete([ {
+				match: /\B:([\-+\w]*)$/,
+				search: function (term, callback) {
+					var results = [];
+					var results2 = [];
+					var results3 = [];
+					$.each(emojiStrategy,function(shortname,data) {
+						if (shortname.indexOf(term) > -1) {
+							results.push(shortname);
+						} else {
+							if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
+								results2.push(shortname);
+							} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
+								results3.push(shortname);
 							}
-						});
-
-						if (term.length >= 3) {
-							results.sort(function(a,b) { return (a.length > b.length); });
-							results2.sort(function(a,b) { return (a.length > b.length); });
-							results3.sort();
 						}
-						var newResults = results.concat(results2).concat(results3);
+					});
 
-						callback(newResults);
-					},
-					template: function (shortname) {
-						return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
-					},
-					replace: function (shortname) {
-						return ':'+shortname+': ';
-					},
-					index: 1,
-					maxCount: 10
-				}
-				],{
-					footer: '<a href="http://www.emoji.codes" target="_blank">Alle Anzeigen<span class="arrow">»</span></a>'
-				});
+					if (term.length >= 3) {
+						results.sort(function(a,b) { return (a.length > b.length); });
+						results2.sort(function(a,b) { return (a.length > b.length); });
+						results3.sort();
+					}
+					var newResults = results.concat(results2).concat(results3);
+
+					callback(newResults);
+				},
+				template: function (shortname) {
+					return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
+				},
+				replace: function (shortname) {
+					return ':'+shortname+': ';
+				},
+				index: 1,
+				maxCount: 10
+			}
+			],{
+				footer: '<a href="http://www.emoji.codes" target="_blank">Alle Anzeigen<span class="arrow">»</span></a>'
 			});
 		});
 	});
+}
+
+// INIT
+head.ready([ 'jquery' ], function() {
+	// handle already fired init event
+	if (init_unhandled) {
+		init();
+	}
+	// handle init event
+	$(document).on('init', function() {
+		init();
+	});
+	// handle delayed inits via timeout
+	window.setTimeout(function() {
+		if (!init_done) {
+			init();
+		}
+	}, init_max_delay);
 });

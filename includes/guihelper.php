@@ -62,14 +62,14 @@ function get_header_html() {
 			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
 	// basic css and javascript
-	$mobile_datepicker_css       = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.css'        : '/datepicker/jquery.mobile.datepicker.css';
-	$mobile_datepicker_theme_css = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.theme.min.css'  : '/datepicker/jquery.mobile.datepicker.theme.css';
-	$throbber_css                = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css'                               : '/css/throbber.css';
-	$basic_css                   = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css'                                  : '/css/basic.css';
-	$head_load_js                = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js'                                : '/js/head.load.js';
-	$datepicker_js               = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/datepicker.min.js'                       : '/datepicker/datepicker.js';
-	$mobile_datepicker_js        = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.js'         : '/datepicker/jquery.mobile.datepicker.js';
-	$basic_js                    = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js'                                    : '/js/basic.js';
+	$mobile_datepicker_css       = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.css' : '/datepicker/jquery.mobile.datepicker.css';
+	$mobile_datepicker_theme_css = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.theme.min.css' : '/datepicker/jquery.mobile.datepicker.theme.css';
+	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
+	$basic_css = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
+	$head_load_js = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js' : '/js/head.load.js';
+	$datepicker_js = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/datepicker.min.js' : '/datepicker/datepicker.js';
+	$mobile_datepicker_js = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.js' : '/datepicker/jquery.mobile.datepicker.js';
+	$basic_js = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js' : '/js/basic.js';
 
 	// css
 	$response .='
@@ -86,17 +86,23 @@ function get_header_html() {
 	if (!isset($_GET['minimal']))
 		$response .= '<script src="' . cacheSafeUrl($head_load_js) . '" type="text/javascript"></script>
 			<script type="text/javascript">
-				head.js(
-					{jquery: "' . cacheSafeUrl('/js/jquery-2.1.4.min.js') . '"},
-					{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
-					{datepicker: "' . cacheSafeUrl($datepicker_js) . '"},
-					{mobile_datepicker: "' . cacheSafeUrl($mobile_datepicker_js) . '"},
-					{basic: "' . cacheSafeUrl($basic_js) . '"},
-					{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
-					{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
-					{textcomplete: "' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '"},
-					{emojione: "' . cacheSafeUrl('/emojione/emojione.min.js') . '"}
-				);
+				var init_unhandled = false;
+				head.load([{jquery: "' . cacheSafeUrl('/js/jquery-2.1.4.min.js') . '"}], function() {
+					$("#page_main").on("pagecreate", function() {
+						$(document).trigger("init");
+						init_unhandled = true;
+					});
+					head.load([
+						{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
+						{datepicker: "' . cacheSafeUrl($datepicker_js) . '"},
+						{mobile_datepicker: "' . cacheSafeUrl($mobile_datepicker_js) . '"},
+						{basic: "' . cacheSafeUrl($basic_js) . '"},
+						{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
+						{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
+						{textcomplete: "' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '"},
+						{emojione: "' . cacheSafeUrl('/emojione/emojione.min.js') . '"}
+					]);
+				});
 			</script>';
 
 	// minimal site and votes allowed, refresh every 10s
