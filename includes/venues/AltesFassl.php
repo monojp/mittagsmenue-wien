@@ -3,16 +3,16 @@
 class AltesFassl extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Zum Alten Fassl';
-		$this->address           = 'Ziegelofengasse 37, 1050 Wien';
-		$this->addressLat        = 48.191498;
-		$this->addressLng        = 16.3604868;
-		$this->url               = 'http://www.zum-alten-fassl.at/';
-		$this->dataSource        = 'http://www.zum-alten-fassl.at/mittagsmenues.html';
-		$this->menu              = 'http://www.zum-alten-fassl.at/standard-karte.html';
+		$this->title = 'Zum Alten Fassl';
+		$this->address = 'Ziegelofengasse 37, 1050 Wien';
+		$this->addressLat = 48.191498;
+		$this->addressLng = 16.3604868;
+		$this->url = 'http://www.zum-alten-fassl.at/';
+		$this->dataSource = 'http://www.zum-alten-fassl.at/mittagsmenues.html';
+		$this->menu = 'http://www.zum-alten-fassl.at/standard-karte.html';
 		$this->statisticsKeyword = 'zum-alten-fassl';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -38,14 +38,16 @@ class AltesFassl extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = html_get_clean($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'MENÜ 1');
-		if (!$data || is_numeric($data))
+		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
+		}
 		//return error_log($data);
 
 		// set price

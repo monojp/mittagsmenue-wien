@@ -1,7 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/../MensaHelper.php');
-
 class MensaSchroedinger extends FoodGetterVenue {
 
 	function __construct() {
@@ -56,8 +54,10 @@ class MensaSchroedinger extends FoodGetterVenue {
 
 		// get menus via helper function
 		$price_return = null;
-		$data_raw[] = mensa_menu_get($dataTmp, '<h2>Menü Classic 1</h2>', $this->timestamp, $price_return);
-		$data_raw[] = mensa_menu_get($dataTmp, '<h2>Menü Classic 2</h2>', $this->timestamp, $price_return);
+		$data_raw[] = $this->mensa_menu_get($dataTmp, '<h2>Menü Classic 1</h2>', $this->timestamp,
+				true, $price_return);
+		$data_raw[] = $this->mensa_menu_get($dataTmp, '<h2>Menü Classic 2</h2>', $this->timestamp,
+				true, $price_return);
 		$data = [];
 		$data_cnt = 1;
 		foreach ($data_raw as $data_raw_element) {
