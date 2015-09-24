@@ -384,7 +384,7 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'rindfleisch auf blattsalat') +
 			mb_substr_count($string, 'selleriesalat') +
 			mb_substr_count($string, 'wurstsalat') +
-			mb_substr_count($string, 'salat mit') +
+			//mb_substr_count($string, 'salat mit') + // probleme mit zb "Schafskäse auf Blattsalat"
 			mb_substr_count($string, 'rohkostsalat')
 		);
 	}
@@ -451,6 +451,12 @@ abstract class FoodGetterVenue {
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today_variants, true));
 
+		// convert last_day_next to an array
+		if (!is_array($string_last_day_next)) {
+			$string_last_day_next = [ $string_last_day_next ];
+		}
+		//return error_log(print_r($string_last_day_next, true));
+
 		// replace some strings that may interfer with day parsing
 		$data = str_replace([ 'Montag-Samstag', 'Montag-Freitag' ], '', $data);
 
@@ -472,9 +478,8 @@ abstract class FoodGetterVenue {
 		if ($posEnd === false && !is_array($string_last_day_next)) {
 			$posEnd = mb_stripos($data, $string_last_day_next, $posStart);
 			//error_log("'${string_last_day_next}' search returned ${posEnd}");
-		}
 		// last day of the week (array of strings)
-		else if ($posEnd === false) {
+		} else if ($posEnd === false) {
 			foreach ($string_last_day_next as $last_day_next) {
 				$posEnd = mb_stripos($data, $last_day_next, $posStart);
 				if ($posEnd !== false) {
@@ -484,6 +489,7 @@ abstract class FoodGetterVenue {
 			}
 		}
 		if ($posEnd === false) {
+			//error_log('no end found');
 			return;
 		 }
 		//return error_log($posEnd);
@@ -522,14 +528,18 @@ abstract class FoodGetterVenue {
 			'IV.', 'III.', 'II.', 'I.',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
-			'1 ', '2 ', '3 ', '4 ', // macht probleme mit dingen wie "1/2 Brathuhn"
+			'1 ', '2 ', '3 ', '4 ', // macht evtl probleme mit dingen wie "1/2 Brathuhn"
 		];
 
 		$foods_title = [
-			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras', 'Aloo Palak', 'Chicken Masala', 'Beef Bhuna',
-			'Tarka Dal', 'Chicken Vindaloo', 'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas', 'Butter Chicken',
-			'Chicken Makhani', 'Fish Masala', 'Zucchini Curry', 'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
-			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri', 'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri',
+			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras',
+			'Aloo Palak', 'Chicken Masala', 'Beef Bhuna', 'Tarka Dal', 'Chicken Vindaloo',
+			'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas',
+			'Butter Chicken', 'Chicken Makhani', 'Fish Masala', 'Zucchini Curry',
+			'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
+			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
+			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
+			'Fish Goa',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
@@ -553,8 +563,9 @@ abstract class FoodGetterVenue {
 			$food = cleanText($food);
 			//error_log($food);
 
-			if (empty($food))
+			if (empty($food)) {
 				continue;
+			}
 
 			// price entry
 			if (
@@ -574,12 +585,12 @@ abstract class FoodGetterVenue {
 			// keywords indicating free day, increase foodCount day
 			if ($use_weekday_feature && $this->get_holiday_count($food) != 0) {
 				// current day is free day
-				if ($foodCount == $weekday)
+				if ($foodCount == $weekday) {
 					return VenueStateSpecial::Urlaub;
+				}
 				$foodCount++;
-			}
 			// nothing/too less found or keywords indicating noise
-			else if (
+			} else if (
 				!stringsExist($food, $number_markers) &&
 				(mb_strlen($food) <= 5 ||
 					mb_strlen(count_chars($food, 3)) <= 5 ||
@@ -592,26 +603,25 @@ abstract class FoodGetterVenue {
 			) {
 				//error_log("skip ${food}");
 				continue;
-			}
 			// keywords indicating end
-			else if (
+			} else if (
 				!$foodDone &&
 				stringsExist($food, [ 'Allergen', 'Tisch reservieren', 'Menü:' ]) || ($end_on_friday && stringsExist($food, [ 'Freitag' ]))
 			) {
 				//error_log("done on ${food}");
 				$foodDone = true;
-			}
 			// first part of menu (soup)
-			else if (
+			} else if (
 				!$foodDone &&
+				//empty($data) && // does unfortunately not work with the weekday independantly
 				$this->get_starter_count($food) != 0
 			) {
-				if ($foodCount == $weekday || !$use_weekday_feature)
+				if ($foodCount == $weekday || !$use_weekday_feature) {
 					$data = $food;
+				}
 				$foodCount++;
-			}
 			// second part of menu
-			else if (
+			} else if (
 				!$foodDone &&
 				($foodCount == ($weekday+1) || !$use_weekday_feature) /*&&
 				!empty($data)*/ // don't use this, otherwise we need a soup
@@ -628,14 +638,18 @@ abstract class FoodGetterVenue {
 						mb_stripos($food, 'dazu') === 0 || endswith($data, 'dazu') ||
 						mb_stripos($food, 'und')  === 0 || endswith($data, 'und') ||
 						mb_stripos($food, 'auf')  === 0 || endswith($data, 'auf')
-					)
+					) {
 						$data .= ' ';
 					// we have a food part and title that is already written
-					else if (stringsExist(end(explode_by_array($newline_replacer, $data)), $foods_title) && !stringsExist($food, $foods_title))
+					} else if (
+						stringsExist(end(explode_by_array($newline_replacer, $data)), $foods_title)
+						&& !stringsExist($food, $foods_title)
+					) {
 						$data .= ': ';
 					// use default newline replacer
-					else
+					} else {
 						$data .= $newline_replacer;
+					}
 				}
 				$data .= $food;
 			}
@@ -694,13 +708,66 @@ abstract class FoodGetterVenue {
 		//return error_log($data) && false;
 
 		// check if holiday
-		if ($this->get_holiday_count($data))
+		if ($this->get_holiday_count($data)) {
 			return VenueStateSpecial::Urlaub;
+		}
 
 		return cleanText($data);
 	}
 
 	protected function parse_foods_independant_from_days($dataTmp, $newline_replacer, &$prices = null, $end_on_friday = true, $one_price_per_food = true) {
 		return $this->parse_foods_helper($dataTmp, $newline_replacer, $prices, $end_on_friday, $one_price_per_food, true);
+	}
+
+	protected function mensa_menu_get($dataTmp, $title_search, $timestamp, $need_starter, &$price_return=null) {
+		$title_pos = strrpos($dataTmp, $title_search);
+		if ($title_pos === false) {
+			return null;
+		}
+		$posStart = strnposAfter($dataTmp, 'menu-item-text">', $title_pos, date('N', $timestamp));
+		if ($posStart === false) {
+			return null;
+		}
+
+		$posEnd = mb_stripos($dataTmp, '</div>', $posStart);
+		$data = mb_substr($dataTmp, $posStart, $posEnd - $posStart);
+		$data = strip_tags($data, '<br>');
+		//return error_log($data);
+
+		// remove multiple newlines
+		$data = preg_replace("/(\n)+/i", "\n", $data);
+		$data = trim($data);
+		// split per new line
+		$foods = explode("\n", $data);
+		//return print_r(error_log($data), true);
+
+		$data = null;
+		$cnt = 1;
+		foreach ($foods as $food) {
+			$food = cleanText($food);
+			if (!empty($food)) {
+				if ($cnt == 1) {
+					$data .= $food;
+				} else if (
+					($cnt == 2 && mb_stripos($data, 'suppe') !== false) || // suppe, xx
+					$cnt == count($foods) // xx, dessert
+				) {
+					$data .= ", $food";
+				} else if (strpos($food, '€') !== false) {
+					if ($price_return !== null) {
+						$price_return = $food;
+					}
+				} else {
+					$data .= " $food";
+				}
+				$cnt++;
+			}
+		}
+
+		if ($need_starter && $this->get_starter_count($data) === 0) {
+			$data = $price_return = null;
+		}
+
+		return empty($data) ? '-' : $data;
 	}
 }
