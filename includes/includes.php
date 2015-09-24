@@ -244,7 +244,7 @@ function cleanText($text) {
 	$text = str_replace([ '–' ], '-', $text);
 
 	// completely remove dirty chars
-	$text = str_replace([ '¸' ], '', $text);
+	$text = str_replace([ '¸', '' ], '', $text);
 
 	// strip invalid chars
 	$text = strip_invalid_chars($text);
@@ -263,7 +263,7 @@ function cleanText($text) {
 	foreach ($words_trim as $word) {
 		// remove word on beginning after numbering
 		// e.g. "2. oder Kabeljaufilet" => "2. Kabeljaufilet"
-		$text = preg_replace("/([0-9]*)([\. ]*)(${word})/", '${1}${2}', $text);
+		$text = preg_replace("/([0-9]+)([\. ]*)(${word})/", '${1}${2}', $text);
 		// remove word on ending
 		$text = preg_replace("/(${word})(\n)/", '${2}', $text);
 	}
