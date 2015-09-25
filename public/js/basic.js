@@ -463,8 +463,9 @@ function vote_settings_save() {
 }
 
 function emoji_update() {
-	// handle emoji replaces
-	$('.convert-emoji').each(function() {
+	// handle missing emoji replaces
+	$('.convert-emoji').not('[data-emoji-converted]').each(function() {
+		$(this).attr('data-emoji-converted', true);
 		$(this).html(emojione.toImage($(this).html()));
 	});
 }

@@ -81,27 +81,32 @@ abstract class FoodGetterVenue {
 	private function get_ajax_venue_code($date_GET, $cache = true) {
 		$cache = $cache ? 'true' : 'false';
 		return '
-			$.ajax({
-				type: "GET",
-				url:  "/venue.php",
-				cache: ' . $cache . ',
-				data: {
-					"classname": "' . get_class($this) . '",
-					"timestamp": "' . $this->timestamp . '",
-					"dateOffset": "' . $this->dateOffset . '",
-					"date": "'. $date_GET . '"
-				},
-				success: function(result) {
-					$("#' . $this->CSSid . '_data").html(result);
-				},
-				error: function() {
-					var errMsg = $(document.createElement("span"));
-					errMsg.attr("class", "error");
-					errMsg.html("Fehler beim Abfragen der Daten :(");
-					errMsg.prepend($(document.createElement("br")));
-					$("#' . $this->CSSid . '_data").empty();
-					$("#' . $this->CSSid . '_data").append(errMsg);
-				}
+			head.ready([ "jquery" ], function() {
+				$.ajax({
+					type: "GET",
+					url:  "/venue.php",
+					cache: ' . $cache . ',
+					data: {
+						"classname": "' . get_class($this) . '",
+						"timestamp": "' . $this->timestamp . '",
+						"dateOffset": "' . $this->dateOffset . '",
+						"date": "'. $date_GET . '"
+					},
+					success: function(result) {
+						$("#' . $this->CSSid . '_data").html(result);
+						head.ready([ "basic", "emojione" ], function() {
+							emoji_update();
+						});
+					},
+					error: function() {
+						var errMsg = $(document.createElement("span"));
+						errMsg.attr("class", "error");
+						errMsg.html("Fehler beim Abfragen der Daten :(");
+						errMsg.prepend($(document.createElement("br")));
+						$("#' . $this->CSSid . '_data").empty();
+						$("#' . $this->CSSid . '_data").append(errMsg);
+					}
+				});
 			});
 		';
 	}
