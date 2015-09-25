@@ -219,7 +219,8 @@ function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_
 	return $html;
 }
 
-function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) {
+function vote_summary_html($votes, $display_menus = false, $show_js_actions = true,
+		$convert_emojis = false) {
 	global $timestamp;
 	$html = '';
 
@@ -289,6 +290,17 @@ function vote_summary_html($votes, $display_menus=false, $show_js_actions=true) 
 		$upVotes = empty($upVotes) ? '-' : implode(', ', $upVotes);
 		$downVotes = empty($downVotes) ? '-' : implode(', ', $downVotes);
 		$specialVote = empty($specialVote) ? '-' : $specialVote;
+
+		// convert emojis in special votes
+		if ($convert_emojis) {
+			require_once(__DIR__ . '/emojione/autoload.php');
+			$client = new Emojione\Client(new Emojione\Ruleset());
+			$client->ascii = true;
+			$client->imageType = 'png';
+			$client->imagePathPNG = './emojione/png/';
+			$client->sprites = false;
+			$specialVote = $client->toImage($specialVote);
+		}
 
 		$html .= "<tr style='$row_style'>
 			<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>

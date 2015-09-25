@@ -25,9 +25,9 @@ define('LOCATION_FALLBACK_LAT', 48.190341);
 define('LOCATION_FALLBACK_LNG', 16.356591);
 define('LOCATION_DEFAULT_DISTANCE', 5000);
 
-$GOOGLE_API_KEYS = array(
+$GOOGLE_API_KEYS = [
 	/* put a list of api keys here (1 is also enough) */
-);
+];
 
 $fb_app_id     = '<your fb app id>';
 $fb_app_secret = '<your fb app secret>';
@@ -45,7 +45,7 @@ define('PRIVACY_INFO', '<text>');
 
 define('ADMIN_EMAIL', '<email>');
 
-$locales = array('de_AT.UTF-8', 'de_DE.UTF-8');
+$locales = [ 'de_AT.UTF-8', 'de_DE.UTF-8' ];
 $locale_new = setlocale(LC_ALL, $locales);
 if (!in_array($locale_new, $locales))
 	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
@@ -55,13 +55,10 @@ date_default_timezone_set('Europe/Vienna');
 $voting_show_start = strtotime('08:00');
 $voting_show_end = strtotime('15:00');
 
-if (date('N') == 5)
+if (date('N') == 5) {
 	$voting_over_time = strtotime('14:00');
-else
+} else {
 	$voting_over_time = strtotime('11:50');
-
-$changelog = array(
-	//strtotime('1970-01-01') => 'New features: x & y',
-);
+}
 
 $tracking_code = "";

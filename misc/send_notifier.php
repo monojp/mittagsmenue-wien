@@ -5,7 +5,7 @@ require_once(__DIR__ . '/../includes/vote.inc.php');
 
 function wrap_in_email_html($body, $custom_userid_access_url) {
 	$css_basic = file_get_contents(__DIR__ . '/../public/css/basic.css');
-	$html  = '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
+	$html = '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
 	$html .= $body;
 	$html .= '<br />';
 	$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}' style='font-weight: bold'>{$custom_userid_access_url}</a></div>";
@@ -35,8 +35,8 @@ if (!in_array($action, $valid_actions))
 $votes = getAllVotes();
 
 // build mail headers
-$headers   = array();
-$headers[] = 'From: ' . mail_encode_utf8(META_KEYWORDS) . '<' .  SITE_FROM_MAIL . '>';
+$headers = array();
+$headers[] = 'From: ' . mail_encode_utf8(META_KEYWORDS) . '<' . SITE_FROM_MAIL . '>';
 $headers[] = "MIME-Version: 1.0";
 $headers[] = "Content-type: text/html; charset=utf-8";
 $headers[] = "X-Mailer: PHP";
@@ -48,19 +48,21 @@ $voting_over_time_print = date('H:i', $voting_over_time);
 foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) {
 	$user = ip_anonymize($ip);
 	// get user config values
-	$email           = isset($user_config['email']) ? $user_config['email'] : '';
-	$vote_reminder   = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
-	$vote_reminder   = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
+	$email = isset($user_config['email']) ? $user_config['email'] : '';
+	$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
+	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
 	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN);
 
 	// no valid email
-	if (empty($email) || $email == 'null')
+	if (empty($email) || $email == 'null') {
 		continue;
+	}
 
 	// user not voted, but wants mails only if votes => continue
-	if ($voted_mail_only && !isset($votes[$ip]))
+	if ($voted_mail_only && !isset($votes[$ip])) {
 		continue;
+	}
 
 	// get/generate custom_userid_access_url
 	$custom_userid = custom_userid_get($ip);
@@ -71,35 +73,35 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	// notify, votes exist and valid
 	if ($action == 'notify' && $votes && !empty($votes)) {
 		// build html
-		$html = vote_summary_html($votes, true, false);
+		$html = vote_summary_html($votes, true, false, true);
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
 		$html = html_compress($html);
 
 		$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
-		if (!$success)
+		if (!$success) {
 			echo "error sending email to {$email}";
-	}
+		}
 	// remind
-	else if ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
+	} else if ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
 		// build html
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
 		$html = html_compress($html);
 
 		$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
-		if (!$success)
+		if (!$success) {
 			echo "error sending email to {$email}";
-	}
+		}
 	// dryrun to check who will get emails
-	else if ($action == 'dryrun') {
-		if ($vote_reminder && !isset($votes[$ip]))
+	} else if ($action == 'dryrun') {
+		if ($vote_reminder && !isset($votes[$ip])) {
 			echo "would send a remind email to {$email}\n";
-		else if ($votes && !empty($votes))
+		} else if ($votes && !empty($votes)) {
 			echo "would send a notify email to {$email}\n";
-	}
+		}
 	// remind html output test
-	else if ($action == 'remind_html_test') {
-		$html = vote_summary_html($votes, true, false);
+	} else if ($action == 'remind_html_test') {
+		$html = vote_summary_html($votes, true, false, true);
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
 		$html = html_compress($html);
 		echo $html;
