@@ -12,7 +12,7 @@ echo "
 <div id='page_main' data-role='page'>
 	<div data-role='header'>
 		<h1>
-			" . SITE_TITLE . ', ' . getGermanDayName() . " <input type='text' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-inline='false' data-role='date' />
+			" . SITE_TITLE . ', ' . getGermanDayName() . " <input type='text' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-inline='false' data-ajax='false' data-role='date' />
 		</h1>
 		<a id='location' href='#setLocationDialog' data-role='button' data-inline='true' data-mini='true' data-icon='location'
 				data-rel='dialog' data-transition='pop' title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
