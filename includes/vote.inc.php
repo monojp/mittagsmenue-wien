@@ -297,7 +297,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 			$client = new Emojione\Client(new Emojione\Ruleset());
 			$client->ascii = true;
 			$client->imageType = 'png';
-			$client->imagePathPNG = './emojione/png/';
+			$client->imagePathPNG = SITE_URL . 'emojione/png/';
 			$client->sprites = false;
 			$specialVote = $client->toImage($specialVote);
 		}
