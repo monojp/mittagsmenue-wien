@@ -302,7 +302,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5', 'Restaurant Maria Rosa',
 			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos', 'Tien Tsin, Chinarestaurant', 'Restaurant z d 3 Buchteln',
 			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
-			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN',
+			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN', 'Lidl Österreich', 'Downunder Gastronomie', 'Cafe Konditorei Gumpendorf',
+			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime'
 		], '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
