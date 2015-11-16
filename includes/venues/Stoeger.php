@@ -3,8 +3,8 @@
 class Stoeger extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Restaurant Stöger';
-		$this->title_notifier = 'NEU';
+		$this->title = 'Restaurant Stöger';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Ramperstorffergasse 63, 1050 Wien';
 		$this->addressLat = 48.190359;
 		$this->addressLng = 16.354808;

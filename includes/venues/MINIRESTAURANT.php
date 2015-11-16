@@ -4,7 +4,7 @@ class MINIRESTAURANT extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'MINIRESTAURANT';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Marchettigasse 11, 1060 Wien';
 		$this->addressLat = 48.192327;
 		$this->addressLng = 16.349121;

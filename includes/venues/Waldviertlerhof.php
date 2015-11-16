@@ -3,17 +3,17 @@
 class Waldviertlerhof extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Waldviertlerhof';
-		//$this->title_notifier  = 'BETA';
-		$this->address           = 'Schönbrunnerstrasse 20, 1050 Wien';
-		$this->addressLat        = 48.193692;
-		$this->addressLng        = 16.358687;
-		$this->url               = 'http://www.waldviertlerhof.at/';
-		$this->dataSource        = 'http://www.waldviertlerhof.at/Mittagsmenue';
-		$this->menu              = 'http://www.waldviertlerhof.at/Speisekarte';
+		$this->title = 'Waldviertlerhof';
+		//$this->title_notifier = 'BETA';
+		$this->address = 'Schönbrunnerstrasse 20, 1050 Wien';
+		$this->addressLat = 48.193692;
+		$this->addressLng = 16.358687;
+		$this->url = 'http://www.waldviertlerhof.at/';
+		$this->dataSource = 'http://www.waldviertlerhof.at/Mittagsmenue';
+		$this->menu = 'http://www.waldviertlerhof.at/Speisekarte';
 		$this->statisticsKeyword = 'waldviertlerhof';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'Menü / Tagesteller / Fischmenü Freitag';
 
 		parent::__construct();
@@ -41,9 +41,10 @@ class Waldviertlerhof extends FoodGetterVenue {
 
 		// check menu food count
 		// 7 weil "Sonn- u. Feiertag geschlossen" im text vorkommt
-		if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) != 7 ) {
+		// UPDATE 2015-10-27: nicht mehr notwendig, da schon direkt nach wochentag gesucht wird
+		/*if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) != 7 ) {
 			return;
-		}
+		}*/
 
 		// get menu data for the chosen day
 		//$data = $this->parse_foods_independant_from_days($dataTmp, "\n", $prices, true, false);

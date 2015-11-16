@@ -531,6 +531,7 @@ abstract class FoodGetterVenue {
 
 		$number_markers = [
 			'IV.', 'III.', 'II.', 'I.',
+			'1,', '2,', '3,', '4,',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
 			'1 ', '2 ', '3 ', '4 ', // macht evtl probleme mit dingen wie "1/2 Brathuhn"
@@ -544,7 +545,7 @@ abstract class FoodGetterVenue {
 			'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
 			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
 			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
-			'Fish Goa',
+			'Fish Goa', 'Chicken Korma', 'Dal Makhani',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
