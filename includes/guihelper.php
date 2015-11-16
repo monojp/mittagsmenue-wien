@@ -39,7 +39,7 @@ function get_venues_html() {
 		//new Gondola(),
 		new RadioCafe(),
 		new Stoeger(),
-		new MINIRESTAURANT(),
+		//new MINIRESTAURANT(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
@@ -160,7 +160,7 @@ function get_footer_html() {
 		<h2>' . implode(' | ', $outputs) . '</h2>
 	</div>';
 
-	$response .= "${tracking_code}" . get_piwik_user_id_script();
+	$response .= "${tracking_code}";
 
 	return $response;
 }
@@ -215,7 +215,8 @@ function get_page_note() {
 						<label for="noteInput">
 							Notiz / <a href="http://emojione.com/" target="_blank">Emoji</a>
 						</label>
-						<input type="text" name="note" id="noteInput" title="Emojis werden durch Eingabe von \':\' gesucht/vorgeschlagen" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+						<small>Hinweis: <a href="http://emojione.com/" target="_blank">Emojis</a> werden durch Eingabe von ":" gesucht/vorgeschlagen</small>
+						<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
 						<br>
 						<span>Vorschau</span>
 						<div id="notePreview" style="margin: .5em 0"></div>
@@ -237,18 +238,6 @@ function get_special_vote_actions_html() {
 	return implode(' | ', $actions);
 }
 
-function get_piwik_user_id_script() {
-	$userId = ip_anonymize();
-	$userId = (stripos($userId, 'extern') !== false) ? null : $userId;
-	// set piwik user id via js, output html
-	return '
-		<script type="text/javascript">
-			var _paq = _paq || [];
-			_paq.push(["setUserId", "' . $userId . '"]);
-		</script>
-	';
-}
-
 function get_alt_venue_html() {
 	return "<fieldset>
 		<div id='div_voting_alt_loader'>
@@ -266,8 +255,9 @@ function get_alt_venue_html() {
 function get_vote_setting_html() {
 	global $voting_over_time;
 
-	if (!is_intern_ip())
+	if (!is_intern_ip()) {
 		return;
+	}
 
 	$ip = get_identifier_ip();
 
@@ -284,9 +274,10 @@ function get_vote_setting_html() {
 	$vote_always_show = filter_var($vote_always_show, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
 	$custom_userid_gui_output = '';
-	$custom_userid = custom_userid_get();
-	if (!$custom_userid)
+	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
+	if (!$custom_userid) {
 		$custom_userid = custom_userid_current();
+	}
 
 	// only show the custom_userid GUI intern
 	// otherwise users could lock themselves out from extern
@@ -309,7 +300,7 @@ function get_vote_setting_html() {
 			<fieldset>
 				<label for="name">Benutzername</label>
 				<p>
-					<input type="text" name="name" id="name" value="' . ip_anonymize() . '" style="width: 100%" />
+					<input type="text" name="name" id="name" value="' . ip_anonymize($ip, $user_config) . '" style="width: 100%" />
 				</p>
 			</fieldset>
 			<br>

@@ -46,7 +46,7 @@ $voting_over_time_print = date('H:i', $voting_over_time);
 
 // loop user configs and send emails
 foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) {
-	$user = ip_anonymize($ip);
+	$user = ip_anonymize($ip, $user_config);
 	// get user config values
 	$email = isset($user_config['email']) ? $user_config['email'] : '';
 	$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
@@ -65,9 +65,10 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	}
 
 	// get/generate custom_userid_access_url
-	$custom_userid = custom_userid_get($ip);
-	if (!$custom_userid)
+	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
+	if (!$custom_userid) {
 		$custom_userid = custom_userid_generate($ip);
+	}
 	$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
 
 	// notify, votes exist and valid

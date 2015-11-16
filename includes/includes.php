@@ -305,18 +305,25 @@ function array_occurence_count($needle, $haystack) {
 	}
 	return $counter;
 }
-function get_identifier_ip() {
-	$ip = custom_userid_original_ip();
-	if (!$ip && isset($_SERVER['REMOTE_ADDR']))
+function get_identifier_ip($user_config = null) {
+	if ( !$user_config && ($custom_userid = custom_userid_current()) ) {
+		$user_config = UserHandler_MySql::getInstance()->get(null, custom_userid_current());
+		$user_config = (is_array($user_config) && count($user_config) == 1) ? reset($user_config) : null;
+	}
+
+	$ip = isset($user_config['ip']) ? $user_config['ip'] : null;
+	if (!$ip && isset($_SERVER['REMOTE_ADDR'])) {
 		$ip = $_SERVER['REMOTE_ADDR'];
+	}
 	return $ip;
 }
-function is_intern_ip() {
+function is_intern_ip($user_config = null) {
 	//return true; // DEBUG
-	$ip = get_identifier_ip();
+	$ip = get_identifier_ip($user_config);
 	$allow_voting_ip_prefix = ALLOW_VOTING_IP_PREFIX;
-	if (empty($allow_voting_ip_prefix) || mb_strpos($ip, $allow_voting_ip_prefix) === 0)
+	if (empty($allow_voting_ip_prefix) || mb_strpos($ip, $allow_voting_ip_prefix) === 0) {
 		return true;
+	}
 	return false;
 }
 function show_voting() {
@@ -800,27 +807,32 @@ function date_from_offset($offset) {
 }*/
 
 // gets an anonymized name of an ip
-function ip_anonymize($ip = null) {
-	if (!$ip)
+function ip_anonymize($ip = null, $user_config = null) {
+	if (!$ip) {
 		$ip = get_identifier_ip();
+	}
 
-	$user_config = UserHandler_MySql::getInstance()->get($ip);
-	$user_config = is_array($user_config) ? reset($user_config) : null;
+	if (!$user_config) {
+		$user_config = UserHandler_MySql::getInstance()->get($ip);
+		$user_config = (is_array($user_config) && count($user_config) == 1) ? reset($user_config) : null;
+	}
 
 	// do ip <=> name stuff
 	// anonymyze ip
 	$ip_parts = explode('.', $ip);
 	$ipLast = end($ip_parts);
-	for ($i=0; $i<count($ip_parts)-1; $i++)
+	for ($i=0; $i<count($ip_parts)-1; $i++) {
 		$ip_parts[$i] = 'x';
+	}
 	$ipPrint = implode('.', $ip_parts);
 	// set username
-	if (isset($user_config['name']))
+	if (isset($user_config['name'])) {
 		$ipPrint = $user_config['name'];
-	else if (is_intern_ip())
+	} else if (is_intern_ip()) {
 		$ipPrint = 'Guest_' . $ipLast;
-	else
+	} else {
 		$ipPrint = 'Unknown/extern IP, check config';
+	}
 
 	return $ipPrint;
 }
