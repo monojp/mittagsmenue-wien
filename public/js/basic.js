@@ -468,11 +468,13 @@ function vote_settings_save() {
 	});
 }
 
+// handle missing emoji replaces
 function emoji_update() {
-	// handle missing emoji replaces
-	$('.convert-emoji').not('[data-emoji-converted]').each(function() {
-		$(this).attr('data-emoji-converted', true);
-		$(this).html(emojione.toImage($(this).html()));
+	head.ready([ 'emojione' ], function() {
+		$('.convert-emoji').not('[data-emoji-converted]').each(function() {
+			$(this).attr('data-emoji-converted', true);
+			$(this).html(emojione.toImage($(this).html()));
+		});
 	});
 }
 
