@@ -6,6 +6,8 @@ var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
 var init_done = false;
 var init_max_delay = 30000;
+var nearplace_radius_default = 500;
+var nearplace_radius_max_default = 1000;
 
 var SHOW_DETAILS_MIN_WIDTH = 800;
 
@@ -52,15 +54,19 @@ function vote_helper(action, identifier, note, try_count) {
 	// ajax call
 	$.ajax({
 		type: 'POST',
-		url:  '/vote.php',
+		url: '/vote.php',
 		data: {
-			'action'     : action,
-			'identifier' : identifier,
-			'note'       : note,
-			'userid'     : $('#userid').html(),
-			'date'       : $('#date').val()
+			'action': action,
+			'identifier': identifier,
+			'note': note,
+			'userid': $('#userid').html(),
+			'date': $('#date').val(),
+			'lat': $('#lat').html(),
+			'lng': $('#lng').html(),
+			'radius': nearplace_radius_default,
+			'sensor': (typeof navigator.geolocation != 'undefined')
 		},
-		dataType: "json",
+		dataType: 'json',
 		success: function(result) {
 
 			// increase interval multiplier to reduce server load
@@ -110,7 +116,7 @@ function vote_helper(action, identifier, note, try_count) {
 			if (try_count < ajax_retry_count_max) {
 				window.setTimeout(function() { vote_helper(action, identifier, note, try_count+1) }, (Math.random()*ajax_retry_time_max)+1);
 			} else {
-				alert('Fehler beim Setzen des Votes.');
+				alert('Fehler beim Abfragen/Setzen der Votes.');
 			}
 		}
 	});
@@ -163,10 +169,10 @@ function positionHandler(position) {
 
 	// get address via ajax
 	$.ajax({
-		type: "GET",
-		url:  '/locator.php',
-		data: { "action": "latlngToAddress", "lat": lat, "lng": lng, 'userid' : $('#userid').html()},
-		dataType: "json",
+		type: 'GET',
+		url: '/locator.php',
+		data: { 'action': 'latlngToAddress', 'lat': lat, 'lng': lng, 'userid' : $('#userid').html()},
+		dataType: 'json',
 		success: function(result) {
 
 			if (result && typeof result.address != 'undefined' && result.address) {
@@ -270,10 +276,10 @@ function setLocation(location, force_geolocation, try_count) {
 
 	// get lat / lng via ajax
 	$.ajax({
-		type: "GET",
-		url:  '/locator.php',
-		data: { "action": "addressToLatLong", "address": location, 'userid' : $('#userid').html()},
-		dataType: "json",
+		type: 'GET',
+		url: '/locator.php',
+		data: { 'action': 'addressToLatLong', 'address': location, 'userid' : $('#userid').html()},
+		dataType: 'json',
 		success: function(result) {
 
 			if (result && typeof result.lat != 'undefined' && result.lat && typeof result.lng != 'undefined' && result.lng) {
@@ -371,13 +377,13 @@ function updateNotePreview() {
 function handle_href_reference_details(id, reference, name, try_count) {
 	$.ajax({
 		type: 'GET',
-		url:  '/nearplaces.php',
+		url: '/nearplaces.php',
 		data: {
-			'action'    : 'details',
-			'id'        : id,
-			'reference' : reference,
-			'sensor'    : (typeof navigator.geolocation != 'undefined'),
-			'userid'    : $('#userid').html()
+			'action': 'details',
+			'id': id,
+			'reference': reference,
+			'sensor': (typeof navigator.geolocation != 'undefined'),
+			'userid': $('#userid').html()
 		},
 		dataType: 'json',
 		async: false,
@@ -408,18 +414,18 @@ function handle_href_reference_details(id, reference, name, try_count) {
 function get_alt_venues(lat, lng, radius, radius_max, success_function, try_count) {
 	$.ajax({
 		type: 'GET',
-		url:  '/nearplaces.php',
+		url: '/nearplaces.php',
 		data: {
-			'action'     : 'nearbysearch_staged', // takes so long, is it worth it?
-			//'action'     : 'nearbysearch_full',
-			'lat'        : lat,
-			'lng'        : lng,
-			'radius'     : radius,
-			'radius_max' : radius_max,
-			'sensor'     : (typeof navigator.geolocation != 'undefined'),
-			'userid'     : $('#userid').html()
+			'action': 'nearbysearch_staged', // takes so long, is it worth it?
+			//'action': 'nearbysearch_full',
+			'lat': lat,
+			'lng': lng,
+			'radius': radius,
+			'radius_max': radius_max,
+			'sensor': (typeof navigator.geolocation != 'undefined'),
+			'userid': $('#userid').html()
 		},
-		dataType: "json",
+		dataType: 'json',
 		success: function(result) {
 			if (typeof result.alert != 'undefined') {
 				alert(result.alert);
@@ -493,17 +499,6 @@ function init() {
 	if (ie_version && ie_version <= 8) {
 		alert('Bitte neueren Internet Explorer verwenden!');
 	}
-
-	// show latest changelog if not seen yet
-	// TODO currently not working with jquery mobile, but maybe not needed
-	/*var changelog_latest = $('#changelog_latest').html();
-	if ($('#changelog').length && $.cookie('changelog_latest') != changelog_latest) {
-		$('#changelog').dialog({title:"Changelog",modal: true,buttons:[{text:'Ok',click:function(){$(this).dialog('close');}}]});
-		$.cookie('changelog_latest', changelog_latest);
-		// piwik track
-		if (typeof _paq != 'undefined')
-			_paq.push(['trackEvent', 'Changelog', 'shown', changelog_latest]);
-	}*/
 
 	// location ready event
 	var locationReadyFired = false;
@@ -606,9 +601,9 @@ function init() {
 			$('#table_voting_alt').hide();
 			$('#div_voting_alt_loader').show();
 
-			// get venues in 500 - 1000 distance radius
+			// get venues in default defined distance radius
 			var results = new Array();
-			get_alt_venues(lat, lng, 500, 1000, function (results) {
+			get_alt_venues(lat, lng, nearplace_radius_default, nearplace_radius_max_default, function (results) {
 				// destroy old table
 				if ($.fn.DataTable.isDataTable('#table_voting_alt'))
 					$('#table_voting_alt').dataTable().fnDestroy();

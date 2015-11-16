@@ -6,7 +6,7 @@ require_once('../includes/vote.inc.php');
 global $voting_over_time;
 
 if (!is_intern_ip()) {
-	exit(json_encode([ 'alert' => js_message_prepare('Zugriff verweigert!') ]));
+	exit(json_encode([ 'alert' => js_message_prepare('access denied') ]));
 }
 
 // check identifier if valid vote
@@ -24,7 +24,7 @@ if ($action == 'vote_delete') {
 	check_voting_time();
 
 	if (!$identifier) {
-		exit(json_encode([ 'alert' => js_message_prepare('Es wurde kein Identifier angegeben!') ]));
+		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
 	VoteHandler_MySql::getInstance($timestamp)->delete(date(VOTE_DATE_FORMAT, $timestamp),
@@ -33,8 +33,8 @@ if ($action == 'vote_delete') {
 } else if (in_array($action, [ 'vote_up', 'vote_down' ])) {
 	check_voting_time();
 
-	if (!$identifier) {
-		exit(json_encode([ 'alert' => js_message_prepare('Es wurde kein Identifier angegeben!') ]));
+	if (!$identifier || !in_array($identifier, $votes_valid_normal)) {
+		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
 	$vote = ($action == 'vote_up') ? 'up' : 'down';
@@ -50,8 +50,8 @@ if ($action == 'vote_delete') {
 } else if ($action == 'vote_special') {
 	check_voting_time();
 
-	if (!$identifier) {
-		exit(json_encode([ 'alert' => js_message_prepare('Es wurde kein Identifier angegeben!') ]));
+	if (!$identifier || !in_array($identifier, $votes_valid_special)) {
+		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
 	$votes['venue'][$ip]['special'] = $identifier;
@@ -90,7 +90,7 @@ if ($action == 'vote_delete') {
 				'special', $note);
 	}
 } else if ($action != 'vote_get') {
-	exit(json_encode([ 'alert' => js_message_prepare('Es wurde keine gültige Aktion übertragen!') ]));
+	exit(json_encode([ 'alert' => js_message_prepare('invalid action') ]));
 }
 
 // return all votes

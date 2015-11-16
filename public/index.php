@@ -53,20 +53,5 @@ if (!isset($_GET['minimal'])) {
 	echo get_page_note();
 }
 
-//echo '<div style="clear: both"></div>';
-
-// changelog
-if (!empty($changelog)) {
-	echo '<div id="changelog" style="display: none; max-height: 15em ! important;">';
-	krsort($changelog);
-	foreach ($changelog as $time => $entry) {
-		$time  = date('Y-m-d', $time);
-		$entry = htmlspecialchars($entry);
-		echo "<h4 style='margin:.5em 0;'>${time}</h4><div>${entry}</div>";
-	}
-	echo '<div id="changelog_latest" style="display: none;">' . reset(array_keys($changelog)) . '</div>';
-	echo '</div>';
-}
-
 // close html
 echo "</body></html>";

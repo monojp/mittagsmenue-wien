@@ -7,6 +7,25 @@ require_once(__DIR__ . '/VoteHandler_MySql.php');
 define('VOTE_NOTE_MAX_LENGTH', 128);
 define('VOTE_DATE_FORMAT', 'Y-m-d');
 
+$votes_valid_special = [ 'Verweigerung', 'Egal' ];
+$votes_valid_normal = [ 'AltesFassl', 'CafeAmacord', 'Ausklang', 'CoteSud', 'DeliciousMonster',
+		'FalkensteinerStueberl', 'Gondola', 'HaasBeisl', 'Lambrecht', 'MINIRESTAURANT',
+		'MensaFreihaus', 'MensaSchroedinger', 'NamNamDeli', 'RadioCafe', 'SchlossquadratMargareta',
+		'SchlossquadratSilberwirt', 'Stoeger', 'TasteOfIndia', 'Waldviertlerhof', 'Woracziczky' ];
+
+// add nearplace results to valid normal votes
+// we just want to prevent that users can set anything here
+$lat = get_var('lat');
+$lng = get_var('lng');
+$api_results = nearbysearch_full($lat, $lng, get_var('radius'), get_var('sensor'));
+$nearplaces = build_response($lat, $lng, $api_results);
+foreach ($nearplaces as $nearplace) {
+	if (empty($nearplace['name'])) {
+		continue;
+	}
+	$votes_valid_normal[] = $nearplace['name'];
+}
+
 function ip_username_sort($a, $b) {
 	$a_real = ip_anonymize($a);
 	$b_real = ip_anonymize($b);
@@ -265,7 +284,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 
 		$upVotes_style = empty($upVotes) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; color: #008000;';
 		$downVotes_style = empty($downVotes) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; color: #FF0000;';
-		$specialVote_style = empty($specialVote) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; text-align: left;';
+		$specialVote_style = empty($specialVote) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; text-align: center;';
 
 		$upVotes = votes_adapt($upVotes, $user, $show_js_actions, $upVotes_style);
 		$downVotes = votes_adapt($downVotes, $user, $show_js_actions, $downVotes_style);
@@ -282,7 +301,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				$specialVote = '<a href="#setNoteDialog" data-rel="dialog" data-transition="pop" class="ui-link">Notiz</a>';
 			}
 		// otherwise => add "me too" functionality
-		} else if ($show_js_actions && !empty($specialVote)) {
+		} else if ($show_js_actions && !empty($specialVote) && in_array($specialVote, $votes_valid_special)) {
 			$specialVote .= " <sup title='Selbiges voten'><a href='javascript:void(0)' onclick='vote_special(\"{$specialVote}\")' style='color: red ! important'>+1</a></sup>";
 		}
 
