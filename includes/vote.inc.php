@@ -13,19 +13,6 @@ $votes_valid_normal = [ 'AltesFassl', 'CafeAmacord', 'Ausklang', 'CoteSud', 'Del
 		'MensaFreihaus', 'MensaSchroedinger', 'NamNamDeli', 'RadioCafe', 'SchlossquadratMargareta',
 		'SchlossquadratSilberwirt', 'Stoeger', 'TasteOfIndia', 'Waldviertlerhof', 'Woracziczky' ];
 
-// add nearplace results to valid normal votes
-// we just want to prevent that users can set anything here
-$lat = get_var('lat');
-$lng = get_var('lng');
-$api_results = nearbysearch_full($lat, $lng, get_var('radius'), get_var('sensor'));
-$nearplaces = build_response($lat, $lng, $api_results);
-foreach ($nearplaces as $nearplace) {
-	if (empty($nearplace['name'])) {
-		continue;
-	}
-	$votes_valid_normal[] = $nearplace['name'];
-}
-
 function ip_username_sort($a, $b) {
 	$a_real = ip_anonymize($a);
 	$b_real = ip_anonymize($b);
@@ -240,7 +227,7 @@ function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_
 
 function vote_summary_html($votes, $display_menus = false, $show_js_actions = true,
 		$convert_emojis = false) {
-	global $timestamp;
+	global $timestamp, $votes_valid_special;
 	$html = '';
 
 	// no votes yet

@@ -9,6 +9,19 @@ if (!is_intern_ip()) {
 	exit(json_encode([ 'alert' => js_message_prepare('access denied') ]));
 }
 
+// add nearplace results to valid normal votes
+// we just want to prevent that users can set anything here
+$lat = get_var('lat');
+$lng = get_var('lng');
+$api_results = nearbysearch_full($lat, $lng, get_var('radius'), get_var('sensor'));
+$nearplaces = build_response($lat, $lng, $api_results);
+foreach ($nearplaces as $nearplace) {
+	if (empty($nearplace['name'])) {
+		continue;
+	}
+	$votes_valid_normal[] = $nearplace['name'];
+}
+
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
 $ip = get_identifier_ip();
