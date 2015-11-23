@@ -216,7 +216,7 @@ function get_page_note() {
 							Notiz / <a href="http://emojione.com/" target="_blank">Emoji</a>
 						</label>
 						<small>Hinweis: <a href="http://emojione.com/" target="_blank">Emojis</a> werden durch Eingabe von ":" gesucht/vorgeschlagen</small>
-						<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" style="width: 20em" />
+						<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" />
 						<br>
 						<span>Vorschau</span>
 						<div id="notePreview" style="margin: .5em 0"></div>
