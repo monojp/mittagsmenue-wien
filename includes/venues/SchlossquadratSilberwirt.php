@@ -3,16 +3,16 @@
 class SchlossquadratSilberwirt extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Silberwirt';
-		$this->address           = 'Schloßgasse 21, 1050 Wien';
-		$this->addressLat        = 48.191094;
-		$this->addressLng        = 16.3593266;
-		$this->url               = 'http://www.silberwirt.at/';
-		$this->dataSource        = 'http://www.silberwirt.at/pdf.php?days=23';
-		$this->menu              = 'http://www.silberwirt.at/fileadmin/files/silberwirt/pdf/KaSilber150501.pdf';
+		$this->title = 'Silberwirt';
+		$this->address = 'Schloßgasse 21, 1050 Wien';
+		$this->addressLat = 48.191094;
+		$this->addressLng = 16.3593266;
+		$this->url = 'http://www.silberwirt.at/';
+		$this->dataSource = 'http://www.silberwirt.at/pdf.php?days=23';
+		$this->menu = 'http://www.silberwirt.at/fileadmin/files/silberwirt/pdf/KaSilber151001.pdf';
 		$this->statisticsKeyword = 'silberwirt';
-		$this->no_menu_days      = [ 0 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -41,16 +41,18 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = pdftohtml($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		$dataTmp = html_clean($dataTmp);
 
 		// get menu data for the chosen day
 		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1));
-		if (!$dataTmp || is_numeric($dataTmp))
+		if (!$dataTmp || is_numeric($dataTmp)) {
 			return ($this->data = $dataTmp);
+		}
 		//return error_log($dataTmp);
 
 		// get and set price

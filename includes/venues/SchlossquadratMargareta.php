@@ -3,16 +3,16 @@
 class SchlossquadratMargareta extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Margareta';
-		$this->address           = 'Margaretenplatz 2, 1050 Wien';
-		$this->addressLat        = 48.1916491;
-		$this->addressLng        = 16.3588115;
-		$this->url               = 'http://www.margareta.at/';
-		$this->dataSource        = 'http://www.margareta.at/pdf.php?days=23';
-		$this->menu              = 'http://www.margareta.at/fileadmin/files/margareta/pdf/KAMargareta150501.pdf';
+		$this->title = 'Margareta';
+		$this->address = 'Margaretenplatz 2, 1050 Wien';
+		$this->addressLat = 48.1916491;
+		$this->addressLng = 16.3588115;
+		$this->url = 'http://www.margareta.at/';
+		$this->dataSource = 'http://www.margareta.at/pdf.php?days=23';
+		$this->menu = 'http://www.margareta.at/fileadmin/files/margareta/pdf/KAMargareta151001.pdf';
 		$this->statisticsKeyword = 'margareta';
-		$this->no_menu_days      = [ 0 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -39,16 +39,18 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = pdftohtml($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		$dataTmp = html_clean($dataTmp);
 
 		// get menu data for the chosen day
 		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), [], ' ');
-		if (!$dataTmp || is_numeric($dataTmp))
+		if (!$dataTmp || is_numeric($dataTmp)) {
 			return ($this->data = $dataTmp);
+		}
 		//return error_log($dataTmp);
 
 		// get and set price
