@@ -216,10 +216,10 @@ abstract class FoodGetterVenue {
 						$price = array_filter($price);
 						if (count($price) > 1) {
 							$price_imploded = implode(' / ', $price);
-							$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}<br>{$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
-						}
-						else if (!empty($price))
+							$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}: {$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
+						} else if (!empty($price)) {
 							$price = '<span>' . reset($price) . '</span>';
+						}
 					}
 				}
 				// remove empty values
