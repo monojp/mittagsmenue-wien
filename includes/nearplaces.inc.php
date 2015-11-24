@@ -93,6 +93,18 @@ $custom_venues = [
 		'name' => 'Chinazentrum',
 		'website' => 'http://www.chinazentrum-naschmarkt.at/',
 		'reference' => -1,
+	],
+	[
+		'id' => -8,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.192134,
+				'lng' => 16.356006,
+			],
+		],
+		'name' => 'New Point',
+		'website' => 'http://www.newpointrestaurant.at/',
+		'reference' => -1,
 	]
 ];
 
