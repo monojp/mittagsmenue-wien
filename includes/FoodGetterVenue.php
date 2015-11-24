@@ -521,7 +521,10 @@ abstract class FoodGetterVenue {
 		return $this->parse_foods_helper($data, $newline_replacer);
 	}
 
-	private function parse_foods_helper($dataTmp, $newline_replacer, &$prices = [], $end_on_friday = true, $one_price_per_food = true, $use_weekday_feature = false) {
+	private function parse_foods_helper($dataTmp, $newline_replacer, &$prices = [],
+			$end_on_friday = true, $one_price_per_food = true, $use_weekday_feature = false,
+			$check_holiday_counts = true
+	) {
 		$data = null;
 		$foodCount = 0; // 0 is monday, 6 is sunday
 		$weekday = date('w', $this->timestamp) - 1;
@@ -548,7 +551,7 @@ abstract class FoodGetterVenue {
 			'Fish Goa', 'Chicken Korma', 'Dal Makhani',
 		];
 
-		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
+		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
 
 		// remove multiple newlines
 		$dataTmp = preg_replace("/(\n)+/i", "\n", $dataTmp);
@@ -589,7 +592,9 @@ abstract class FoodGetterVenue {
 			}
 
 			// keywords indicating free day, increase foodCount day
-			if ($use_weekday_feature && $this->get_holiday_count($food) != 0) {
+			if ($use_weekday_feature && $check_holiday_counts
+					&& $this->get_holiday_count($food) != 0
+			) {
 				// current day is free day
 				if ($foodCount == $weekday) {
 					return VenueStateSpecial::Urlaub;
@@ -602,9 +607,13 @@ abstract class FoodGetterVenue {
 					mb_strlen(count_chars($food, 3)) <= 5 ||
 					stringsExist($food, [
 						'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'montag',
-						'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag', 'gilt in', 'uhr', 'schanigarten',
-						'bieten', 'fangfrisch', 'ambiente', 'reichhaltig', 'telefonnummer', 'willkommen',
-						'freundlich', 'donnerstag', 'kleistgasse', 'tcpdf',
+						'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag',
+						'gilt in', 'uhr', 'schanigarten', 'bieten', 'fangfrisch', 'ambiente',
+						'reichhaltig', 'telefonnummer', 'willkommen', 'freundlich', 'donnerstag',
+						'kleistgasse', 'tcpdf', 'take away', 'über die gasse', 'konsumation',
+						'nur im haus', 'sehr geehrte', 'alle jahre wieder', 'location', 'feier',
+						'unterstützen', 'angebote', 'grüße', 'team', 'gerne', 'termin', 'details',
+						'anspruch', 'nummer',
 					], true))
 			) {
 				//error_log("skip ${food}");
@@ -714,15 +723,19 @@ abstract class FoodGetterVenue {
 		//return error_log($data) && false;
 
 		// check if holiday
-		if ($this->get_holiday_count($data)) {
+		if ($check_holiday_counts && $this->get_holiday_count($data)) {
 			return VenueStateSpecial::Urlaub;
 		}
 
 		return cleanText($data);
 	}
 
-	protected function parse_foods_independant_from_days($dataTmp, $newline_replacer, &$prices = null, $end_on_friday = true, $one_price_per_food = true) {
-		return $this->parse_foods_helper($dataTmp, $newline_replacer, $prices, $end_on_friday, $one_price_per_food, true);
+	protected function parse_foods_independant_from_days($dataTmp, $newline_replacer,
+			&$prices = null, $end_on_friday = true, $one_price_per_food = true,
+			$check_holiday_counts = true
+	) {
+		return $this->parse_foods_helper($dataTmp, $newline_replacer, $prices, $end_on_friday,
+				$one_price_per_food, true, $check_holiday_counts);
 	}
 
 	protected function mensa_menu_get($dataTmp, $title_search, $timestamp, $need_starter, &$price_return=null) {
