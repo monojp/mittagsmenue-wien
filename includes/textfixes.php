@@ -104,4 +104,5 @@ $searchReplace = array(
 	'Rieltte' => 'Rillette',
 	'von Schwein' => 'vom Schwein',
 	'Nuß' => 'Nuss',
+	'tagessuppe oder salat & dessert' => '(tagessuppe | salat) & dessert'
 );
