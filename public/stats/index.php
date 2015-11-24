@@ -165,7 +165,9 @@ else {
 }
 
 echo '<br />';
-echo '<small>Abfrage erfolgte in ' . round($diff, 2) . ' Sekunden</small>';
+if (!empty($diff)) {
+	echo '<small>Abfrage erfolgte in ' . round($diff, 2) . ' Sekunden</small>';
+}
 
 ?>
 <script type="text/javascript">
