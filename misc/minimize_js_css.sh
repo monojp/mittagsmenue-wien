@@ -12,13 +12,9 @@ sed -i.bak s/-moz-//g $CSSDIR/basic.css && rm "${CSSDIR}/basic.css.bak"
 sed -i.bak s/-o-//g $CSSDIR/basic.css && rm "${CSSDIR}/basic.css.bak"
 
 # minimize css
-java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/../datepicker/jquery.mobile.datepicker.css -o $CSSDIR/../datepicker/jquery.mobile.datepicker.min.css
-java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/../datepicker/jquery.mobile.datepicker.theme.css -o $CSSDIR/../datepicker/jquery.mobile.datepicker.theme.min.css
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/throbber.css -o $CSSDIR/throbber.min.css
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type css $CSSDIR/basic.css -o $CSSDIR/basic.min.css
 
 # minimize js
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/head.load.js -o $JSDIR/head.load.min.js
-java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/../datepicker/datepicker.js -o $JSDIR/../datepicker/datepicker.min.js
-java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/../datepicker/jquery.mobile.datepicker.js -o $JSDIR/../datepicker/jquery.mobile.datepicker.min.js
 java -jar $BASEDIR/yuicompressor-2.4.8.jar --type js $JSDIR/basic.js -o $JSDIR/basic.min.js

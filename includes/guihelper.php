@@ -62,13 +62,9 @@ function get_header_html() {
 			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
 	// basic css and javascript
-	$mobile_datepicker_css       = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.css' : '/datepicker/jquery.mobile.datepicker.css';
-	$mobile_datepicker_theme_css = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.theme.min.css' : '/datepicker/jquery.mobile.datepicker.theme.css';
 	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
 	$basic_css = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
 	$head_load_js = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js' : '/js/head.load.js';
-	$datepicker_js = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/datepicker.min.js' : '/datepicker/datepicker.js';
-	$mobile_datepicker_js = USE_MINIMZED_JS_CSS_HTML ? '/datepicker/jquery.mobile.datepicker.min.js' : '/datepicker/jquery.mobile.datepicker.js';
 	$basic_js = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js' : '/js/basic.js';
 
 	// css
@@ -76,8 +72,6 @@ function get_header_html() {
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($basic_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($mobile_datepicker_css) . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($mobile_datepicker_theme_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.textcomplete.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/emojione.min.css') . '" />
@@ -94,8 +88,6 @@ function get_header_html() {
 					});
 					head.load([
 						{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
-						{datepicker: "' . cacheSafeUrl($datepicker_js) . '"},
-						{mobile_datepicker: "' . cacheSafeUrl($mobile_datepicker_js) . '"},
 						{basic: "' . cacheSafeUrl($basic_js) . '"},
 						{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
 						{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
