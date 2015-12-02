@@ -4,7 +4,7 @@ class Gondola extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Gondola';
-		$this->title_notifier = 'WIEDERAUFERSTANDEN';
+		//$this->title_notifier = 'WIEDERAUFERSTANDEN';
 		$this->address = 'Schönbrunnerstraße 70, 1050 Wien';
 		$this->addressLat = 48.189628;
 		$this->addressLng = 16.352214;
