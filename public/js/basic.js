@@ -64,6 +64,7 @@ function vote_helper(action, identifier, note, try_count) {
 			'lat': $('#lat').html(),
 			'lng': $('#lng').html(),
 			'radius': nearplace_radius_default,
+			'radius_max': nearplace_radius_max_default,
 			'sensor': (typeof navigator.geolocation != 'undefined')
 		},
 		dataType: 'json',

@@ -11,12 +11,17 @@ if (!is_intern_ip()) {
 
 // add nearplace results to valid normal votes
 // we just want to prevent that users can set anything here
-$lat = get_var('lat');
-$lng = get_var('lng');
-$api_results = nearbysearch_full($lat, $lng, get_var('radius'), get_var('sensor'));
+$lat = is_var('lat') ? get_var('lat') : LOCATION_FALLBACK_LAT;
+$lng = is_var('lng') ? get_var('lng') : LOCATION_FALLBACK_LNG;
+$radius = is_var('radius') ? get_var('radius') : '100';
+$radius_max = is_var('radius_max') ? get_var('radius_max') : LOCATION_DEFAULT_DISTANCE;
+$sensor = is_var('sensor') ? get_var('sensor') : 'false';
+
+$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
+$api_results = array_merge($api_results, nearbysearch_full($lat, $lng, $radius_max, $sensor));
 $nearplaces = build_response($lat, $lng, $api_results);
 foreach ($nearplaces as $nearplace) {
-	if (empty($nearplace['name'])) {
+	if (empty($nearplace['name']) || in_array($nearplace['name'], $votes_valid_normal)) {
 		continue;
 	}
 	$votes_valid_normal[] = $nearplace['name'];
