@@ -49,11 +49,12 @@ class SchlossquadratSilberwirt extends FoodGetterVenue {
 		$dataTmp = html_clean($dataTmp);
 
 		// get menu data for the chosen day
-		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1));
+		$dataTmp = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1),
+				[], "\n", false);
+		//return error_log($dataTmp);
 		if (!$dataTmp || is_numeric($dataTmp)) {
 			return ($this->data = $dataTmp);
 		}
-		//return error_log($dataTmp);
 
 		// get and set price
 		$dataPriceTmp = html_get_clean($this->url);

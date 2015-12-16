@@ -452,7 +452,8 @@ abstract class FoodGetterVenue {
 		);
 	}
 
-	protected function parse_foods_inbetween_days($data, $string_next_day, $string_last_day_next = [], $newline_replacer = "\n") {
+	protected function parse_foods_inbetween_days($data, $string_next_day,
+			$string_last_day_next = [], $newline_replacer = "\n", $add_food_counts = true) {
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today_variants, true));
 
@@ -518,12 +519,13 @@ abstract class FoodGetterVenue {
 		//return error_log($data) && false;
 
 		// menu magic via common parser helper (auto numbering and stuff)
-		return $this->parse_foods_helper($data, $newline_replacer);
+		return $this->parse_foods_helper($data, $newline_replacer, $prices, true, true, false, true,
+				$add_food_counts);
 	}
 
 	private function parse_foods_helper($dataTmp, $newline_replacer, &$prices = [],
 			$end_on_friday = true, $one_price_per_food = true, $use_weekday_feature = false,
-			$check_holiday_counts = true
+			$check_holiday_counts = true, $add_food_counts = true
 	) {
 		$data = null;
 		$foodCount = 0; // 0 is monday, 6 is sunday
@@ -689,34 +691,38 @@ abstract class FoodGetterVenue {
 		$foods = array_filter($foods);
 		//return error_log(print_r($foods, true)) && false;
 
-		// count main foods
-		foreach ($foods as $food) {
-			if (
-				$this->get_starter_count($food) == 0 &&
-				$this->get_dessert_count($food) == 0
-			) {
-				//error_log($food);
-				$foodsMainCount++;
-			}
-			/*else {
-				error_log($food);
-			}*/
-		}
-
-		// add counts (as long food is no dessert or soup)
-		if ($foodsMainCount > 1) {
-			$foodCount = 1;
-			foreach ($foods as &$food) {
+		// add food counts: we try to detect different main foods, starters and desserts
+		// automatically here
+		if ($add_food_counts) {
+			// count main foods
+			foreach ($foods as $food) {
 				if (
-					$this->get_dessert_count($food) == 0 &&
-					$this->get_starter_count($food) == 0
+					$this->get_starter_count($food) == 0 &&
+					$this->get_dessert_count($food) == 0
 				) {
-					$food = $foodCount . '. ' . trim($food);
-					$foodCount++;
 					//error_log($food);
+					$foodsMainCount++;
 				}
+				/*else {
+					error_log($food);
+				}*/
 			}
-			unset($food);
+
+			// add counts (as long food is no dessert or soup)
+			if ($foodsMainCount > 1) {
+				$foodCount = 1;
+				foreach ($foods as &$food) {
+					if (
+						$this->get_dessert_count($food) == 0 &&
+						$this->get_starter_count($food) == 0
+					) {
+						$food = $foodCount . '. ' . trim($food);
+						$foodCount++;
+						//error_log($food);
+					}
+				}
+				unset($food);
+			}
 		}
 
 		$data = implode("\n", $foods);

@@ -39,11 +39,11 @@ class CafeAmacord extends FoodGetterVenue {
 
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayNameShort(1) . ':',
-				'Guten');
+				'Guten', "\n", false);
+		//return error_log($data);
 		if (!$data || is_numeric($data)) {
 			return ($this->data = $data);
 		}
-		//return error_log($data);
 
 		$prices = $this->parse_prices_regex($dataTmp, [ '/\d{1},\d{2}/' ]);
 		//return error_log(print_r($prices, true));

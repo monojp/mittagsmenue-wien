@@ -31,8 +31,8 @@ class AltesFassl extends FoodGetterVenue {
 
 	protected function get_today_variants() {
 		return [
-			date('d.m', $this->timestamp),
-			date('d,m', $this->timestamp),
+			getGermanDayName() . ' ' . date('d.m', $this->timestamp),
+			getGermanDayName() . ' ' . date('d,m', $this->timestamp),
 		];
 	}
 
@@ -44,11 +44,11 @@ class AltesFassl extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
-		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), 'MENÜ 1');
+		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), [ 'Menü 1' ]);
+		//return error_log($data);
 		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
 		}
-		//return error_log($data);
 
 		// set price
 		$this->price = $this->parse_prices_regex($dataTmp, [ '/\d{1},\d{2}/' ]);
