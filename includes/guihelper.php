@@ -36,7 +36,7 @@ function get_venues_html() {
 		new FalkensteinerStueberl(),
 		//new Lambrecht(),
 		new CafeAmacord(),
-		new Gondola(),
+		//new Gondola(), // unparsbar zurzeit (spalten-pdf)
 		new RadioCafe(),
 		new Stoeger(),
 		//new MINIRESTAURANT(),

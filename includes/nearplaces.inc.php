@@ -105,6 +105,18 @@ $custom_venues = [
 		'name' => 'New Point',
 		'website' => 'http://www.newpointrestaurant.at/',
 		'reference' => -1,
+	],
+	[
+		'id' => -9,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.189628,
+				'lng' => 16.352214,
+			],
+		],
+		'name' => 'Gondola',
+		'website' => 'http://www.gondola.at/',
+		'reference' => -1,
 	]
 ];
 
@@ -315,7 +327,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos', 'Tien Tsin, Chinarestaurant', 'Restaurant z d 3 Buchteln',
 			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
 			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN', 'Lidl Österreich', 'Downunder Gastronomie', 'Cafe Konditorei Gumpendorf',
-			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime'
+			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime', 'Zum alten Fassl', 'Wien 5., Margareten',
 		], '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace(array(
 			'restaurant', 'ristorante'
