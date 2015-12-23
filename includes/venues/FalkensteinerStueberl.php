@@ -52,8 +52,8 @@ class FalkensteinerStueberl extends FoodGetterVenue {
 			return;
 		}
 
-		// check menu food count
-		if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) != 7) {
+		// check menu food count (UPDATE: because of inline holiday message >= 7 should be valid)
+		if ($this->get_holiday_count($dataTmp) + $this->get_starter_count($dataTmp) < 7) {
 			return;
 		}
 

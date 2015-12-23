@@ -33,6 +33,8 @@ class AltesFassl extends FoodGetterVenue {
 		return [
 			getGermanDayName() . ' ' . date('d.m', $this->timestamp),
 			getGermanDayName() . ' ' . date('d,m', $this->timestamp),
+			getGermanDayName() . ', ' . date('d.m', $this->timestamp),
+			getGermanDayName() . ', ' . date('d,m', $this->timestamp),
 		];
 	}
 
