@@ -411,7 +411,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'geschlossen') +
 			mb_substr_count($string, 'pfingsten') +
 			mb_substr_count($string, 'pfingstmontag') +
-			mb_substr_count($string, 'fronleichnam')
+			mb_substr_count($string, 'fronleichnam') +
+			mb_substr_count($string, 'ruhetag')
 		);
 	}
 
@@ -627,7 +628,7 @@ abstract class FoodGetterVenue {
 						'kleistgasse', 'tcpdf', 'take away', 'über die gasse', 'konsumation',
 						'nur im haus', 'sehr geehrte', 'alle jahre wieder', 'location', 'feier',
 						'unterstützen', 'angebote', 'grüße', 'team', 'gerne', 'termin', 'details',
-						'anspruch', 'nummer',
+						'anspruch', 'nummer', 'geöffnet',
 					], true))
 			) {
 				//error_log("skip ${food}");
@@ -808,6 +809,6 @@ abstract class FoodGetterVenue {
 			$data = $price_return = null;
 		}
 
-		return empty($data) ? '-' : $data;
+		return $data;
 	}
 }
