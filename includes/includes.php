@@ -880,6 +880,10 @@ function html_compress($html) {
 	return $response;
 }
 
+function startswith($haystack, $needle) {
+	return (strpos($haystack, $needle) === 0);
+}
+
 function endswith($haystack, $needle) {
 	$strlen = mb_strlen($haystack);
 	$needlelen = mb_strlen($needle);
