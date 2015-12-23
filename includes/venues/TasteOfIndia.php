@@ -3,46 +3,54 @@
 class TasteOfIndia extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Taste of India';
-		$this->address           = 'Margaretenstraße 34, 1040 Wien';
-		$this->addressLat        = 48.1959393;
-		$this->addressLng        = 16.3641738;
-		$this->url               = 'http://www.taste-of-india.at/';
-		$this->dataSource        = 'http://www.taste-of-india.at/mittagsmenue.html';
-		$this->menu              = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
+		$this->title = 'Taste of India';
+		$this->address = 'Margaretenstraße 34, 1040 Wien';
+		$this->addressLat = 48.1959393;
+		$this->addressLng = 16.3641738;
+		$this->url = 'http://www.taste-of-india.at/';
+		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue.html';
+		$this->menu = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
 		$this->statisticsKeyword = 'taste-of-india';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
 
 	protected function get_today_variants() {
-		$today_variants[] = date_offsetted('d.m.y');
-		return $today_variants;
+		return [ date_offsetted('d.m.y') ];
 	}
 
 	protected function parseDataSource() {
 		$dataTmp = file_get_contents($this->dataSource);
-		if (!$dataTmp)
+		if (!$dataTmp) {
 			return;
+		}
 
 		// get menu data for the chosen day
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today, true));
 
+		// check if holiday
+		if ($this->get_holiday_count($dataTmp)) {
+			return VenueStateSpecial::Urlaub;
+		}
+
 		$today = null;
 		foreach ($today_variants as $today) {
 			$posStart = strposAfter($dataTmp, $today);
-			if ($posStart !== false)
+			if ($posStart !== false) {
 				break;
+			}
 		}
-		if ($posStart === false)
+		if ($posStart === false) {
 			return;
+		}
 		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
 		// last day of the week
-		if (!$posEnd)
+		if (!$posEnd) {
 			$posEnd = mb_stripos($dataTmp, '</table>', $posStart);
+		}
 		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
 
 		$data = strip_tags($data);
