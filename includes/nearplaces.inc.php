@@ -117,6 +117,42 @@ $custom_venues = [
 		'name' => 'Gondola',
 		'website' => 'http://www.gondola.at/',
 		'reference' => -1,
+	],
+	[
+		'id' => -10,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.191697,
+				'lng' => 16.357873,
+			],
+		],
+		'name' => 'Erbsenzählerei',
+		'website' => 'http://www.xn--die-erbsenzhlerei-0qb.at/',
+		'reference' => -1,
+	],
+	[
+		'id' => -11,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.192031,
+				'lng' => 16.358819,
+			],
+		],
+		'name' => 'Bierometer 2',
+		'website' => 'http://www.bierometer-2.at/',
+		'reference' => -1,
+	],
+	[
+		'id' => -12,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.196901,
+				'lng' => 16.365892,
+			],
+		],
+		'name' => 'Nagoya Sushi',
+		'website' => 'http://www.nagoyasushi.at/',
+		'reference' => -1,
 	]
 ];
 
