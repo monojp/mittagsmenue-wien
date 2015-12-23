@@ -457,6 +457,10 @@ abstract class FoodGetterVenue {
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today_variants, true));
 
+		// convert next_day to an array
+		if (!is_array($string_next_day)) {
+			$string_next_day = [ $string_next_day ];
+		}
 		// convert last_day_next to an array
 		if (!is_array($string_last_day_next)) {
 			$string_last_day_next = [ $string_last_day_next ];
@@ -478,7 +482,15 @@ abstract class FoodGetterVenue {
 		if ($posStart === false) {
 			return;
 		}
-		$posEnd = mb_stripos($data, $string_next_day, $posStart);
+		foreach ($string_next_day as $tomorrow) {
+			$posEnd = strposAfter($data, $tomorrow, $posStart);
+			// set date and stop if match found
+			if ($posEnd !== false) {
+				//error_log("'${tomorrow}' found on pos ${posEnd}");
+				$this->date = $tomorrow;
+				break;
+			}
+		}
 		//error_log("'${string_next_day}' search returned ${posEnd}");
 		// last day of the week (string)
 		if ($posEnd === false && !is_array($string_last_day_next)) {
@@ -539,7 +551,7 @@ abstract class FoodGetterVenue {
 			'1,', '2,', '3,', '4,',
 			'1.', '2.', '3.', '4.',
 			'1)', '2)', '3)', '4)',
-			'1 ', '2 ', '3 ', '4 ', // macht evtl probleme mit dingen wie "1/2 Brathuhn"
+			'1 ', '2 ', '3 ', '4 ',
 		];
 
 		$foods_title = [
@@ -674,15 +686,18 @@ abstract class FoodGetterVenue {
 		}
 		//return error_log($data) && false;
 
-		// replace common noise strings
-		$data = str_replace($number_markers, '', $data);
-
 		$foods = explode_by_array([ "\n", "\r" ], $data);
 		//return error_log(print_r($foods, true)) && false;
 
-		// strip price infos from foods
 		foreach ($foods as &$food) {
+			// strip price infos from foods
 			$food = preg_replace($regex_price, ' ', $food);
+			// replace common numbering strings (if they start the line)
+			foreach ($number_markers as $number_marker) {
+				if (startswith($food, $number_marker)) {
+					$food = mb_substr($food, count($number_marker) + 1);
+				}
+			}
 			$food = cleanText($food);
 		}
 		unset($food);
