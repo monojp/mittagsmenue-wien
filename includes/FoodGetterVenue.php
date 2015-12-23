@@ -628,7 +628,7 @@ abstract class FoodGetterVenue {
 						'kleistgasse', 'tcpdf', 'take away', 'über die gasse', 'konsumation',
 						'nur im haus', 'sehr geehrte', 'alle jahre wieder', 'location', 'feier',
 						'unterstützen', 'angebote', 'grüße', 'team', 'gerne', 'termin', 'details',
-						'anspruch', 'nummer', 'geöffnet',
+						'anspruch', 'nummer', 'geöffnet', 'wünscht', 'frohe',
 					], true))
 			) {
 				//error_log("skip ${food}");
