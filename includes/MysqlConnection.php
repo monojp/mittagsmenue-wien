@@ -16,9 +16,9 @@ class MySqlConnection {
 			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
 		$db_connect_ok = false;
 		foreach ($DB_CONFIGS as $db_config) {
-			if (!$this->db->real_connect($db_config['DB_SERVER'], $db_config['DB_USER'], $db_config['DB_PASSWORD'], $db_config['DB_NAME']))
+			if (!$this->db->real_connect($db_config['DB_SERVER'], $db_config['DB_USER'], $db_config['DB_PASSWORD'], $db_config['DB_NAME'])) {
 				error_log('Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
-			else {
+			} else {
 				$db_connect_ok = true;
 				break;
 			}
@@ -27,19 +27,26 @@ class MySqlConnection {
 			$this->db = null;
 			return;
 		}
-		$this->db->query("SET NAMES 'utf8mb4'");
+		// set charset
+		if (!$this->db->set_charset('utf8mb4')) {
+			if (!$this->db->set_charset('utf8')) {
+				error_log('could not set charset');
+			}
+		}
 	}
 
 	function __destruct() {
 		// abort on error
-		if (!$this->db)
+		if (!$this->db) {
 			return null;
+		}
 		$this->db->close();
 	}
 
 	public static function getInstance() {
-		if (is_null(self::$instance))
+		if (is_null(self::$instance)) {
 			self::$instance = new self();
+		}
 		return self::$instance;
 	}
 

@@ -7,29 +7,19 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+
 -- --------------------------------------------------------
 
 --
 -- Tabellenstruktur für Tabelle `foodCache`
 --
 
-CREATE TABLE IF NOT EXISTS `foodCache` (
+CREATE TABLE `foodCache` (
   `timestamp` date NOT NULL,
-  `dataSource` varchar(128) NOT NULL,
-  `date` varchar(128) NOT NULL,
-  `price` varchar(128) NOT NULL,
-  `data` varchar(16384) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
--- --------------------------------------------------------
-
---
--- Tabellenstruktur für Tabelle `foodCustomUser`
---
-
-CREATE TABLE IF NOT EXISTS `foodCustomUser` (
-  `ip` varchar(128) NOT NULL,
-  `custom_userid` varchar(128) NOT NULL
+  `dataSource` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+  `date` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+  `price` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+  `data` mediumtext CHARACTER SET utf8mb4 NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -38,10 +28,11 @@ CREATE TABLE IF NOT EXISTS `foodCustomUser` (
 -- Tabellenstruktur für Tabelle `foodUser`
 --
 
-CREATE TABLE IF NOT EXISTS `foodUser` (
-  `ip` varchar(128) NOT NULL,
-  `name` varchar(128) NOT NULL,
-  `email` varchar(128) DEFAULT NULL,
+CREATE TABLE `foodUser` (
+  `ip` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+  `name` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
+  `custom_userid` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL,
+  `email` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL,
   `vote_reminder` tinyint(1) NOT NULL DEFAULT '0',
   `voted_mail_only` tinyint(1) NOT NULL DEFAULT '0',
   `vote_always_show` tinyint(1) NOT NULL DEFAULT '0'
@@ -53,10 +44,10 @@ CREATE TABLE IF NOT EXISTS `foodUser` (
 -- Tabellenstruktur für Tabelle `foodVote`
 --
 
-CREATE TABLE IF NOT EXISTS `foodVote` (
+CREATE TABLE `foodVote` (
   `day` date NOT NULL,
-  `ip` varchar(128) NOT NULL,
-  `category` varchar(128) NOT NULL,
+  `ip` varchar(64) CHARACTER SET utf8mb4 NOT NULL,
+  `category` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
   `vote` varchar(128) CHARACTER SET utf8mb4 NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -69,12 +60,6 @@ CREATE TABLE IF NOT EXISTS `foodVote` (
 --
 ALTER TABLE `foodCache`
   ADD PRIMARY KEY (`timestamp`,`dataSource`);
-
---
--- Indizes für die Tabelle `foodCustomUser`
---
-ALTER TABLE `foodCustomUser`
-  ADD PRIMARY KEY (`ip`);
 
 --
 -- Indizes für die Tabelle `foodUser`
