@@ -484,11 +484,10 @@ abstract class FoodGetterVenue {
 			return;
 		}
 		foreach ($string_next_day as $tomorrow) {
-			$posEnd = strposAfter($data, $tomorrow, $posStart);
-			// set date and stop if match found
+			$posEnd = mb_stripos($data, $tomorrow, $posStart);
+			// stop if match found
 			if ($posEnd !== false) {
 				//error_log("'${tomorrow}' found on pos ${posEnd}");
-				$this->date = $tomorrow;
 				break;
 			}
 		}
@@ -502,7 +501,7 @@ abstract class FoodGetterVenue {
 			foreach ($string_last_day_next as $last_day_next) {
 				$posEnd = mb_stripos($data, $last_day_next, $posStart);
 				if ($posEnd !== false) {
-					//error_log("'${last_day_next}' found on pos ${posEnd}");
+				//error_log("'${last_day_next}' found on pos ${posEnd}");
 					break;
 				}
 			}
@@ -511,7 +510,7 @@ abstract class FoodGetterVenue {
 			//error_log('no end found');
 			return;
 		 }
-		//return error_log($posEnd);
+		//return error_log($posEnd) && false;
 
 		$data = mb_substr($data, $posStart, $posEnd - $posStart);
 		//return error_log($data) && false;

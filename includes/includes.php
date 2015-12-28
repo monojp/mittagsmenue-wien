@@ -94,8 +94,9 @@ function cacheSafeUrl($file) {
 }
 function strposAfter($haystack, $needle, $offset=0) {
 	$pos = mb_strpos($haystack, $needle, $offset);
-	if ($pos !== FALSE)
+	if ($pos !== false) {
 		$pos += mb_strlen($needle);
+	}
 	return $pos;
 }
 /*
