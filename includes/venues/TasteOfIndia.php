@@ -31,11 +31,6 @@ class TasteOfIndia extends FoodGetterVenue {
 		$today_variants = $this->get_today_variants();
 		//return error_log(print_r($today, true));
 
-		// check if holiday
-		if ($this->get_holiday_count($dataTmp)) {
-			return VenueStateSpecial::Urlaub;
-		}
-
 		$today = null;
 		foreach ($today_variants as $today) {
 			$posStart = strposAfter($dataTmp, $today);
@@ -59,6 +54,11 @@ class TasteOfIndia extends FoodGetterVenue {
 		// remove multiple newlines
 		$data = preg_replace("/(\n)+/i", "\n", $data);
 		$data = trim($data);
+
+		// check if holiday
+		if ($this->get_holiday_count($data)) {
+			return VenueStateSpecial::Urlaub;
+		}
 
 		$foods = explode("\n", $data);
 		//unset($foods[0]); // date
