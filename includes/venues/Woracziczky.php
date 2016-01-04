@@ -8,17 +8,17 @@ class Woracziczky extends FoodGetterVenue {
 	const FACEBOOK_ID = 350394680695;
 
 	function __construct() {
-		$this->title             = 'Woracziczky';
-		//$this->title_notifier  = 'UPDATE';
-		$this->address           = 'Spengergasse 52, 1050 Wien';
-		$this->addressLat        = 48.189343;
-		$this->addressLng        = 16.352982;
-		$this->url               = 'http://www.woracziczky.at/';
-		$this->dataSource        = 'https://facebook.com/WORACZICZKY';
-		$this->menu              = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
+		$this->title = 'Woracziczky';
+		//$this->title_notifier = 'UPDATE';
+		$this->address = 'Spengergasse 52, 1050 Wien';
+		$this->addressLat = 48.189343;
+		$this->addressLng = 16.352982;
+		$this->url = 'http://www.woracziczky.at/';
+		$this->dataSource = 'https://facebook.com/WORACZICZKY';
+		$this->menu = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
 		$this->statisticsKeyword = 'woracziczky';
-		$this->no_menu_days      = [ 0, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 6 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -37,39 +37,46 @@ class Woracziczky extends FoodGetterVenue {
 		$data = null;
 
 		// set date
-		$this->date = reset($this->get_today_variants());
+		$today_variants = $this->get_today_variants();
+		$this->date = reset($today_variants);
 
 		foreach ((array)$all_posts as $post) {
-			if (!isset($post['message']) || !isset($post['created_time']) || !isset($post['from']))
+			if (!isset($post['message']) || !isset($post['created_time'])
+					|| !isset($post['from'])) {
 				continue;
+			}
 
 			// ignore user posts
-			if ($post['from']['id'] != self::FACEBOOK_ID)
+			if ($post['from']['id'] != self::FACEBOOK_ID) {
 				continue;
+			}
 
 			// get wanted data out of post
-			$message      = $post['message'];
+			$message = $post['message'];
 			$created_time = $post['created_time'];
 
 			// clean/adapt data
-			$message      = trim($message, "\n ");
+			$message = trim($message, "\n ");
 			$created_time = strtotime($created_time);
 
 			// not from today, skip
-			if (date('Ymd', $created_time) != date('Ymd', $this->timestamp))
+			if (date('Ymd', $created_time) != date('Ymd', $this->timestamp)) {
 				continue;
+			}
 
 			//error_log($message);
 
 			// nothing mittags-relevantes found
 			$words_relevant = [
-				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s', 'Essen', 'Mahlzeit',
-				'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich', 'gibt', 'servieren euch', 'Bis gleich',
-				'schmecken', 'freuen uns auf euch', 'neue Woche', 'wartet schon auf euch',
-				'freuen sich auf euch', 'erwarten euch', 'suppe', 'Suppe', 'heute',
+				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s',
+				'Essen', 'Mahlzeit', 'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich',
+				'gibt', 'servieren euch', 'Bis gleich', 'schmecken', 'freuen uns auf euch',
+				'neue Woche', 'wartet schon auf euch', 'freuen sich auf euch', 'erwarten euch',
+				'suppe', 'Suppe', 'heute',
 			];
-			if (!stringsExist($message, $words_relevant))
+			if (!stringsExist($message, $words_relevant)) {
 				continue;
+			}
 
 			// use whole fp post
 			$data = str_replace("\n", "<br />", $message);
