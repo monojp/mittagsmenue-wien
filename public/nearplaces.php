@@ -17,48 +17,45 @@ $id = is_var('id') ? get_var('id') : null;
 $reference = is_var('reference') ? get_var('reference') : null;
 
 // handle actions
-if ($action) {
-	// get the next page of a nearbysearch
-	if ($action == 'nextpage') {
-		$api_response = nextpage_search($lat, $lng, $radius, $sensor);
-		$response = build_response($lat, $lng, $api_response['results']);
-		echo json_encode(remove_doubles($response));
-	}
-	// do a new nearbysearch for restaurants
-	else if ($action == 'nearbysearch') {
-		$api_response = nearbysearch($lat, $lng, $radius, $sensor);
-		$response = build_response($lat, $lng, $api_response['results']);
-		echo json_encode(remove_doubles($response));
-	}
-	// do a places details search with a given place reference
-	else if ($action == 'details') {
-		if (!$id || !$reference)
-			echo json_encode(array('error' => js_message_prepare('"reference" oder "id" leer!')));
-
-		$response = details_cache_read($id, $reference);
-		if ($response === null) {
-			$response = details($id, $reference, $sensor);
-			details_cache_write($id, $reference, $response);
-		}
-		echo json_encode($response);
-	}
-	// do a full search with all pages (takes rather long because of sleeps)
-	// therefore it is cached
-	else if ($action == 'nearbysearch_full') {
-		$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
-		$response = build_response($lat, $lng, $api_results);
-		echo json_encode(remove_doubles($response));
-	}
-	// do a staged search (2 full searches in a row)
-	else if ($action == 'nearbysearch_staged') {
-		$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
-		$api_results = array_merge($api_results, nearbysearch_full($lat, $lng, $radius_max, $sensor));
-		$response = build_response($lat, $lng, $api_results);
-		echo json_encode(remove_doubles($response));
-	}
-	// undefined action
-	else
-		echo json_encode(array('error' => js_message_prepare('Die gewählte Aktion ist ungültig!')));
+if (!$action) {
+	echo json_encode([ 'error' => js_message_prepare('Es ist keine Aktion gesetzt!') ]);
+	exit;
 }
-else
-	echo json_encode(array('error' => js_message_prepare('Es ist keine Aktion gesetzt!')));
+
+// get the next page of a nearbysearch
+if ($action == 'nextpage') {
+	$api_response = nextpage_search($lat, $lng, $radius, $sensor);
+	$response = build_response($lat, $lng, $api_response['results']);
+	echo json_encode(remove_doubles($response));
+// do a new nearbysearch for restaurants
+} else if ($action == 'nearbysearch') {
+	$api_response = nearbysearch($lat, $lng, $radius, $sensor);
+	$response = build_response($lat, $lng, $api_response['results']);
+	echo json_encode(remove_doubles($response));
+// do a places details search with a given place reference
+} else if ($action == 'details') {
+	if (!$id || !$reference)
+		echo json_encode(array('error' => js_message_prepare('"reference" oder "id" leer!')));
+
+	$response = details_cache_read($id, $reference);
+	if ($response === null) {
+		$response = details($id, $reference, $sensor);
+		details_cache_write($id, $reference, $response);
+	}
+	echo json_encode($response);
+// do a full search with all pages (takes rather long because of sleeps)
+// therefore it is cached
+} else if ($action == 'nearbysearch_full') {
+	$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
+	$response = build_response($lat, $lng, $api_results);
+	echo json_encode(remove_doubles($response));
+// do a staged search (2 full searches in a row)
+} else if ($action == 'nearbysearch_staged') {
+	$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
+	$api_results = array_merge($api_results, nearbysearch_full($lat, $lng, $radius_max, $sensor));
+	$response = build_response($lat, $lng, $api_results);
+	echo json_encode(remove_doubles($response));
+// undefined action
+} else {
+	echo json_encode(array('error' => js_message_prepare('Die gewählte Aktion ist ungültig!')));
+}
