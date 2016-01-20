@@ -667,7 +667,7 @@ function init() {
 		emoji_update();
 
 		// emoji shortname textcomplete for note input
-		$.getJSON('emojione/emoji.json', function (emojiStrategy) {
+		$.getJSON('emojione/emoji.json?1', function (emojiStrategy) {
 			// append custom keywords
 			emojiStrategy.toilet.keywords.push('heisl');
 			emojiStrategy.spaghetti.keywords.push('pasta');
