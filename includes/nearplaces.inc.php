@@ -153,7 +153,19 @@ $custom_venues = [
 		'name' => 'Nagoya Sushi',
 		'website' => 'http://www.nagoyasushi.at/',
 		'reference' => -1,
-	]
+	],
+        [
+               'id' => -13,
+		'geometry' => [
+                        'location' => [
+                                'lat' => 48.196341,
+                                'lng' => 16.357740,
+                        ],
+                ],
+                'name' => 'Karma Ramen',
+                'website' => 'http://www.karmaramen.at/',
+                'reference' => -1,
+        ],
 ];
 
 // searches for venue data in the nearplaces cache
