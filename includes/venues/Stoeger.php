@@ -60,7 +60,7 @@ class Stoeger extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
-		$data = $this->parse_foods_inbetween_days($dataTmp, 'Spezialitäten');
+		$data = $this->parse_foods_inbetween_days($dataTmp, 'Spezialitäten', [], "\n", false);
 		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
 		}
