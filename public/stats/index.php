@@ -171,7 +171,7 @@ if (!empty($diff)) {
 
 ?>
 <script type="text/javascript">
-	head.ready([ 'jquery', 'jquery_datatables' ], function() {
+	head.ready([ 'jquery_datatables' ], function() {
 		$(document).ready(function() {
 			$('#table_stats').dataTable({
 				'order': [[ 4, 'desc' ]],
