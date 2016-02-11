@@ -112,7 +112,7 @@ class VoteHandler_MySql extends VoteHandler {
 		}
 		$return = [];
 
-		$week_start_end = getStartAndEndDate($weeknumber, 2015);
+		$week_start_end = getStartAndEndDate($weeknumber, $yearnumber);
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("SELECT ip, category, vote FROM foodVote WHERE day BETWEEN ? AND ?"))) {
