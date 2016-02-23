@@ -396,9 +396,9 @@ function handle_href_reference_details(id, reference, name, try_count) {
 			// got website via details api
 			if (typeof result.result.website != 'undefined') {
 				window.open(result.result.website, '_blank');
-			// now website open google search
+			// no website, open search
 			} else {
-				window.open('https://www.google.com/search?q=' + name, '_blank');
+				window.open('https://duckduckgo.com/?q=' + name, '_blank');
 			}
 		},
 		error: function() {

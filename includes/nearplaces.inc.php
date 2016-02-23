@@ -154,16 +154,28 @@ $custom_venues = [
 		'website' => 'http://www.nagoyasushi.at/',
 		'reference' => -1,
 	],
-        [
-               'id' => -13,
+	[
+		'id' => -13,
 		'geometry' => [
+			'location' => [
+				'lat' => 48.196341,
+				'lng' => 16.357740,
+			],
+		],
+		'name' => 'Karma Ramen',
+		'website' => 'http://www.karmaramen.at/',
+		'reference' => -1,
+	],
+	[
+                'id' => -14,
+                'geometry' => [
                         'location' => [
-                                'lat' => 48.196341,
-                                'lng' => 16.357740,
+                                'lat' => 48.194904,
+                                'lng' => 16.350911,
                         ],
                 ],
-                'name' => 'Karma Ramen',
-                'website' => 'http://www.karmaramen.at/',
+                'name' => 'Al Chile!',
+                'website' => 'http://www.al-chile.info/',
                 'reference' => -1,
         ],
 ];
@@ -174,8 +186,9 @@ function nearplace_details_cache_search($name) {
 	$data = details_cache_read(null, null);
 	foreach ((array)$data as $dataset) {
 		foreach ((array)$dataset as $venue) {
-			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false)
+			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false) {
 				return $venue;
+			}
 		}
 	}
 	return null;
@@ -187,8 +200,9 @@ function nearplace_cache_search($name) {
 	$data = nearplace_cache_read(null, null, null);
 	foreach ((array)$data as $dataset) {
 		foreach ((array)$dataset as $venue) {
-			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false)
+			if (isset($venue['name']) && mb_stripos($venue['name'], $name) !== false) {
 				return $venue;
+			}
 		}
 	}
 	return null;
@@ -233,25 +247,33 @@ function details_cache_read($id, $reference) {
  * writes an entry in the details cache
  */
 function details_cache_write($id, $reference, $cache_entry) {
-	// do nothing for custom nearplace venue
-	if ($id < 0)
+	// never cache empty data
+	if (empty($cache_entry)) {
 		return null;
-	if (!file_exists(DETAILS_CACHE))
-		$data = array();
-	else {
-		$data = file_get_contents(DETAILS_CACHE);
-		if (empty($data))
-			$data = array();
-		$data = json_decode($data, true);
-		if ($data === null)
-			$data = array();
+	}
+	// do nothing for custom nearplace venue
+	if ($id < 0) {
+		return null;
 	}
 
-	$cache_key = array(
-		'id'        => $id,
+	if (!file_exists(DETAILS_CACHE)) {
+		$data = [];
+	} else {
+		$data = file_get_contents(DETAILS_CACHE);
+		if (empty($data)) {
+			$data = [];
+		}
+		$data = json_decode($data, true);
+		if ($data === null) {
+			$data = [];
+		}
+	}
+
+	$cache_key = [
+		'id' => $id,
 		'reference' => $reference,
 		'timestamp' => time(),
-	);
+	];
 	$cache_key = implode('|', $cache_key);
 	$data[$cache_key] = $cache_entry;
 	$data = json_encode($data);
@@ -262,20 +284,23 @@ function details_cache_write($id, $reference, $cache_entry) {
  * returns the data or null on error/empty cache
  */
 function nearplace_cache_read($lat, $lng, $radius) {
-	if (!file_exists(NEARPLACES_CACHE))
+	if (!file_exists(NEARPLACES_CACHE)) {
 		return null;
-	else {
+	} else {
 		$data = file_get_contents(NEARPLACES_CACHE);
-		if (empty($data))
+		if (empty($data)) {
 			return null;
+		}
 		$data = json_decode($data, true);
-		if ($data === null)
+		if ($data === null) {
 			return null;
+		}
 	}
 
 	// if parameters are null, return all
-	if ($lat === null && $lng === null && $radius === null)
+	if ($lat === null && $lng === null && $radius === null) {
 		return $data;
+	}
 
 	// if younger than 1 week, radius +- 100 m and lat/lng distance +- 100 m, return cache entry
 	foreach ((array)$data as $cache_key => $cache_entry) {
@@ -304,23 +329,30 @@ function nearplace_cache_read($lat, $lng, $radius) {
  * writes an entry in the nearplace cache for full searches
  */
 function nearplace_cache_write($lat, $lng, $radius, $cache_entry) {
-	if (!file_exists(NEARPLACES_CACHE))
-		$data = array();
-	else {
-		$data = file_get_contents(NEARPLACES_CACHE);
-		if (empty($data))
-			$data = array();
-		$data = json_decode($data, true);
-		if ($data === null)
-			$data = array();
+	// never cache empty data
+	if (empty($cache_entry)) {
+		return null;
 	}
 
-	$cache_key = array(
-		'lat'       => $lat,
-		'lng'       => $lng,
-		'radius'    => $radius,
+	if (!file_exists(NEARPLACES_CACHE)) {
+		$data = [];
+	} else {
+		$data = file_get_contents(NEARPLACES_CACHE);
+		if (empty($data)) {
+			$data = [];
+		}
+		$data = json_decode($data, true);
+		if ($data === null) {
+			$data = [];
+		}
+	}
+
+	$cache_key = [
+		'lat' => $lat,
+		'lng' => $lng,
+		'radius' => $radius,
 		'timestamp' => time(),
-	);
+	];
 	$cache_key = implode('|', $cache_key);
 	$data[$cache_key] = $cache_entry;
 	$data = json_encode($data);
@@ -329,26 +361,29 @@ function nearplace_cache_write($lat, $lng, $radius, $cache_entry) {
 
 function handle_api_response($api_response) {
 	// check status flag
-	if (!isset($api_response['status']) || $api_response['status'] != 'OK')
+	if (!isset($api_response['status']) || $api_response['status'] != 'OK') {
 		return null;
+	}
 
 	// save next_page_token in session for future queries
-	if (!empty($api_response['next_page_token']))
+	if (!empty($api_response['next_page_token'])) {
 		$_SESSION['nearplaces']['next_page_token'] = trim($api_response['next_page_token']);
 	// delete if not found to avoid problems with old session stuff
-	else if (isset($_SESSION['nearplaces']['next_page_token']))
+	} elseif (isset($_SESSION['nearplaces']['next_page_token'])) {
 		unset($_SESSION['nearplaces']['next_page_token']);
+	}
 
 	return $api_response;
 }
 
 function build_response($lat_orig, $lng_orig, $api_response) {
-	$response = array();
+	$response = [];
 
 	foreach ((array)$api_response as $result) {
 		// important stuff missing, continue
-		if (!isset($result['name']) || !isset($result['geometry']['location']))
+		if (!isset($result['name']) || !isset($result['geometry']['location'])) {
 			continue;
+		}
 
 		// clean name from unwanted stuff
 		$name = trim(str_ireplace([
@@ -376,50 +411,51 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
 			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN', 'Lidl Österreich', 'Downunder Gastronomie', 'Cafe Konditorei Gumpendorf',
 			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime', 'Zum alten Fassl', 'Wien 5., Margareten',
+			'Erbsenzählerei',
 		], '', $result['name']), ',.;_.-:"& ');
-		$name_clean_check = trim(str_ireplace(array(
-			'restaurant', 'ristorante'
-		), '', $name));
+		$name_clean_check = trim(str_ireplace([ 'restaurant', 'ristorante' ], '', $name));
 
 		// name empty
-		if (empty($name) || empty($name_clean_check))
+		if (empty($name) || empty($name_clean_check)) {
 			continue;
+		}
 
 		$names[$name] = true;
 
-		$lat           = str_replace(',', '.', trim($result['geometry']['location']['lat']));
-		$lng           = str_replace(',', '.', trim($result['geometry']['location']['lng']));
-		$rating        = isset($result['rating']) ? $result['rating'] : null;
-		$id            = isset($result['id']) ? $result['id'] : null;
-		$reference     = isset($result['reference']) ? $result['reference'] : null;
-		$maps_href     = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
+		$lat = str_replace(',', '.', trim($result['geometry']['location']['lat']));
+		$lng = str_replace(',', '.', trim($result['geometry']['location']['lng']));
+		$rating = isset($result['rating']) ? $result['rating'] : null;
+		$id = isset($result['id']) ? $result['id'] : null;
+		$reference = isset($result['reference']) ? $result['reference'] : null;
+		$maps_href = htmlspecialchars("https://www.openstreetmap.org/directions?engine=graphhopper_foot&route=$lat_orig,$lng_orig;$lat,$lng");
+		//$maps_href = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
 		$name_url_safe = urlencode($name);
-		$name_escaped  = htmlspecialchars($name, ENT_QUOTES);
-		$name_escaped  = str_replace("'", '', $name_escaped);
+		$name_escaped = htmlspecialchars($name, ENT_QUOTES);
+		$name_escaped = str_replace("'", '', $name_escaped);
 
 		$href = "<a href='javascript:void(0)' onclick='handle_href_reference_details(\"{$id}\", \"{$reference}\", \"{$name_url_safe}\", 0)' title='Homepage'>{$name_escaped}</a>";
 		$actions = "<a href='${maps_href}' class='no_decoration lat_lng_link' target='_blank'>
-			<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='Google Maps Route'>Google Maps Route</div>
+			<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='OpenStreetMap Route'>OpenStreetMap Route</div>
 		</a>";
-		if (show_voting())
+		if (show_voting()) {
 			$actions .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-plus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_up(\"{$name_escaped}\")' title='Vote Up'>Vote up</div>"
-			          . "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"{$name_escaped}\")' title='Vote Down'>Vote Down</div>";
+					. "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"{$name_escaped}\")' title='Vote Down'>Vote Down</div>";
+		}
 
-		$response[] = array(
+		$response[] = [
 			'name' => $name,
 			$href,
 			round(distance($lat_orig, $lng_orig, $lat, $lng, false) * 1000),
 			//(!$rating) ? '-' : (string)$rating,
 			$actions,
-		);
+		];
 	}
 
 	return $response;
 }
 
 function remove_doubles($response) {
-	$names_found = array();
-	$response_new = array();
+	$names_found = $response_new = [];
 
 	foreach ($response as $entry) {
 		if (!in_array($entry['name'], $names_found)) {
@@ -443,21 +479,25 @@ function nextpage_search($lat, $lng, $radius, $sensor, $opennow=false, $rankby=n
 	shuffle($GOOGLE_API_KEYS);
 
 	// get next_page_token from search before
-	if (!isset($_SESSION['nearplaces']['next_page_token']))
+	if (!isset($_SESSION['nearplaces']['next_page_token'])) {
 		return null;
+	}
 	$next_page_token = $_SESSION['nearplaces']['next_page_token'];
 
 	// query api
 	foreach ($GOOGLE_API_KEYS as $api_key) {
-		if (LOG_API_REQUESTS)
+		if (LOG_API_REQUESTS) {
 			error_log("@nextpage_search: query api with key $api_key");
+		}
 		$api_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$api_key&location=$lat,$lng&radius=$radius&rankby=$rankby&sensor=$sensor&types=restaurant|food&language=de";
-		if ($opennow)
+		if ($opennow) {
 			$api_url .= '&opennow';
+		}
 		$api_url .= "&pagetoken=$next_page_token";
 		$api_response = file_get_contents($api_url);
-		if ($api_response === false)
+		if ($api_response === false) {
 			continue;
+		}
 		$api_response = json_decode($api_response, true);
 		break;
 	}
@@ -472,14 +512,17 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 
 	// query api
 	foreach ($GOOGLE_API_KEYS as $api_key) {
-		if (LOG_API_REQUESTS)
+		if (LOG_API_REQUESTS) {
 			error_log("@nearbysearch: query api with key $api_key");
+		}
 		$api_url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=$api_key&location=$lat,$lng&radius=$radius&rankby=$rankby&sensor=$sensor&types=restaurant|food&language=de";
-		if ($opennow)
+		if ($opennow) {
 			$api_url .= '&opennow';
+		}
 		$api_response = file_get_contents($api_url);
-		if ($api_response === false)
+		if ($api_response === false) {
 			continue;
+		}
 		$api_response = json_decode($api_response, true);
 		break;
 	}
@@ -489,8 +532,9 @@ function nearbysearch($lat, $lng, $radius, $sensor, $opennow=false, $rankby=null
 		foreach ((array)$custom_venues as $venue) {
 			$lat_venue = isset($venue['geometry']['location']['lat']) ? $venue['geometry']['location']['lat'] : null;
 			$lng_venue = isset($venue['geometry']['location']['lng']) ? $venue['geometry']['location']['lng'] : null;
-			if (distance($lat_venue, $lng_venue, $lat, $lng, false) <= $radius)
+			if (distance($lat_venue, $lng_venue, $lat, $lng, false) <= $radius) {
 				$api_response['results'][] = $venue;
+			}
 		}
 	}
 
@@ -515,12 +559,14 @@ function details($id, $reference, $sensor) {
 	else {
 		shuffle($GOOGLE_API_KEYS);
 		foreach ($GOOGLE_API_KEYS as $api_key) {
-			if (LOG_API_REQUESTS)
+			if (LOG_API_REQUESTS) {
 				error_log("@details: query api with key $api_key");
+			}
 			$api_url = "https://maps.googleapis.com/maps/api/place/details/json?key=$api_key&reference=$reference&sensor=$sensor&language=de";
 			$api_response = file_get_contents($api_url);
-			if ($api_response === false)
+			if ($api_response === false) {
 				continue;
+			}
 			$api_response = json_decode($api_response, true);
 			break;
 		}
@@ -531,36 +577,41 @@ function details($id, $reference, $sensor) {
 
 function nearbysearch_full($lat, $lng, $radius, $sensor) {
 	$api_results = nearplace_cache_read($lat, $lng, $radius);
-	if ($api_results === null) {
-		$api_results = array();
-
-		// default nearbysearch
-		$api_response = nearbysearch($lat, $lng, $radius, $sensor);
-		$api_results = array_merge($api_results, (array)$api_response['results']);
-		while(1) {
-			sleep(2);
-			$api_response = nextpage_search($lat, $lng, $radius, $sensor);
-			if (!$api_response)
-				break;
-			else
-				$api_results = array_merge($api_results, (array)$api_response['results']);
-		}
-
-		// nearby search with opennow
-		// UPDATE doesn't really make sense because of caching
-		/*$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
-		$api_results = array_merge($api_results, (array)$api_response['results']);
-		while(1) {
-			sleep(2);
-			$api_response = nextpage_search($lat, $lng, $radius, $sensor, true);
-			if (!$api_response)
-				break;
-			else
-				$api_results = array_merge($api_results, (array)$api_response['results']);
-		}*/
-
-		if ($api_results !== null)
-			nearplace_cache_write($lat, $lng, $radius, $api_results);
+	// we got something, return immediately
+	if (!empty($api_results)) {
+		return $api_results;
 	}
+
+	// make a new query
+	$api_results = [];
+
+	// default nearbysearch
+	$api_response = nearbysearch($lat, $lng, $radius, $sensor);
+	$api_results = array_merge($api_results, (array)$api_response['results']);
+	while(1) {
+		sleep(2);
+		$api_response = nextpage_search($lat, $lng, $radius, $sensor);
+		if (!$api_response) {
+			break;
+		} else {
+			$api_results = array_merge($api_results, (array)$api_response['results']);
+		}
+	}
+
+	// nearby search with opennow
+	// UPDATE doesn't really make sense because of caching
+	/*$api_response = nearbysearch($lat, $lng, $radius, $sensor, true);
+	$api_results = array_merge($api_results, (array)$api_response['results']);
+	while(1) {
+		sleep(2);
+		$api_response = nextpage_search($lat, $lng, $radius, $sensor, true);
+		if (!$api_response) {
+			break;
+		} else {
+			$api_results = array_merge($api_results, (array)$api_response['results']);
+		}
+	}*/
+
+	nearplace_cache_write($lat, $lng, $radius, $api_results);
 	return $api_results;
 }

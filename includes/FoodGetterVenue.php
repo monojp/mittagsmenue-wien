@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
+require_once(__DIR__ . '/FB_Helper.php');
 
 abstract class VenueStateSpecial {
 	const Urlaub = 100;
@@ -195,36 +196,39 @@ abstract class FoodGetterVenue {
 					<span class='menuData convert-emoji'>{$data}</span>
 				</div>";
 
-			if ($this->price && strpos($this->data, '€') === FALSE) {
-				if (!is_array($this->price)) {
-					$this->price = array($this->price);
-				}
-				foreach ($this->price as &$price) {
-					if (is_numeric($price)) {
-						$price = cleanText($price);
-						$price = str_replace(',', '.', $price);
-						$price = money_format('%.2n', $price);
-					}
-					else if (is_array($price)) {
-						foreach ($price as &$p) {
-							$p = trim($p, "/., \t\n\r\0\x0B");
-							$p = str_replace(',', '.', $p);
-							if (!empty($p))
-								$p = money_format('%.2n', $p);
-						}
-						// remove empty values
-						$price = array_filter($price);
-						if (count($price) > 1) {
-							$price_imploded = implode(' / ', $price);
-							$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}: {$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
-						} else if (!empty($price)) {
-							$price = '<span>' . reset($price) . '</span>';
-						}
-					}
-				}
+			if ($this->price || $this->menu) {
 				// remove empty values
-				$price = implode(' / ', array_filter($this->price));
-				$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank' style='color: inherit ! important;'>Speisekarte</a>)";
+				if ($this->price) {
+					if (!is_array($this->price)) {
+						$this->price = array($this->price);
+					}
+					foreach ($this->price as &$price) {
+						if (is_numeric($price)) {
+							$price = cleanText($price);
+							$price = str_replace(',', '.', $price);
+							$price = money_format('%.2n', $price);
+						} else if (is_array($price)) {
+							foreach ($price as &$p) {
+								$p = trim($p, "/., \t\n\r\0\x0B");
+								$p = str_replace(',', '.', $p);
+								if (!empty($p))
+									$p = money_format('%.2n', $p);
+							}
+							// remove empty values
+							$price = array_filter($price);
+							if (count($price) > 1) {
+								$price_imploded = implode(' / ', $price);
+								$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}: {$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
+							} else if (!empty($price)) {
+								$price = '<span>' . reset($price) . '</span>';
+							}
+						}
+					}
+					$price = implode(' / ', array_filter($this->price));
+					$return .= "Details: <b>{$price}</b> (<a href='{$this->menu}' class='color_inherit' target='_blank' style='color: inherit ! important;'>Speisekarte</a>)";
+				} else {
+					$return .= "Details: <a href='{$this->menu}' class='color_inherit' target='_blank' style='color: inherit ! important;'>Speisekarte</a>";
+				}
 			}
 		}
 		else {
@@ -282,7 +286,7 @@ abstract class FoodGetterVenue {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a href='https://maps.google.com/maps?dirflg=r&amp;saddr=@@lat_lng@@&amp;daddr={$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
+			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
 				<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='Google Maps Route'>Google Maps Route</div>
 			</a>";
 		}
@@ -562,7 +566,7 @@ abstract class FoodGetterVenue {
 			'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
 			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
 			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
-			'Fish Goa', 'Chicken Korma', 'Dal Makhani',
+			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
@@ -576,7 +580,8 @@ abstract class FoodGetterVenue {
 		//return error_log(print_r($foods, true)) && false;
 
 		// set date
-		$this->date = reset($this->get_today_variants());
+		$today_variants = $this->get_today_variants();
+		$this->date = reset($today_variants);
 
 		// immediately return if we only have 1 element
 		/*if (count($foods) == 1)
@@ -655,6 +660,7 @@ abstract class FoodGetterVenue {
 				($foodCount == ($weekday+1) || !$use_weekday_feature) /*&&
 				!empty($data)*/ // don't use this, otherwise we need a soup
 			) {
+				$data_lines = explode_by_array($newline_replacer, $data);
 				// do newline replacers when the output string is not empty
 				// AND whole menu contains a number marker and new food doesn't (avoids problems with menus stretching over multiple lines)
 				if (
@@ -671,7 +677,7 @@ abstract class FoodGetterVenue {
 						$data .= ' ';
 					// we have a food part and title that is already written
 					} else if (
-						stringsExist(end(explode_by_array($newline_replacer, $data)), $foods_title)
+						stringsExist(end($data_lines), $foods_title)
 						&& !stringsExist($food, $foods_title)
 					) {
 						$data .= ': ';
@@ -757,6 +763,63 @@ abstract class FoodGetterVenue {
 	) {
 		return $this->parse_foods_helper($dataTmp, $newline_replacer, $prices, $end_on_friday,
 				$one_price_per_food, true, $check_holiday_counts);
+	}
+
+	protected function parse_facebook($page_id) {
+		global $fb_app_id, $fb_app_secret;
+		$fb_helper = new FB_Helper($fb_app_id, $fb_app_secret);
+		$all_posts = $fb_helper->get_all_posts($page_id);
+
+		$data = null;
+
+		// set date to first today variant
+		$today_variants = $this->get_today_variants();
+		$this->date = reset($today_variants);
+
+		foreach ((array)$all_posts as $post) {
+			if (!isset($post['message']) || !isset($post['created_time'])
+					|| !isset($post['from'])) {
+				continue;
+			}
+
+			// ignore posts other than from the wanted page
+			if ($post['from']['id'] != $page_id) {
+				continue;
+			}
+
+			// get wanted data out of post
+			$message = $post['message'];
+			$created_time = $post['created_time'];
+
+			// clean/adapt data
+			$message = trim($message, "\n ");
+			$created_time = strtotime($created_time);
+
+			//error_log($message);
+
+			// not from today, skip
+			if (date('Ymd', $created_time) != date('Ymd', $this->timestamp)) {
+				continue;
+			}
+
+			//error_log($message);
+
+			// nothing mittags-relevantes found
+			$words_relevant = [
+				'Mittagspause', 'Mittagsmenü', 'was gibts', 'bringt euch', 'haben wir', 'gibt\'s',
+				'Essen', 'Mahlzeit', 'Vorspeise', 'Hauptspeise', 'bieten euch', 'bis gleich',
+				'gibt', 'servieren euch', 'Bis gleich', 'schmecken', 'freuen uns auf euch',
+				'neue Woche', 'wartet schon auf euch', 'freuen sich auf euch', 'erwarten euch',
+				'suppe', 'Suppe', 'heute', 'Mittagsteller',
+			];
+			if (!stringsExist($message, $words_relevant)) {
+				continue;
+			}
+
+			// use whole fp post
+			$data = str_replace("\n", "<br />", $message);
+		}
+		return $data;
 	}
 
 	protected function mensa_menu_get($dataTmp, $title_search, $timestamp, $need_starter, &$price_return=null) {
