@@ -255,10 +255,10 @@ function cleanText($text) {
 	$text = str_replace_wrapper($searchReplace, $text);
 
 	// remove EU allergy warnings
-	$text = preg_replace('/( |\(|,|;)+[A-Z,\. ]+( |\)|,|;)+/', ' ', " ${text} ");
-	//$text = preg_replace('/(<br>)+[A-Z, ]+/', '<br>', $text);
-	$text = preg_replace('/[A-Z,\. ]+(<br>)+/', '<br>', $text);
-	$text = preg_replace("/[A-Z,\. ]+(\n)+/", "\n", $text);
+	$text = preg_replace('/( |\(|,|;)+[ABCDEFGHLMNOPR,\. ]+( |\)|,|;)+/', ' ', " ${text} ");
+	//$text = preg_replace('/(<br>)+[ABCDEFGHLMNOPR, ]+/', '<br>', $text);
+	$text = preg_replace('/[ABCDEFGHLMNOPR,\. ]+(<br>)+/', '<br>', $text);
+	$text = preg_replace("/[ABCDEFGHLMNOPR,\. ]+(\n)+/", "\n", $text);
 
 	$words_trim = [ 'oder', 'Vegan' ];
 	foreach ($words_trim as $word) {
@@ -270,7 +270,7 @@ function cleanText($text) {
 	}
 
 	// trim different types of characters and special whitespaces / placeholders
-	$text = trim($text, " ., *\t\n\r\0"); // no unicode chars should be used here to avoid problems
+	$text = trim($text, "á ., *\t\n\r\0"); // no unicode chars should be used here to avoid problems
 
 	return $text;
 }
