@@ -41,6 +41,10 @@ class Stoeger extends FoodGetterVenue {
 					. getGermanMonthName() . date(' Y', $this->timestamp),
 			getGermanDayName() . date(',d.', $this->timestamp)
 					. getGermanMonthName() . date(' Y', $this->timestamp),
+			getGermanDayName() . date(' d.', $this->timestamp)
+					. getGermanMonthName() . date(' Y', $this->timestamp),
+			getGermanDayName() . date(' d. ', $this->timestamp)
+					. getGermanMonthName() . date(' Y', $this->timestamp),
 			getGermanDayName() . date(', j. ', $this->timestamp)
 					. getGermanMonthName() . date(' Y', $this->timestamp),
 			getGermanDayName() . date(',j. ', $this->timestamp)
@@ -48,6 +52,10 @@ class Stoeger extends FoodGetterVenue {
 			getGermanDayName() . date(', j.', $this->timestamp)
 					. getGermanMonthName() . date(' Y', $this->timestamp),
 			getGermanDayName() . date(',j.', $this->timestamp)
+					. getGermanMonthName() . date(' Y', $this->timestamp),
+			getGermanDayName() . date(' j.', $this->timestamp)
+					. getGermanMonthName() . date(' Y', $this->timestamp),
+			getGermanDayName() . date(' j. ', $this->timestamp)
 					. getGermanMonthName() . date(' Y', $this->timestamp),
 		];
 	}
