@@ -82,7 +82,7 @@ function get_header_html() {
 		$response .= '<script src="' . cacheSafeUrl($head_load_js) . '" type="text/javascript"></script>
 			<script type="text/javascript">
 				var init_unhandled = false;
-				head.load([{jquery: "' . cacheSafeUrl('/js/jquery-2.2.0.min.js') . '"}], function() {
+				head.load([{jquery: "' . cacheSafeUrl('/js/jquery-2.2.1.min.js') . '"}], function() {
 					$("#page_main").on("pagecreate", function() {
 						$(document).trigger("init");
 						init_unhandled = true;
