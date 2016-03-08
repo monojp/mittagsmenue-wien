@@ -222,12 +222,25 @@ function strip_invalid_chars($text) {
 | .                                 # anything else
 /x
 END;
-	return preg_replace($regex, '$1', $text);
+	$text = preg_replace($regex, '$1', $text);
+
+	// unify strange apostrophes
+	$text = str_replace([ '`', '´', '’', ], '\'', $text);
+
+	// unify strange dashes
+	$text = str_replace([ '–' ], '-', $text);
+
+	// completely remove dirty chars
+	$text = str_replace([ '¸', '', '' ], '', $text);
+
+	return $text;
 }
 function cleanText($text) {
 	global $searchReplace;
 
 	//error_log($text);
+
+	$text = strip_invalid_chars($text);
 
 	// fix encoding
 	$text = html_entity_decode($text, ENT_COMPAT/* | ENT_HTML401*/, 'UTF-8');
@@ -237,18 +250,6 @@ function cleanText($text) {
 
 	// unify html line breaks
 	$text = preg_replace('/(<)[brBR]+( )*(\/)*(>)/', '<br>', $text);
-
-	// unify strange apostrophes
-	$text = str_replace([ '`', '´', '’', ], '\'', $text);
-
-	// unify strange dashes
-	$text = str_replace([ '–' ], '-', $text);
-
-	// completely remove dirty chars
-	$text = str_replace([ '¸', '' ], '', $text);
-
-	// strip invalid chars
-	$text = strip_invalid_chars($text);
 
 	// replace configured words (make a sort before to avoid replacing substuff and breaking things)
 	arsort($searchReplace);
@@ -572,6 +573,7 @@ function doctotxt($file) {
 }
 
 function html_clean($html, $from_encoding = null) {
+	$html = strip_invalid_chars($html);
 	// fix unclean data by replacing tabs with spaces
 	$html = str_replace( ["\t", "\r" ], [ ' ', ' ' ], $html);
 	// adapt paragraphs with a line break to avoid being handled inline
@@ -597,8 +599,9 @@ function html_clean($html, $from_encoding = null) {
 function html_get_clean($url, $from_encoding = null) {
 	// download html
 	$html = file_get_contents($url);
-	if ($html === false)
+	if ($html === false) {
 		return;
+	}
 	// return clean data
 	return html_clean($html, $from_encoding);
 }
