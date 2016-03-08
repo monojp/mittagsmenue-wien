@@ -27,7 +27,7 @@ function get_venues_html() {
 		new TasteOfIndia(),
 		new DeliciousMonster(),
 		new Ausklang(),
-		new NamNamDeli(),
+		new NamNam(),
 		new Waldviertlerhof(),
 		new MensaFreihaus(),
 		new MensaSchroedinger(),

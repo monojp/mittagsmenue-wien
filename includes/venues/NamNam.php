@@ -1,19 +1,19 @@
 <?php
 
-class NamNamDeli extends FoodGetterVenue {
+class NamNam extends FoodGetterVenue {
 
 	function __construct() {
-		$this->title             = 'Nam Nam Deli';
-		//$this->title_notifier  = 'NEU';
-		$this->address           = 'Webgasse 3, 1060 Wien';
-		$this->addressLat        = 48.192375;
-		$this->addressLng        = 16.348016;
-		$this->url               = 'http://www.nam-nam.at/restaurant/';
-		$this->dataSource        = 'http://www.nam-nam.at/restaurant/wochenkarte/';
-		$this->menu              = 'http://www.nam-nam.at/restaurant/menue/speisen/';
+		$this->title = 'Nam Nam';
+		//$this->title_notifier = 'NEU';
+		$this->address = 'Webgasse 3, 1060 Wien';
+		$this->addressLat = 48.192375;
+		$this->addressLng = 16.348016;
+		$this->url = 'http://www.nam-nam.at/restaurant/';
+		$this->dataSource = 'http://www.nam-nam.at/restaurant/wochenkarte/';
+		$this->menu = 'http://www.nam-nam.at/restaurant/menue/speisen/';
 		$this->statisticsKeyword = 'nam-nam';
-		$this->no_menu_days      = [ 0, 1, 6 ];
-		$this->lookaheadSafe     = true;
+		$this->no_menu_days = [ 0, 1, 6 ];
+		$this->lookaheadSafe = true;
 
 		parent::__construct();
 	}
@@ -28,14 +28,16 @@ class NamNamDeli extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		$dataTmp = html_get_clean($this->dataSource);
-		if (!$dataTmp )
+		if (!$dataTmp ) {
 			return;
+		}
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), [ 'Daily Menu Specials', 'Menus of the Week' ]);
-		if (!$data || is_numeric($data))
+		if (!$data || is_numeric($data)) {
 			return ($this->data = $data);
+		}
 		//return error_log($data);
 
 		$this->price = $this->parse_prices_regex($dataTmp, [ '/MITTAGSMENÜ NUR \d{1},\d{2}/' ]);
