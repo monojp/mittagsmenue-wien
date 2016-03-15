@@ -6,7 +6,7 @@ class Erbsenzaehlerei extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Erbsenzählerei';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Pilgramgasse 2, 1050 Wien';
 		$this->addressLat = 48.191697;
 		$this->addressLng = 16.357873;

@@ -16,8 +16,9 @@ function get_venues_html() {
 	$response = '';
 
 	// loading container because venues are shown via JS when dom ready
-	if (!isset($_GET['minimal']))
+	if (!isset($_GET['minimal'])) {
 		$response .= get_loading_container_html();
+	}
 
 	$venues = [
 		new SchlossquadratMargareta(),
@@ -41,6 +42,7 @@ function get_venues_html() {
 		new Stoeger(),
 		//new MINIRESTAURANT(),
 		new Erbsenzaehlerei(),
+		new Bierometer2(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
