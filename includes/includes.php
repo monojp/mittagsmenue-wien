@@ -885,7 +885,7 @@ function html_compress($html) {
 }
 
 function startswith($haystack, $needle) {
-	return (strpos($haystack, $needle) === 0);
+	return (mb_strpos($haystack, $needle) === 0);
 }
 
 function endswith($haystack, $needle) {
