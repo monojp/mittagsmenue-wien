@@ -352,7 +352,9 @@ function get_venues_distance() {
 			$(this).hide();
 			$(this).attr('data-inreach', false);
 		} else {
-			$(this).show();
+			if (!$(this).attr('data-userhidden')) {
+				$(this).show();
+			}
 			$(this).attr('data-inreach', true);
 		}
 
@@ -487,6 +489,22 @@ function adapt_button_vote_summary_toggle() {
 	}
 }
 
+function venue_hide(id) {
+	// save custom location in cookie
+	var venues_hidden = $.cookie('venues_hidden');
+	if (typeof venues_hidden != 'object') {
+		venues_hidden = new Array();
+	}
+
+	venues_hidden.push(id);
+
+	// save hidden venue in cookie for 1 month
+	$.cookie('venues_hidden', venues_hidden, { expires: 31 });
+
+	// hide venue in gui immediately
+	$('#' + id).hide();
+}
+
 function init() {
 	// reset init flag
 	init_unhandled = false;
@@ -532,6 +550,15 @@ function init() {
 
 	// start location stuff
 	head.ready([ 'jquery_cookie' ], function() {
+		$.cookie.json = true; // we want to store json object for e.g. venue hiding
+
+		// hide user hidden venues
+		$.each($.cookie('venues_hidden'), function (index, value) {
+			$('#' + value).hide();
+			$('#' + value).attr('data-userhidden', true);
+		});
+
+		// do location inits
 		var location = $.cookie('location');
 		// custom location from cookie
 		if (typeof location != 'undefined' && location && location.length) {

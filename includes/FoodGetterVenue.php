@@ -268,10 +268,11 @@ abstract class FoodGetterVenue {
 		$string = '';
 
 		// if minimal (JS free) site requested => show venues immediately
-		if (!isset($_GET['minimal']))
+		if (!isset($_GET['minimal'])) {
 			$attributeStyle = 'display: none';
-		else
+		} else {
 			$attributeStyle = '';
+		}
 
 		$string .= "<div id='{$this->CSSid}' class='venueDiv' style='{$attributeStyle}'>";
 		// hidden lat/lng spans
@@ -282,8 +283,10 @@ abstract class FoodGetterVenue {
 
 		// title
 		$string .= "<span class='title' title='Homepage'><a href='{$this->url}' class='no_decoration' target='_blank'>{$this->title}</a></span>";
-		if ($this->title_notifier)
+		if ($this->title_notifier) {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
+		}
+		$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->CSSid}\");' style='color: red ! important'>x</a></sup>";
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
 			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
