@@ -49,13 +49,14 @@ a:hover {
 .title {
 	font-weight: bold;
 	font-size: 1.5em;
-	margin-right: 5px;
+	margin-right: .2em;
 	vertical-align: middle;
 }
 .title_notifier {
 	color: red;
 	font-weight: bold;
 	font-size: 0.8em;
+	margin-right: .3em;
 }
 .icon {
 	margin: 0px 5px;
