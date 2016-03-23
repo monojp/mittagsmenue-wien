@@ -167,17 +167,29 @@ $custom_venues = [
 		'reference' => -1,
 	],
 	[
-                'id' => -14,
-                'geometry' => [
-                        'location' => [
-                                'lat' => 48.194904,
-                                'lng' => 16.350911,
-                        ],
-                ],
-                'name' => 'Al Chile!',
-                'website' => 'http://www.al-chile.info/',
-                'reference' => -1,
-        ],
+		'id' => -14,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.194904,
+				'lng' => 16.350911,
+			],
+		],
+		'name' => 'Al Chile!',
+		'website' => 'http://www.al-chile.info/',
+		'reference' => -1,
+	],
+	[
+		'id' => -15,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.184198,
+				'lng' => 16.361702,
+			],
+		],
+		'name' => 'Duspara',
+		'website' => 'http://www.duspara.at/',
+		'reference' => -1,
+	],
 ];
 
 // searches for venue data in the nearplaces cache
@@ -411,7 +423,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
 			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN', 'Lidl Österreich', 'Downunder Gastronomie', 'Cafe Konditorei Gumpendorf',
 			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime', 'Zum alten Fassl', 'Wien 5., Margareten',
-			'Erbsenzählerei',
+			'Erbsenzählerei', 'Bierometer 2', 'broetchen4you.at', 'Restaurant.Bar', 'Würstelbox', 'Cafe Oben & Unten',
 		], '', $result['name']), ',.;_.-:"& ');
 		$name_clean_check = trim(str_ireplace([ 'restaurant', 'ristorante' ], '', $name));
 
