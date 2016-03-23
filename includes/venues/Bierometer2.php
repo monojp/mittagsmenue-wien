@@ -43,7 +43,7 @@ class Bierometer2 extends FoodGetterVenue {
 		}
 		//return error_log($data);
 
-		//$this->price = [ ];
+		$this->price = [ 5.8, 6.3 ];
 		//return error_log(print_r($this->price, true));
 
 		return ($this->data = $data);
