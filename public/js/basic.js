@@ -4,8 +4,7 @@ var oldVoteData = null;
 var voting_over_interval_multiplier = 1;
 var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
-var init_done = false;
-var init_max_delay = 30000;
+var location_max_delay = 10000;
 var nearplace_radius_default = 500;
 var nearplace_radius_max_default = 1000;
 
@@ -222,7 +221,7 @@ function sortVenuesAfterPosition(lat, lng) {
 
 	// get location diff for all venues
 	var locationDiffs = new Array();
-	$.each($('[class="venueDiv"]'), function() {
+	$.each($('.venueDiv'), function() {
 		var id = $(this).prop('id');
 		var latVenue = $(this).children('.lat').html();
 		var lngVenue = $(this).children('.lng').html();
@@ -265,10 +264,6 @@ function setLocation(location, force_geolocation, try_count) {
 		} else {
 			// sort venues
 			sortVenuesAfterPosition($('#lat').html(), $('#lng').html());
-
-			// locationReady event
-			usedGeolocation = false;
-			$(document).trigger('locationReady');
 		}
 		$.removeCookie('location');
 		return;
@@ -319,10 +314,8 @@ function setDistance(distance) {
 		// save distance in cookie
 		$.cookie('distance', distance, { expires: 7 });
 	}
+
 	// update shown venues
-	get_venues_distance();
-}
-function get_venues_distance() {
 	// current location
 	var lat = $('#lat').html();
 	var lng = $('#lng').html();
@@ -331,10 +324,11 @@ function get_venues_distance() {
 	// for each venue
 	var marker = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	var cnt = 0;
-	$.each($('[class="venueDiv"]'), function() {
+	$.each($('.venueDiv'), function() {
 		var latVenue = $(this).children('.lat').html();
 		var lngVenue = $(this).children('.lng').html();
 		var obj = $(this);
+		var title = $('.title', obj).text();
 
 		// get distance on clientside via JS
 		var distanceString = "";
@@ -473,11 +467,9 @@ function vote_settings_save() {
 
 // handle missing emoji replaces
 function emoji_update() {
-	head.ready([ 'emojione' ], function() {
-		$('.convert-emoji').not('[data-emoji-converted]').each(function() {
-			$(this).attr('data-emoji-converted', true);
-			$(this).html(emojione.toImage($(this).html()));
-		});
+	$('.convert-emoji').not('[data-emoji-converted]').each(function() {
+		$(this).attr('data-emoji-converted', true);
+		$(this).html(emojione.toImage($(this).html()));
 	});
 }
 
@@ -505,51 +497,8 @@ function venue_hide(id) {
 	$('#' + id).hide();
 }
 
-function init() {
-	// reset init flag
-	init_unhandled = false;
-	init_done = true;
-
-	// hide location info on small screens
-	if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
-		$('#location').hide();
-	}
-
-	// old ie warning (not supported by jquery 2.*)
-	var ie_version = detectIE();
-	if (ie_version && ie_version <= 8) {
-		alert('Bitte neueren Internet Explorer verwenden!');
-	}
-
-	// location ready event
-	var locationReadyFired = false;
-	$(document).on('locationReady', function() {
-		locationReadyFired = true;
-		// add distance user-venue to each venue
-		// also hides venues which are too far away
-		head.ready([ 'jquery_cookie' ], function() {
-			var distance = $.cookie('distance');
-
-			// default distance
-			if (typeof distance == 'undefined') {
-				distance = $('#distance_default').html();
-			}
-
-			setDistance(distance);
-
-			$('#loadingContainer').hide();
-		});
-
-		// replace @@lat_lng@@ placeholder in google maps hrefs
-		$('.lat_lng_link').each(function(index, value) {
-			var href = $(this).prop('href');
-			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
-			$(this).prop('href', href);
-		});
-	});
-
-	// start location stuff
-	head.ready([ 'jquery_cookie' ], function() {
+function init_cookie() {
+	$(document).ready(function() {
 		$.cookie.json = true; // we want to store json object for e.g. venue hiding
 
 		// hide user hidden venues
@@ -568,11 +517,126 @@ function init() {
 			setLocation(null, false, 0);
 		}
 	});
-	// fallback with timer if location ready event not fired
-	setTimeout(function() {
-		if (!locationReadyFired)
-			$(document).trigger('locationReady');
-	}, 10000);
+}
+
+function init_emoji() {
+	$(document).ready(function() {
+		// default options
+		emojione.ascii = true;
+		emojione.imageType = 'png';
+		//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
+		emojione.sprites = true;
+
+		// stop inits if input not found
+		if (!$("#noteInput").length) {
+			return;
+		}
+
+		// note input handles
+		$("#noteInput").on('keyup change input',function(e) {
+			updateNotePreview();
+		});
+		updateNotePreview();
+
+		// handle emoji replaces
+		emoji_update();
+
+		// emoji shortname textcomplete for note input
+		$.getJSON('emojione/emoji.json?1', function (emojiStrategy) {
+			// append custom keywords
+			emojiStrategy.toilet.keywords.push('heisl');
+			emojiStrategy.spaghetti.keywords.push('pasta');
+
+			// init input
+			$("#noteInput").textcomplete([ {
+				match: /\B:([\-+\w]*)$/,
+				search: function (term, callback) {
+					var results = [];
+					var results2 = [];
+					var results3 = [];
+					$.each(emojiStrategy,function(shortname,data) {
+						if (shortname.indexOf(term) > -1) {
+							results.push(shortname);
+						} else {
+							if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
+								results2.push(shortname);
+							} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
+								results3.push(shortname);
+							}
+						}
+					});
+
+					if (term.length >= 3) {
+						results.sort(function(a,b) { return (a.length > b.length); });
+						results2.sort(function(a,b) { return (a.length > b.length); });
+						results3.sort();
+					}
+					var newResults = results.concat(results2).concat(results3);
+
+					callback(newResults);
+				},
+				template: function (shortname) {
+					return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
+				},
+				replace: function (shortname) {
+					return ':'+shortname+': ';
+				},
+				index: 1,
+				maxCount: 10
+			}
+			],{
+				footer: '<a href="http://www.emoji.codes" target="_blank">Alle Anzeigen<span class="arrow">»</span></a>'
+			});
+		});
+	});
+}
+
+function init_datatables() {
+	$(document).ready(function() {
+		$('#table_stats').dataTable({
+			'order': [[ 4, 'desc' ]],
+			'dom': '<lfpti>',
+			'lengthChange': false,
+			'searching': true,
+			'fnDrawCallback': function (oSettings) {
+				/* change input type of the search field because of jquerymobile */
+				$('#table_stats_filter input').attr('type', 'text')
+						.attr('data-type', 'search');
+				$('#table_stats_filter input').textinput();
+			}
+		});
+		$('#table_stats').show();
+		$('#table_ingredients').dataTable({
+			'order': [[ 2, 'desc' ]],
+			'dom': '<lfpti>',
+			'lengthChange': false,
+			'searching': false
+		});
+		$('#table_ingredients').show();
+		$('#table_compositions').dataTable({
+			'order': [[ 2, 'desc' ]],
+			'dom': '<lfpti>',
+			'lengthChange': false,
+			'searching': false
+		});
+		$('#table_compositions').show();
+
+		$('#loader_stats').hide();
+	});
+};
+
+// handle init
+$(document).ready(function() {
+	// hide location info on small screens
+	if (width_device <= SHOW_DETAILS_MIN_WIDTH) {
+		$('#location').hide();
+	}
+
+	// old ie warning (not supported by jquery 2.*)
+	var ie_version = detectIE();
+	if (ie_version && ie_version <= 8) {
+		alert('Bitte neueren Internet Explorer verwenden!');
+	}
 
 	// show voting
 	if ($('#show_voting').length) {
@@ -670,93 +734,38 @@ function init() {
 			}, 0);
 		}
 	});
-
-	// emojione inits
-	head.ready([ 'textcomplete', 'emojione' ], function() {
-		// default options
-		emojione.ascii = true;
-		emojione.imageType = 'png';
-		//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
-		emojione.sprites = true;
-
-		// stop inits if input not found
-		if (!$("#noteInput").length) {
-			return;
-		}
-
-		// note input handles
-		$("#noteInput").on('keyup change input',function(e) {
-			updateNotePreview();
-		});
-		updateNotePreview();
-
-		// handle emoji replaces
-		emoji_update();
-
-		// emoji shortname textcomplete for note input
-		$.getJSON('emojione/emoji.json?1', function (emojiStrategy) {
-			// append custom keywords
-			emojiStrategy.toilet.keywords.push('heisl');
-			emojiStrategy.spaghetti.keywords.push('pasta');
-
-			// init input
-			$("#noteInput").textcomplete([ {
-				match: /\B:([\-+\w]*)$/,
-				search: function (term, callback) {
-					var results = [];
-					var results2 = [];
-					var results3 = [];
-					$.each(emojiStrategy,function(shortname,data) {
-						if (shortname.indexOf(term) > -1) {
-							results.push(shortname);
-						} else {
-							if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
-								results2.push(shortname);
-							} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
-								results3.push(shortname);
-							}
-						}
-					});
-
-					if (term.length >= 3) {
-						results.sort(function(a,b) { return (a.length > b.length); });
-						results2.sort(function(a,b) { return (a.length > b.length); });
-						results3.sort();
-					}
-					var newResults = results.concat(results2).concat(results3);
-
-					callback(newResults);
-				},
-				template: function (shortname) {
-					return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
-				},
-				replace: function (shortname) {
-					return ':'+shortname+': ';
-				},
-				index: 1,
-				maxCount: 10
-			}
-			],{
-				footer: '<a href="http://www.emoji.codes" target="_blank">Alle Anzeigen<span class="arrow">»</span></a>'
-			});
-		});
-	});
-}
-
-// INIT
-head.ready([ 'jquery' ], function() {
-	// handle already fired init event
-	if (init_unhandled) {
-		init();
-	}
-	// handle init event
-	$(document).on('init', function() {
-		init();
-	});
-	// handle delayed inits via timeout
-	window.setTimeout(function() {
-		if (!init_done) {
-			init();
-		}
-	}, init_max_delay);
 });
+
+// location ready event
+var locationReadyFired = false;
+$(document).on('locationReady', function() {
+	$(document).ready(function() {
+		locationReadyFired = true;
+		// add distance user-venue to each venue
+		// also hides venues which are too far away
+		var distance = $.cookie('distance');
+
+		// default distance
+		if (typeof distance == 'undefined') {
+			distance = $('#distance_default').html();
+		}
+
+		setDistance(distance);
+
+		$('#loadingContainer').hide();
+
+		// replace @@lat_lng@@ placeholder in google maps hrefs
+		$('.lat_lng_link').each(function(index, value) {
+			var href = $(this).prop('href');
+			href = href.replace('@@lat_lng@@', $('#lat').html() + ',' + $('#lng').html());
+			$(this).prop('href', href);
+		});
+	});
+});
+
+// fallback with timer if location ready event not fired
+setTimeout(function() {
+	if (!locationReadyFired) {
+		$(document).trigger('locationReady');
+	}
+}, location_max_delay);

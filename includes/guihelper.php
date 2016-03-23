@@ -67,7 +67,6 @@ function get_header_html() {
 	// basic css and javascript
 	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
 	$basic_css = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
-	$head_load_js = USE_MINIMZED_JS_CSS_HTML ? '/js/head.load.min.js' : '/js/head.load.js';
 	$basic_js = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js' : '/js/basic.js';
 
 	// css
@@ -81,24 +80,15 @@ function get_header_html() {
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/sprites/emojione.sprites.css') . '" />';
 	// javascript
 	if (!isset($_GET['minimal']))
-		$response .= '<script src="' . cacheSafeUrl($head_load_js) . '" type="text/javascript"></script>
-			<script type="text/javascript">
-				var init_unhandled = false;
-				head.load([{jquery: "' . cacheSafeUrl('/js/jquery-2.2.1.min.js') . '"}], function() {
-					$("#page_main").on("pagecreate", function() {
-						$(document).trigger("init");
-						init_unhandled = true;
-					});
-					head.load([
-						{jquery_mobile: "' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"},
-						{basic: "' . cacheSafeUrl($basic_js) . '"},
-						{jquery_cookie: "' . cacheSafeUrl('/js/jquery.cookie.js') . '"},
-						{jquery_datatables: "' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '"},
-						{textcomplete: "' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '"},
-						{emojione: "' . cacheSafeUrl('/emojione/emojione.min.js') . '"}
-					]);
-				});
-			</script>';
+		$response .= '
+			<script src="' . cacheSafeUrl('/js/jquery-2.2.2.min.js') . '"></script>
+			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
+			<script src="' . cacheSafeUrl($basic_js) . '"></script>
+			<script src="' . cacheSafeUrl('/js/jquery.cookie.js') . '" async="async" onload="init_cookie()"></script>
+			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
+			<script src="' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '" async="async"></script>
+			<script src="' . cacheSafeUrl('/emojione/emojione.min.js') . '" async="async" onload="init_emoji()"></script>
+		';
 
 	// minimal site and votes allowed, refresh every 10s
 	if (isset($_GET['minimal']) && show_voting()) {

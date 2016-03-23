@@ -169,45 +169,6 @@ if (!empty($diff)) {
 	echo '<small>Abfrage erfolgte in ' . round($diff, 2) . ' Sekunden</small>';
 }
 
-?>
-<script type="text/javascript">
-	head.ready([ 'jquery_datatables' ], function() {
-		$(document).ready(function() {
-			$('#table_stats').dataTable({
-				'order': [[ 4, 'desc' ]],
-				'dom': '<lfpti>',
-				'lengthChange': false,
-				'searching': true,
-				'fnDrawCallback': function (oSettings) {
-					/* change input type of the search field because of jquerymobile */
-					$('#table_stats_filter input').attr('type', 'text')
-							.attr('data-type', 'search');
-					$('#table_stats_filter input').textinput();
-				}
-			});
-			$('#table_stats').show();
-			$('#table_ingredients').dataTable({
-				'order': [[ 2, 'desc' ]],
-				'dom': '<lfpti>',
-				'lengthChange': false,
-				'searching': false
-			});
-			$('#table_ingredients').show();
-			$('#table_compositions').dataTable({
-				'order': [[ 2, 'desc' ]],
-				'dom': '<lfpti>',
-				'lengthChange': false,
-				'searching': false
-			});
-			$('#table_compositions').show();
-
-			$('#loader_stats').hide();
-		});
-	});
-</script>
-
-<?php
-
 echo "	</div>";
 echo "	<div data-role='footer'>" . get_footer_html() . "</div>";
 echo "</div>";
