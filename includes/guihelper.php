@@ -38,7 +38,7 @@ function get_venues_html() {
 		//new Lambrecht(),
 		new CafeAmacord(),
 		//new Gondola(), // unparsbar zurzeit (spalten-pdf)
-		new RadioCafe(),
+		//new RadioCafe(), // encoding-probleme
 		new Stoeger(),
 		//new MINIRESTAURANT(),
 		new Erbsenzaehlerei(),
