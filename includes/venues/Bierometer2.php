@@ -34,6 +34,9 @@ class Bierometer2 extends FoodGetterVenue {
 		}
 		//return error_log($dataTmp);
 
+		// strip full dates (which appear in the page header)
+		$dataTmp = preg_replace('/\d{2}\.\d{2}\.\d{4}/', '', $dataTmp);
+
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp,
 				date('d', strtotime('+1 day', $this->timestamp)),
