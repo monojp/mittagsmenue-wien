@@ -25,17 +25,20 @@ $valid_actions = array(
 );
 
 // get action paramter
-if (count($argv) == 2)
+if (count($argv) == 2) {
 	$action = trim($argv[1]);
-if (!isset($action) || !$action)
+}
+if (!isset($action) || !$action) {
 	$action = get_var('action');
-if (!in_array($action, $valid_actions))
+}
+if (!in_array($action, $valid_actions)) {
 	exit("error, parameter action [" . implode('|', $valid_actions) . "] invalid!\n");
+}
 
 $votes = getAllVotes();
 
 // build mail headers
-$headers = array();
+$headers = [];
 $headers[] = 'From: ' . mail_encode_utf8(META_KEYWORDS) . '<' . SITE_FROM_MAIL . '>';
 $headers[] = "MIME-Version: 1.0";
 $headers[] = "Content-type: text/html; charset=utf-8";
@@ -80,10 +83,12 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 
 		$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 		if (!$success) {
-			echo "error sending email to {$email}";
+			error_log("error sending email to {$email}");
+		} else {
+			error_log("sent notify email to ${email}");
 		}
 	// remind
-	} else if ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
+	} elseif ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
 		// build html
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
@@ -91,17 +96,19 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 
 		$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 		if (!$success) {
-			echo "error sending email to {$email}";
+			error_log("error sending email to {$email}");
+		} else {
+			error_log("sent remind email to ${email}");
 		}
 	// dryrun to check who will get emails
-	} else if ($action == 'dryrun') {
+	} elseif ($action == 'dryrun') {
 		if ($vote_reminder && !isset($votes[$ip])) {
 			echo "would send a remind email to {$email}\n";
-		} else if ($votes && !empty($votes)) {
+		} elseif ($votes && !empty($votes)) {
 			echo "would send a notify email to {$email}\n";
 		}
 	// remind html output test
-	} else if ($action == 'remind_html_test') {
+	} elseif ($action == 'remind_html_test') {
 		$html = vote_summary_html($votes, true, false, true);
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
 		$html = html_compress($html);
