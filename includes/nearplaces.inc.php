@@ -94,7 +94,7 @@ $custom_venues = [
 		'website' => 'http://www.chinazentrum-naschmarkt.at/',
 		'reference' => -1,
 	],
-	[
+	/*[
 		'id' => -8,
 		'geometry' => [
 			'location' => [
@@ -105,7 +105,7 @@ $custom_venues = [
 		'name' => 'New Point',
 		'website' => 'http://www.newpointrestaurant.at/',
 		'reference' => -1,
-	],
+	],*/
 	[
 		'id' => -9,
 		'geometry' => [
@@ -118,7 +118,7 @@ $custom_venues = [
 		'website' => 'http://www.gondola.at/',
 		'reference' => -1,
 	],
-	[
+	/*[
 		'id' => -10,
 		'geometry' => [
 			'location' => [
@@ -129,8 +129,8 @@ $custom_venues = [
 		'name' => 'Erbsenzählerei',
 		'website' => 'http://www.xn--die-erbsenzhlerei-0qb.at/',
 		'reference' => -1,
-	],
-	[
+	],*/
+	/*[
 		'id' => -11,
 		'geometry' => [
 			'location' => [
@@ -141,7 +141,7 @@ $custom_venues = [
 		'name' => 'Bierometer 2',
 		'website' => 'http://www.bierometer-2.at/',
 		'reference' => -1,
-	],
+	],*/
 	[
 		'id' => -12,
 		'geometry' => [
@@ -398,37 +398,30 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		}
 
 		// clean name from unwanted stuff
-		$name = trim(str_ireplace([
-			'silberwirt', 'margareta', 'altes fassl', 'aus:klang', 'delicious monster', 'haas beisl', 'Haasbeisl', 'kunsthallencafé', 'taste of india',
-			'zum schwarzer adler', 'schlossquadrat', 'Nam Nam', 'Restaurant Waldviertlerhof Josef Krenn Ges.m.b.H.',
-			'Schloss Schönbrunn Konzerte', 'betriebs . nfg. keg', 'ges.m.b.h', 'ges.mbh', 'gesmbh', 'gmbh', 'm.b.h', 'immobilien', 'e.u', 'weinbar', 'gesellschaft',
-			'gasthaus', 'brauerei', 'Betriebs . Nfg. KEG', 'Co KG', 'betriebs', 'Billa AG', 'Billa Aktien', 'Brabenetz & Dirnwöber',
-			'm. islam kg', 'andreas gruber', 'Schnaps- Club Hofstöckl', 'Wien - Margit Köffler', 'Göd Manfred', 'keg', 'hans rudolf siegl',
-			'fairleih', 'eventausstattung', 'tchibo / eduscho filiale', 'Billa', 'Penny Markt', 'Osteria Vinoteca Panarea', 'Little Stage',
-			'Zum Stöger', 'Lidl Austria', 'Inh. Kaya Aydin', 'SPAR Österreichische Warenhandels-AG', 'WerkzeugH', '- BAR - ENOTECA', 'Motto Club-Restaurant-Bar',
-			'Waldviertlerhof', 'conceptspace', 'Public-theplacetobe', 'Ankerbrot AG', 'International Limited', 'Espresso Italiano', 'Oxy Zentrum', 'Pizza Hotline',
-			'Burger Bring', 'LA VITA È BELLA', 'Rori\'s Finest Sweets', 'Pizza Da Capo', 'Motto', 'Bäckerei Cafe Felzl', 'Cafe 60', 'Vinothek Pub Klemo', 'Café Standard',
-			'Collina Vienna', 'Cafe Willendorf', 'Pizzeria La Carne', 'Deli', 'Il Cantuccino', 'Mokador Caffe', 'Home Made - Grocery & Café', 'Schnipi Schnitzel- u Pizzazustellung',
-			'Rosa Lila Tip', 'Senhor Vinho', 'Gergely\'s', 'Chicken King & Makara Noodle', 'Vinoteca Tropea - Vienna', 'Schlupfwinkel Abendbeisl', 'Andino', 'Lehmberg',
-			'Battello', 'Aromat', 'MINIRESTAURANT', 'Natraj - indischer Lieferservice', 'Bonbon et Chocolat', 'Cafe Restaurant Horvath', 'Finkh', 'Brass Monkey',
-			'Indisches Restaurant Mirchi', 'Cafe Jelinek', 'Fleischerei Friedrich Szabo', 'Mami\'s Möhspeis', 'Fleischboutique', 'Celeste Cafe', 'Spar-supermarkt',
-			'Radatz Filiale Wiedner Hauptstraße', 'Erste Wiener Katzenambulanz Mag. med vet Ingrid Harant', 'Naturprodukte Wallner', 'NIPPON YA Handels',
-			'BOBBY\'S Foodstore - Your British and American Foodstore', 'NH Atterseehaus', 'Restaurant Schwarzer Adler', 'pentahotel Vienna', 'Rudi\'s Beisl',
-			'Café Rüdigerhof', 'Cafe Siebenbrunnen', 'Café Wortner Kaffeehaus', 'Wieden Bräu', 'Cafe Savoy', 'Frascati Pizzeria Gelateria', 'Café Ritter',
-			'Schick Hotel Erzherzog Rainer', 'Restaurant Wiener Wirtschaft', 'Cafe Drechsler', 'Johnny\'s Pub', 'Restaurant Goldene Glocke', 'Tchibo Filiale',
-			'Vinothek La Cave', 'Bar Tabacchi', 'PizzaMann', 'Hofer', 'Weinschenke', 'Trattoria Pizzeria Blaue Lagune', 'Délices du midi', 'Conti & Co',
-			'Yak und Yeti', 'LioUnge', 'Pizza John', 'Trzesniewski', 'Cafe Cherie', 'Restaurant To Syrtaki', 'McDonald\'s', 'SnackBerry', 'Hotel NH Wien Atterseehaus',
-			'Admiral Sportwetten', 'Wolf', 'Tanzcafe Jenseits', 'Hotel NH Wien Atterseehaus Suites', 'Woracziczky', 'Pizza Mann Wien 5', 'Restaurant Maria Rosa',
-			'Cafe Amacord', 'Ristorante Gondola', 'K.Ö.St.V. Herulia Wien', 'Fadista Dos Santos', 'Tien Tsin, Chinarestaurant', 'Restaurant z d 3 Buchteln',
-			'Tapasta, Leben zwischendurch', 'Admiral Wettcafé', 'Sopile', 'Thai Kitchen Restaurant', 'Restaurant Zum Andreas', 'Ubl', 'BANGKOK-VIENNA', 'Entler',
-			'Chang Ya-hui', 'Beograd', 'Sopile', 'Artner', 'Cafe Restaurant CASPIAN', 'Lidl Österreich', 'Downunder Gastronomie', 'Cafe Konditorei Gumpendorf',
-			'Keke´s Bar', 'Leschanz G.. Wiener Schokoladen Manufaktur', 'Hotel NH Wien Zentrum', 'The Breakfastclub', 'Winetime', 'Zum alten Fassl', 'Wien 5., Margareten',
-			'Erbsenzählerei', 'Bierometer 2', 'broetchen4you.at', 'Restaurant.Bar', 'Würstelbox', 'Cafe Oben & Unten',
+		$name = trim(str_replace([ 'Little Stage', 'WerkzeugH', 'Osteria Vinoteca Panarea',
+			'Bar Tabacchi', 'Zum Stöger e.U', 'Vinoto', 'La Casa Grande - Cucina Di Tino', 'Victor',
+			'Gregors Konditorei', 'Admiral Wettcafé', 'Tanzcafe Jenseits', 'Gergely\'s', 'Ströck',
+			'Anker Snack & Coffee Gastronomiebetriebs GmbH', 'Tchibo Filiale', 'Rori\'s Margareten',
+			'Restaurant Schwarzer Adler', 'Die Erbsenzählerei', 'Pizza Hotline', 'Burger Bring',
+			'Schnaps-Bar Club Hofstöckl', 'Margareta', 'Silberwirt', 'Partyservice Schlögl', 'SPAR',
+			'LA VITA È BELLA - BAR - ENOTECA', 'Vinothek La Cave', 'broetchen4you.at', 'BILLA AG',
+			'Pizza Da Capo', 'Woracziczky Gasthaus', 'Pizza Mann Wien 5', 'Schlacher Event OG',
+			'Hofer Wien 5., Margareten', 'Bäckerei Cafe Felzl', 'McDonald\'s', 'Zum alten Fassl',
+			'Motto - Restaurant.Bar', 'ristorante GONDOLA', 'FAIRLEIH - Eventausstattung', 'Aromat',
+			'Flying Diner 1050', 'Senhor Vinho', 'Café Standard', 'Waldviertlerhof', 'HaasBeisl',
+			'SPAR Supermarkt', 'Flying Diner', 'Weinbar - Vinothek Pub Klemo', 'Pizzeria La Carne',
+			'Nam Nam Deli', 'Supermarkt', 'Lidl Österreich GmbH', 'Public-theplacetobe', 'Winzig',
+			'Mc. Curry', 'Schlupfwinkel Abendbeisl', 'Café Rüdigerhof', 'Restaurant Goldene Glocke',
+			'Rudi\'s Beisl', 'Nam Nam', 'Restaurant Zum Andreas Hofer', 'Eduard Fruth',
+			'Wald/4 ler Stub\'n', 'Pro Vino Lang & Partner KG - Vinothek und Weinhandel', 'Entler',
+			'TIP TOP TABLE GmbH', 'Cafe Jelinek', 'Pizzeria Tanti Saluti', 'Bangkok Vienna',
+			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin',
+			'Kulinario - Vinzenz Gruppe Service GmbH (Geschäftsbereich Küchen Wien)', 'Wieden Bräu',
+			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter',
 		], '', $result['name']), ',.;_.-:"& ');
-		$name_clean_check = trim(str_ireplace([ 'restaurant', 'ristorante' ], '', $name));
 
 		// name empty
-		if (empty($name) || empty($name_clean_check)) {
+		if (empty($name)) {
 			continue;
 		}
 
