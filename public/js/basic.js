@@ -527,6 +527,9 @@ function init_emoji() {
 		//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
 		emojione.sprites = true;
 
+		// handly emoji replaces
+		emoji_update();
+
 		// stop inits if input not found
 		if (!$("#noteInput").length) {
 			return;
@@ -537,9 +540,6 @@ function init_emoji() {
 			updateNotePreview();
 		});
 		updateNotePreview();
-
-		// handle emoji replaces
-		emoji_update();
 
 		// emoji shortname textcomplete for note input
 		$.getJSON('emojione/emoji.json?1', function (emojiStrategy) {

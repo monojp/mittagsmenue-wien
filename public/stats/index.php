@@ -68,7 +68,7 @@ if (is_intern_ip()) {
 	</tr></thead><tbody>';
 	foreach ($stats as $stat_entry) {
 		echo "<tr>
-			<td>{$stat_entry['category']}</td>
+			<td class='convert-emoji'>{$stat_entry['category']}</td>
 			<td class='center'>{$stat_entry['cnt_up']}</td>
 			<td class='center'>{$stat_entry['cnt_down']}</td>
 			<td class='center'>{$stat_entry['ratio']}</td>
