@@ -85,7 +85,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 		if (!$success) {
 			log_debug("error sending email to {$email}");
 		} else {
-			error_log("sent notify email to ${email}");
+			log_debug("sent notify email to ${email}");
 		}
 	// remind
 	} elseif ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
@@ -96,9 +96,9 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 
 		$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
 		if (!$success) {
-			error_log("error sending email to {$email}");
+			log_debug("error sending email to {$email}");
 		} else {
-			error_log("sent remind email to ${email}");
+			log_debug("sent remind email to ${email}");
 		}
 	// dryrun to check who will get emails
 	} elseif ($action == 'dryrun') {
