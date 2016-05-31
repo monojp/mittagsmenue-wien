@@ -963,3 +963,10 @@ function getStartAndEndDate($week, $year) {
 	$ret[] = $dto->format('Y-m-d');
 	return $ret;
 }
+function log_debug($string) {
+        $string = trim($string);
+        $site_title_clean = strtolower(iconv('utf-8', 'ascii//TRANSLIT', SITE_TITLE));
+        file_put_contents(sys_get_temp_dir() . '/' . $site_title_clean,
+                        date('r') . ': ' . $string . "\n",
+                        FILE_APPEND);
+}

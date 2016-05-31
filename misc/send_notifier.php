@@ -83,7 +83,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 
 		$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
 		if (!$success) {
-			error_log("error sending email to {$email}");
+			log_debug("error sending email to {$email}");
 		} else {
 			error_log("sent notify email to ${email}");
 		}
