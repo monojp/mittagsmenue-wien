@@ -603,6 +603,9 @@ function init_datatables() {
 				$('#table_stats_filter input').attr('type', 'text')
 						.attr('data-type', 'search');
 				$('#table_stats_filter input').textinput();
+				if (typeof emojione != 'undefined') {
+					emoji_update();
+				}
 			}
 		});
 		$('#table_stats').show();
