@@ -564,6 +564,7 @@ abstract class FoodGetterVenue {
 			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
 			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
 			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
+			'Bombay Aloo',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
