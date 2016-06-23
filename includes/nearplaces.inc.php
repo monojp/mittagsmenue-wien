@@ -314,12 +314,12 @@ function nearplace_cache_read($lat, $lng, $radius) {
 		return $data;
 	}
 
-	// if younger than 1 week, radius +- 100 m and lat/lng distance +- 100 m, return cache entry
+	// if younger than 1 day, radius +- 100 m and lat/lng distance +- 100 m, return cache entry
 	foreach ((array)$data as $cache_key => $cache_entry) {
 		$cache_key = explode('|', $cache_key);
 		if (
 			count($cache_key) == 4 &&
-			$cache_key[3] >= strtotime('-1 week') &&
+			$cache_key[3] >= strtotime('-1 day') &&
 			abs($cache_key[2] - $radius) <= 100 &&
 			distance($cache_key[0], $cache_key[1], $lat, $lng, false) * 1000 <= 100
 		) {
@@ -418,6 +418,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin',
 			'Kulinario - Vinzenz Gruppe Service GmbH (Geschäftsbereich Küchen Wien)', 'Wieden Bräu',
 			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter',
+			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty
