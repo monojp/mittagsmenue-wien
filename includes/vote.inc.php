@@ -26,7 +26,7 @@ function ip_username_sort($a, $b) {
 function returnVotes($votes) {
 	global $voting_over_time;
 
-	if (!empty($votes)) {
+	if (is_array($votes) && !empty($votes)) {
 		if (is_array($votes)) {
 			uksort($votes, 'ip_username_sort');
 		}
@@ -232,7 +232,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 	$html = '';
 
 	// no votes yet
-	if (empty($votes)) {
+	if (!is_array($votes) || empty($votes)) {
 		return "<div style='margin: 5px'>Noch keine Daten vorhanden</div>";
 	}
 
