@@ -9,7 +9,7 @@ class SchlossquadratMargareta extends FoodGetterVenue {
 		$this->addressLng = 16.3588115;
 		$this->url = 'http://www.margareta.at/';
 		$this->dataSource = 'http://www.margareta.at/pdf.php?days=23';
-		$this->menu = 'http://www.margareta.at/fileadmin/files/margareta/pdf/KAMargareta151001.pdf';
+		$this->menu = 'http://www.margareta.at/fileadmin/files/margareta/pdf/KAMargareta160501.pdf';
 		$this->statisticsKeyword = 'margareta';
 		$this->no_menu_days = [ 0 ];
 		$this->lookaheadSafe = true;
