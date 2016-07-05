@@ -40,7 +40,7 @@ class Bierometer2 extends FoodGetterVenue {
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp,
 				date('d', strtotime('+1 day', $this->timestamp)),
-				[ '©', 'Bierometer', 'NEWSLETTER' ]);
+				[ 'MENÜ-ALTERNATIVE', 'NEWSLETTER', 'Bierometer', '©' ]);
 		if (!$data || is_numeric($data)) {
 			return ($this->data = $data);
 		}
