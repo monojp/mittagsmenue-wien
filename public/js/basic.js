@@ -542,7 +542,7 @@ function init_emoji() {
 		updateNotePreview();
 
 		// emoji shortname textcomplete for note input
-		$.getJSON('emojione/emoji.json?1', function (emojiStrategy) {
+		$.getJSON('emojione/emoji.json?2', function (emojiStrategy) {
 			// append custom keywords
 			emojiStrategy.toilet.keywords.push('heisl');
 			emojiStrategy.spaghetti.keywords.push('pasta');
@@ -555,18 +555,18 @@ function init_emoji() {
 					var results2 = [];
 					var results3 = [];
 					$.each(emojiStrategy,function(shortname,data) {
-						if (shortname.indexOf(term) > -1) {
-							results.push(shortname);
-						} else {
-							if (data.aliases !== null && data.aliases.indexOf(term) > -1) {
+						if(shortname.indexOf(term) > -1) { results.push(shortname); }
+						else {
+							if((data.aliases !== null) && (data.aliases.indexOf(term) > -1)) {
 								results2.push(shortname);
-							} else if (data.keywords !== null && data.keywords.indexOf(term) > -1) {
+							}
+							else if((data.keywords !== null) && (data.keywords.indexOf(term) > -1)) {
 								results3.push(shortname);
 							}
 						}
 					});
 
-					if (term.length >= 3) {
+					if(term.length >= 3) {
 						results.sort(function(a,b) { return (a.length > b.length); });
 						results2.sort(function(a,b) { return (a.length > b.length); });
 						results3.sort();
@@ -577,6 +577,7 @@ function init_emoji() {
 				},
 				template: function (shortname) {
 					return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
+					//return ' :'+shortname+':';
 				},
 				replace: function (shortname) {
 					return ':'+shortname+': ';
