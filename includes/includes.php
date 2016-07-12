@@ -271,7 +271,7 @@ function cleanText($text) {
 	}
 
 	// trim different types of characters and special whitespaces / placeholders
-	$text = trim($text, "á ., *\t\n\r\0"); // no unicode chars should be used here to avoid problems
+	$text = trim($text, "á .,*\t\n\r\0"); // no unicode chars should be used here to avoid problems
 
 	return $text;
 }
