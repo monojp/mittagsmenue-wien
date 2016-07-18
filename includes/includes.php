@@ -8,6 +8,7 @@ require_once(__DIR__ . '/UserHandler_MySql.php');
 require_once(__DIR__ . '/customuserid.inc.php');
 
 mb_internal_encoding('UTF-8');
+ini_set("user_agent", "Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0");
 
 // valid session for 3 hours
 $server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
@@ -271,7 +272,7 @@ function cleanText($text) {
 	}
 
 	// trim different types of characters and special whitespaces / placeholders
-	$text = trim($text, "á .,*\t\n\r\0"); // no unicode chars should be used here to avoid problems
+	$text = trim($text, "á .,*\t\n\r\0-<> "); // no unicode chars should be used here to avoid problems
 
 	return $text;
 }
