@@ -26,6 +26,7 @@ function custom_userid_generate($ip = null) {
 	}
 
 	// update user data and return new userid
-	UserHandler_MySql::getInstance()->update_custom_userid($ip, ( $userid_new = uniqid() ));
+	$userid_new = hash('sha1', uniqid() . time() . $ip . rand(0, 999999999));
+	UserHandler_MySql::getInstance()->update_custom_userid($ip, $userid_new);
 	return $userid_new;
 }

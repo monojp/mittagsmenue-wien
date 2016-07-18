@@ -57,6 +57,13 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN);
 
+	// get/generate custom_userid_access_url
+	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
+	if (!$custom_userid) {
+		$custom_userid = custom_userid_generate($ip);
+	}
+	$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
+
 	// no valid email
 	if (empty($email) || $email == 'null') {
 		continue;
@@ -66,13 +73,6 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	if ($voted_mail_only && !isset($votes[$ip])) {
 		continue;
 	}
-
-	// get/generate custom_userid_access_url
-	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
-	if (!$custom_userid) {
-		$custom_userid = custom_userid_generate($ip);
-	}
-	$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
 
 	// notify, votes exist and valid
 	if ($action == 'notify' && $votes && !empty($votes)) {
