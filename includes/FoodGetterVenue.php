@@ -202,13 +202,13 @@ abstract class FoodGetterVenue {
 						if (is_numeric($price)) {
 							$price = cleanText($price);
 							$price = str_replace(',', '.', $price);
-							$price = money_format('%.2n', $price);
+							$price = money_format('%.2n', floatval($price));
 						} else if (is_array($price)) {
 							foreach ($price as &$p) {
 								$p = trim($p, "/., \t\n\r\0\x0B");
 								$p = str_replace(',', '.', $p);
 								if (!empty($p))
-									$p = money_format('%.2n', $p);
+									$p = money_format('%.2n', floatval($p));
 							}
 							// remove empty values
 							$price = array_filter($price);
@@ -331,9 +331,13 @@ abstract class FoodGetterVenue {
 	// DATE CHECK HELPERS
 	// ------------------
 	protected function in_date_range_string($string, $timestamp, $start_format = '%d. %B', $end_format = '%d. %B') {
+		// strip week counter
+		$string = preg_replace('/kw[\d]{2}/i', '', $string);
+		// get dates to check out of string
 		preg_match('/[\d]+\.(.)+(-|—|–|bis)(.)*[\d]+\.(.)+/', $string, $date_check);
-		if (empty($date_check) || !isset($date_check[0]))
+		if (empty($date_check) || !isset($date_check[0])) {
 			return;
+		}
 		$date_check = explode_by_array(array('-', '—', '–', 'bis'), $date_check[0]);
 		$date_check = array_map('trim', $date_check);
 		$date_start = strtotimep($date_check[0], $start_format, $timestamp);
@@ -567,7 +571,7 @@ abstract class FoodGetterVenue {
 			'Bombay Aloo', 'Beef Palak',
 		];
 
-		$regex_price = '/[0-9,\. ]*(€|EUR|Euro|euro|Tagesteller|Fischmenü|preis|Preis)+[0-9,\. ]*/';
+		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü|preis)+[ ]*[0-9,\. ]*/i';
 
 		// remove multiple newlines
 		$dataTmp = preg_replace("/(\n)+/i", "\n", $dataTmp);
@@ -631,6 +635,7 @@ abstract class FoodGetterVenue {
 						'nur im haus', 'sehr geehrte', 'alle jahre wieder', 'location', 'feier',
 						'unterstützen', 'angebote', 'grüße', 'team', 'gerne', 'termin', 'details',
 						'anspruch', 'nummer', 'geöffnet', 'wünscht', 'frohe',
+						'Solange der Vorrat reicht',
 					], true))
 			) {
 				//error_log("skip ${food}");
@@ -705,6 +710,7 @@ abstract class FoodGetterVenue {
 			$food = cleanText($food);
 		}
 		unset($food);
+		//return error_log(print_r($foods, true)) && false;
 
 		// remove empty values
 		$foods = array_filter($foods);
