@@ -22,7 +22,7 @@ if ($action == 'user_config_set') {
 		} else {
 			UserHandler_MySql::getInstance()->update($ip, $name, $email, $vote_reminder, $voted_mail_only, $vote_always_show);
 		}
-		echo json_encode(array('alert' => js_message_prepare('Daten wurden gespeichert.')));
+		echo json_encode(true);
 	}
 // invalid action
 } else {

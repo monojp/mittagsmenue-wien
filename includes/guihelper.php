@@ -307,7 +307,9 @@ function get_vote_setting_html() {
 			</fieldset>
 			' . $custom_userid_gui_output . '
 			<br>
-			<button data-icon="check" onclick="vote_settings_save();">Speichern</button>';
+			<script>
+				$("#setVoteSettingsDialog input").on("change keyup", function() { vote_settings_save(); });
+			</script>';
 }
 
 function get_button_vote_summary_toggle_html() {
