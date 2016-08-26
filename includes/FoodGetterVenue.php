@@ -6,6 +6,7 @@ require_once(__DIR__ . '/FB_Helper.php');
 
 abstract class VenueStateSpecial {
 	const Urlaub = 100;
+	const None = 200;
 }
 
 /*
@@ -20,6 +21,7 @@ abstract class FoodGetterVenue {
 	protected $dataSource = null;
 	protected $menu = null;
 	protected $data = null;
+	protected $changed = null;
 	protected $date = null;
 	protected $price = null;
 	protected $statisticsKeyword = null;
@@ -28,6 +30,8 @@ abstract class FoodGetterVenue {
 	protected $dataFromCache = false;
 	protected $price_nested_info = null;
 	private $CSSid = null;
+
+	const SECONDS_EMPTY_CACHE = 300;
 
 	// constructor
 	// set date offset via get parameter
@@ -56,27 +60,40 @@ abstract class FoodGetterVenue {
 	// checks if the data is from today
 	// used for caching
 	protected function isDataUpToDate() {
+		// new today check
+		if ($this->date == date('Y-m-d', $this->timestamp)) {
+			return true;
+		}
+		// old today check
 		foreach ($this->get_today_variants() as $today) {
-			if ($this->date == $today)
+			if ($this->date == $today) {
 				return true;
+			}
 		}
 		return false;
 	}
 
 	// writes data to the cache
 	protected function cacheWrite() {
-		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->dataSource, $this->date, $this->price, $this->data);
+		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->dataSource,
+				date('Y-m-d', $this->timestamp), $this->price, $this->data);
 	}
 	// reads data from the cache
 	protected function cacheRead() {
-		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache($this->dataSource, $this->date, $this->price, $this->data);
+		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache(
+				$this->dataSource, $this->date, $this->price, $this->data,
+				$this->changed);
+		// reset too old empty cached data
+		if ($this->data == VenueStateSpecial::None
+				&& ($this->timestamp - strtotime($this->changed)) > self::SECONDS_EMPTY_CACHE) {
+			$this->data = null;
+			$this->dataFromCache = false;
+			CacheHandler_MySql::getInstance($this->timestamp)->deleteCache($this->dataSource);
+		}
 	}
 
 	private function isStateSpecial() {
-		return in_array(
-			$this->data, [
-				VenueStateSpecial::Urlaub,
-			]);
+		return in_array($this->data, [ VenueStateSpecial::Urlaub, VenueStateSpecial::None ]);
 	}
 
 	private function get_ajax_venue_code($date_GET, $cache = true) {
@@ -110,29 +127,27 @@ abstract class FoodGetterVenue {
 
 	public function parse_check() {
 		// data valid and ok, do nothing
-		if (
-			$this->data &&
-			($this->isDataUpToDate() || $this->isStateSpecial())
-		)
+		if ($this->data && ($this->isDataUpToDate() || $this->isStateSpecial())) {
 			return $this->data;
+		}
 
 		// another year, also do nothing. nevery parse another year!
-		if (date('Y') != date('Y', $this->timestamp))
+		if (date('Y') != date('Y', $this->timestamp)) {
 			return $this->data;
+		}
 
 		$currentWeekYear = date('YW');
-		$wantedWeekYear  = date('YW', $this->timestamp);
+		$wantedWeekYear = date('YW', $this->timestamp);
 
 		// old data in general, we don't want that
-		if ($wantedWeekYear < $currentWeekYear)
+		if ($wantedWeekYear < $currentWeekYear) {
 			return $this->data;
+		}
 
 		// not lookaheadsafe and different week, do nothing
-		if (
-			!$this->lookaheadSafe &&
-			$currentWeekYear != $wantedWeekYear
-		)
+		if (!$this->lookaheadSafe && $currentWeekYear != $wantedWeekYear) {
 			return $this->data;
+		}
 
 		return $this->parseDataSource();
 	}
@@ -150,46 +165,52 @@ abstract class FoodGetterVenue {
 		$this->cacheRead();
 
 		// not valid or old data
-		$data = $this->parse_check();
+		$this->data = $this->parse_check();
+
+		// handle empty data special in cache
+		if (empty($this->data)) {
+			$this->data = VenueStateSpecial::None;
+		}
 
 		// save special data to cache
-		if ($this->isStateSpecial() && !$this->dataFromCache)
+		if ($this->isStateSpecial() && !$this->dataFromCache) {
 			$this->cacheWrite();
+		}
 
 		// special state urlaub
-		if ($data == VenueStateSpecial::Urlaub)
+		if ($this->data == VenueStateSpecial::Urlaub) {
 			return '<span class="error">Geschlossen wegen Urlaub/Feiertag</span><br />';
-
-		//$data = create_ingredient_hrefs($data, $this->statisticsKeyword, 'menuData', false);
+		} elseif ($this->data == VenueStateSpecial::None) {
+			$this->data = null;
+		}
 
 		// normalize unicode
-		if (!Normalizer::isNormalized($data))
-			$data = Normalizer::normalize($data);
+		if (!Normalizer::isNormalized($this->data)) {
+			$this->data = Normalizer::normalize($this->data);
+		}
 
 		// replace html breaks with newlines
-		$data = str_replace($explodeNewLines, "\n", $data);
+		$this->data = str_replace($explodeNewLines, "\n", $this->data);
 
 		// convert special chars
-		$data = htmlspecialchars($data, ENT_HTML5 | ENT_DISALLOWED);
+		$this->data = htmlspecialchars($this->data, ENT_HTML5 | ENT_DISALLOWED);
 
 		// replace newlines with html breaks
-		$data = str_replace($explodeNewLines, '<br>', $data);
+		$this->data = str_replace($explodeNewLines, '<br>', $this->data);
 
 		// prepare return
 		$return = isset($_GET['minimal']) ? '<br>' : '';
 
-		if (
-			!empty($this->data) &&
-			$this->isDataUpToDate()
-		) {
+		if (!empty($this->data) && $this->isDataUpToDate()) {
 			// not from cache? => write back
-			if (!$this->dataFromCache)
+			if (!$this->dataFromCache) {
 				$this->cacheWrite();
+			}
 
 			$return .= "<div class='menu '>
 					<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle' style='color: inherit ! important;'>Angebot:</a>
 					<span> </span>
-					<span class='menuData convert-emoji'>{$data}</span>
+					<span class='menuData convert-emoji'>{$this->data}</span>
 				</div>";
 
 			if ($this->price || $this->menu) {
@@ -214,7 +235,11 @@ abstract class FoodGetterVenue {
 							$price = array_filter($price);
 							if (count($price) > 1) {
 								$price_imploded = implode(' / ', $price);
-								$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}: {$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
+								if (!isset($_GET['minimal'])) {
+									$price = "<a class='color_inherit' title='{$this->price_nested_info}' onclick='alert(\"{$this->price_nested_info}: {$price_imploded}\")' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
+								} else {
+									$price = "<a class='color_inherit' title='{$this->price_nested_info}' style='color: inherit ! important;'>({$price_imploded})<span class='raised'>i</span></a>";
+								}
 							} else if (!empty($price)) {
 								$price = '<span>' . reset($price) . '</span>';
 							}
@@ -282,7 +307,9 @@ abstract class FoodGetterVenue {
 		if ($this->title_notifier) {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		}
-		$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->CSSid}\");' style='color: red ! important'>x</a></sup>";
+		if (!isset($_GET['minimal'])) {
+			$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->CSSid}\");' style='color: red ! important'>x</a></sup>";
+		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
 			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
@@ -404,10 +431,10 @@ abstract class FoodGetterVenue {
 	 */
 	protected function get_holiday_count($string) {
 		$string = mb_strtolower($string);
-		$string = str_replace([ "'", '"', '`', '´' ], '', $string);
+		$string = str_replace([ "'", '"', '`', '´', ' ' ], '', $string);
+
 		return (
 			mb_substr_count($string, 'feiertag') +
-			mb_substr_count($string, 'f e i e r t a g') +
 			mb_substr_count($string, 'urlaub') +
 			//mb_substr_count($string, 'geöffne') + // for e.g. Waldviertlerhof "Wir haben am 1. Mai geöffnet!" which is parsed as "ai geöffne"
 			mb_substr_count($string, 'weihnacht') +
@@ -454,14 +481,14 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'parfait') +
 			mb_substr_count($string, 'eisbecher') +
 			mb_substr_count($string, 'bananenschnitte') +
-			mb_substr_count($string, 'topfenstrudel')
+			mb_substr_count($string, 'topfenstrudel') +
+			mb_substr_count($string, 'fruchtsalat')
 		);
 	}
 
 	protected function parse_foods_inbetween_days($data, $string_next_day,
 			$string_last_day_next = [], $newline_replacer = "\n", $add_food_counts = true) {
 		$today_variants = $this->get_today_variants();
-		//return error_log(print_r($today_variants, true));
 
 		// convert next_day to an array
 		if (!is_array($string_next_day)) {
@@ -471,7 +498,6 @@ abstract class FoodGetterVenue {
 		if (!is_array($string_last_day_next)) {
 			$string_last_day_next = [ $string_last_day_next ];
 		}
-		//return error_log(print_r($string_last_day_next, true));
 
 		// replace some strings that may interfer with day parsing
 		$data = str_replace([ 'Montag-Samstag', 'Montag-Freitag' ], '', $data);
@@ -481,7 +507,6 @@ abstract class FoodGetterVenue {
 			// set date and stop if match found
 			if ($posStart !== false) {
 				//error_log("'${today}' found on pos ${posStart}");
-				$this->date = $today;
 				break;
 			}
 		}
@@ -568,10 +593,11 @@ abstract class FoodGetterVenue {
 			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
 			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
 			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
-			'Bombay Aloo', 'Beef Palak',
+			'Bombay Aloo', 'Beef Palak', 'Chicken Mushroom', 'Beef Dal', 'Chicken Curry',
+			'Fish Adriaki', 'Raj Mah',
 		];
 
-		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü|preis)+[ ]*[0-9,\. ]*/i';
+		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü)+[ ]*[0-9,\. ]*/i';
 
 		// remove multiple newlines
 		$dataTmp = preg_replace("/(\n)+/i", "\n", $dataTmp);
@@ -665,24 +691,18 @@ abstract class FoodGetterVenue {
 			) {
 				$data_lines = explode_by_array($newline_replacer, $data);
 				// do newline replacers when the output string is not empty
-				// AND whole menu contains a number marker and new food doesn't (avoids problems with menus stretching over multiple lines)
-				if (
-					!empty($data) &&
-					(!stringsExist($data, $number_markers) || stringsExist($food, $number_markers))
-				) {
+				// OR whole menu contains a number marker and new food doesn't (avoids problems with menus stretching over multiple lines)
+				if (!empty($data) || (stringsExist($data, $number_markers)
+						&& !stringsExist($food, $number_markers))) {
 					// we are continuing the old food here
-					if (
-						mb_stripos($food, 'mit')  === 0 || endswith($data, 'mit')  ||
-						mb_stripos($food, 'dazu') === 0 || endswith($data, 'dazu') ||
-						mb_stripos($food, 'und')  === 0 || endswith($data, 'und') ||
-						mb_stripos($food, 'auf')  === 0 || endswith($data, 'auf')
-					) {
+					if (mb_strpos($food, 'mit')  === 0 || endswith($data, 'mit')
+							|| mb_strpos($food, 'dazu') === 0 || endswith($data, 'dazu')
+							|| mb_strpos($food, 'und')  === 0 || endswith($data, 'und')
+							|| mb_strpos($food, 'auf')  === 0 || endswith($data, 'auf')) {
 						$data .= ' ';
 					// we have a food part and title that is already written
-					} else if (
-						stringsExist(end($data_lines), $foods_title)
-						&& !stringsExist($food, $foods_title)
-					) {
+					} elseif (stringsExist(end($data_lines), $foods_title)
+							&& !stringsExist($food, $foods_title)) {
 						$data .= ': ';
 					// use default newline replacer
 					} else {
@@ -823,6 +843,12 @@ abstract class FoodGetterVenue {
 			// use whole fp post
 			$data = str_replace("\n", "<br />", $message);
 		}
+
+		// check if holiday
+		if ($this->get_holiday_count($data)) {
+			return VenueStateSpecial::Urlaub;
+		}
+
 		return $data;
 	}
 

@@ -41,7 +41,7 @@ class CacheHandler_MySql extends CacheHandler {
 		$priceDB = json_encode($price);
 
 		// prepare statement
-		if (!($stmt = $this->db->prepare("INSERT INTO foodCache VALUES (?, ?, ?, ?, ?)"))) {
+		if (!($stmt = $this->db->prepare("INSERT INTO foodCache VALUES (?, ?, ?, ?, ?, NOW())"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		}
 		// bind params
@@ -55,7 +55,7 @@ class CacheHandler_MySql extends CacheHandler {
 		$stmt->free_result();
 	}
 
-	public function getFromCache($dataSource, &$date, &$price, &$data) {
+	public function getFromCache($dataSource, &$date, &$price, &$data, &$changed) {
 		if (!$this->db_ok()) {
 			return;
 		}
@@ -63,7 +63,7 @@ class CacheHandler_MySql extends CacheHandler {
 		$timestamp = date('Y-m-d', $this->timestamp);
 
 		// prepare statement
-		if (!($stmt = $this->db->prepare("SELECT date, price, data FROM foodCache WHERE timestamp=? AND dataSource=?"))) {
+		if (!($stmt = $this->db->prepare("SELECT date, price, data, changed FROM foodCache WHERE timestamp=? AND dataSource=?"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		}
 		// bind params
@@ -75,7 +75,7 @@ class CacheHandler_MySql extends CacheHandler {
 			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// bind result variables
-		if (!$stmt->bind_result($date, $price, $data)) {
+		if (!$stmt->bind_result($date, $price, $data, $changed)) {
 			return error_log("Binding results failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// fetch results
@@ -122,11 +122,36 @@ class CacheHandler_MySql extends CacheHandler {
 		$priceDB = json_encode($price);
 
 		// prepare statement
-		if (!($stmt = $this->db->prepare("UPDATE foodCache SET date=?, price=?, data=? WHERE timestamp=? AND dataSource=?"))) {
+		if (!($stmt = $this->db->prepare("UPDATE foodCache SET date=?, price=?, data=?, changed=NOW() WHERE timestamp=? AND dataSource=?"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		}
 		// bind params
-		if (!$stmt->bind_param("sssss", $timestamp, $dataSource, $date, $priceDB, $data)) {
+		if (!$stmt->bind_param("sssss", $date, $priceDB, $data, $timestamp, $dataSource)) {
+			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		// execute
+		if (!$stmt->execute()) {
+			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
+		}
+		$stmt->free_result();
+	}
+
+	public function deleteCache($dataSource) {
+		if (!$this->db_ok()) {
+			return;
+		}
+
+		$timestamp = date('Y-m-d', $this->timestamp);
+		// update 2013-07-23: use json instead of serialized data
+		// because of better read- & editability
+		$priceDB = json_encode($price);
+
+		// prepare statement
+		if (!($stmt = $this->db->prepare("DELETE FROM foodCache WHERE timestamp=? AND dataSource=?"))) {
+			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
+		}
+		// bind params
+		if (!$stmt->bind_param("ss", $timestamp, $dataSource)) {
 			return error_log("Binding parameters failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// execute

@@ -107,4 +107,5 @@ $searchReplace = array(
 	'tagessuppe oder salat & dessert' => '(tagessuppe | salat) & dessert',
 	'Menü 1' => '',
 	'Menü 2' => '',
+	' Vegan' => '', // TasteOfIndia info
 );
