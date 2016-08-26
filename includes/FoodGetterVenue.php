@@ -85,7 +85,7 @@ abstract class FoodGetterVenue {
 				$this->changed);
 		// reset too old empty cached data
 		if ($this->data == VenueStateSpecial::None
-				&& ($this->timestamp - strtotime($this->changed)) > self::SECONDS_EMPTY_CACHE) {
+				&& (time() - strtotime($this->changed)) > self::SECONDS_EMPTY_CACHE) {
 			$this->data = null;
 			$this->dataFromCache = false;
 			CacheHandler_MySql::getInstance($this->timestamp)->deleteCache($this->dataSource);
@@ -482,7 +482,9 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'eisbecher') +
 			mb_substr_count($string, 'bananenschnitte') +
 			mb_substr_count($string, 'topfenstrudel') +
-			mb_substr_count($string, 'fruchtsalat')
+			mb_substr_count($string, 'fruchtsalat') +
+			mb_substr_count($string, 'zwetschkenfleck') +
+			mb_substr_count($string, 'zwetschkentraum')
 		);
 	}
 
