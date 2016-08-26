@@ -3,6 +3,8 @@
 require_once(__DIR__ . '/../includes/includes.php');
 require_once(__DIR__ . '/../includes/vote.inc.php');
 
+mb_language('uni');
+
 function wrap_in_email_html($body, $custom_userid_access_url) {
 	$css_basic = file_get_contents(__DIR__ . '/../public/css/basic.css');
 	$html = '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
@@ -13,16 +15,7 @@ function wrap_in_email_html($body, $custom_userid_access_url) {
 	return $html;
 }
 
-function mail_encode_utf8($string) {
-	return '=?utf-8?b?' . base64_encode($string) . '?=';
-}
-
-$valid_actions = array(
-	'remind',
-	'notify',
-	'dryrun',
-	'remind_html_test',
-);
+$valid_actions = [ 'remind', 'notify', 'dryrun', 'remind_html_test' ];
 
 // get action paramter
 if (count($argv) == 2) {
@@ -39,7 +32,7 @@ $votes = getAllVotes();
 
 // build mail headers
 $headers = [];
-$headers[] = 'From: ' . mail_encode_utf8(META_KEYWORDS) . '<' . SITE_FROM_MAIL . '>';
+$headers[] = 'From: ' . mb_encode_mimeheader(META_KEYWORDS) . '<' . SITE_FROM_MAIL . '>';
 $headers[] = "MIME-Version: 1.0";
 $headers[] = "Content-type: text/html; charset=utf-8";
 $headers[] = "X-Mailer: PHP";
