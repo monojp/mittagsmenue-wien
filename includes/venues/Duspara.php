@@ -50,8 +50,8 @@ class Duspara extends FoodGetterVenue {
 			return false;
 		}
 
-		//$this->menu = $fb_helper->get_graph_url_picture($object_id);
 		$dataTmp = pdftotxt_ocr($fb_helper->get_picture_url($object_id));
+		//error_log($dataTmp);
 
 		// check date range
 		if (!$this->in_date_range_string($dataTmp, $this->timestamp, '%d.%m', '%d.%m')) {
@@ -64,7 +64,9 @@ class Duspara extends FoodGetterVenue {
 		 * MO = 0, TUE = 1 => [0, 1], [2, 3] */
 		$this->parse_foods_independant_from_days($dataTmp, "\n", $this->price, false, false);
 		$weekday = date('w', $this->timestamp) - 1;
-		$this->price = array_slice($this->price, $weekday * 2, 2);
+		if ($this->price !== null) {
+			$this->price = array_slice($this->price, $weekday * 2, 2);
+		}
 
 		//return error_log(print_r($this->price, true));
 		//return error_log($data);

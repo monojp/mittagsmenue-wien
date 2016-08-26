@@ -623,7 +623,7 @@ abstract class FoodGetterVenue {
 			// price entry
 			if (
 				(!$one_price_per_food || ($foodCount == ($weekday+1) || !$use_weekday_feature)) &&
-				!empty($data) &&
+				//!empty($data) && // FIXME: why does it need to be empty?
 				preg_match_all($regex_price, $food, $prices_temp)
 			) {
 				//error_log("found price in ${food}");
