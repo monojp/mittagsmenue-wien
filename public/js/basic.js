@@ -394,7 +394,7 @@ function handle_href_reference_details(id, reference, name, try_count) {
 				window.open(result.result.website, '_blank');
 			// no website, open search
 			} else {
-				window.open('https://duckduckgo.com/?q=' + name, '_blank');
+				window.open($('#SEARCH_PROVIDER').html() + name, '_blank');
 			}
 		},
 		error: function() {

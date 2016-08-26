@@ -1,21 +1,14 @@
 <?php
 
-$DB_CONFIGS = array(
-	// live db
-	array(
-		'DB_SERVER'   => '<server>',
-		'DB_NAME'     => '<database>',
-		'DB_USER'     => '<username>',
+$DB_CONFIGS = [
+	// list of db connections (multiple are possible for fallback reasons)
+	[
+		'DB_SERVER' => '<server>',
+		'DB_NAME' => '<database>',
+		'DB_USER' => '<username>',
 		'DB_PASSWORD' => '<password>',
-	),
-	// test db as backup
-	array(
-		'DB_SERVER'   => '<server>',
-		'DB_NAME'     => '<database>',
-		'DB_USER'     => '<username>',
-		'DB_PASSWORD' => '<password>',
-	),
-);
+	],
+];
 
 define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
@@ -29,7 +22,7 @@ $GOOGLE_API_KEYS = [
 	/* put a list of api keys here (1 is also enough) */
 ];
 
-$fb_app_id     = '<your fb app id>';
+$fb_app_id = '<your fb app id>';
 $fb_app_secret = '<your fb app secret>';
 
 define('USE_MINIMZED_JS_CSS', true);
@@ -43,12 +36,13 @@ define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
 define('PRIVACY_INFO', '<text>');
 
-define('ADMIN_EMAIL', '<email>');
+define('SEARCH_PROVIDER', 'https://duckduckgo.com/?q=');
 
 $locales = [ 'de_AT.UTF-8', 'de_DE.UTF-8' ];
 $locale_new = setlocale(LC_ALL, $locales);
-if (!in_array($locale_new, $locales))
+if (!in_array($locale_new, $locales)) {
 	trigger_error("could not set target locale. current: '$locale_new'", E_USER_WARNING);
+}
 
 date_default_timezone_set('Europe/Vienna');
 

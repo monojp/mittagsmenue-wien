@@ -83,7 +83,7 @@ function getWebsiteFromVenueClass($venue_class) {
 		}
 		// google fallback
 		if ($website === null) {
-			$website = 'https://duckduckgo.com/?q=' . urlencode($venue_class);
+			$website = SEARCH_PROVIDER . urlencode($venue_class);
 		}
 		return $website;
 	}

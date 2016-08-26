@@ -104,18 +104,7 @@ function get_header_html() {
 	}
 
 	$response .= '</head><body>';
-
-	// header
-	/*$response .= "<div data-role='header'>
-		<h1>
-			" . SITE_TITLE . ", <input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "' data-role='none' />
-		</h1>
-		<a id='location' href='javascript:void(0)' onclick='setLocationDialog(this)' data-role='button' data-inline='true' data-mini='true' data-icon='location'
-				title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
-	</div>";
-
-	$response .= "<div role='main' class='ui-content'>";*/
-
+	$response .= '<div class="hidden" id="SEARCH_PROVIDER">' . SEARCH_PROVIDER . '</div>';
 	return $response;
 }
 function get_footer_html() {
