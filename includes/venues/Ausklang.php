@@ -30,10 +30,11 @@ class Ausklang extends FoodGetterVenue {
 		if (!$dataTmp) {
 			return;
 		}
+		//return error_log($dataTmp) && false;
 
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1),
-				[ 'menü', 'men&uuml;' ]);
+				[ 'menü mit suppe', 'men&uuml; mit suppe' ]);
 		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
 		}
