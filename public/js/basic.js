@@ -467,6 +467,9 @@ function vote_settings_save() {
 
 // handle missing emoji replaces
 function emoji_update() {
+	if (typeof emojione == 'undefined') {
+		return;
+	}
 	$('.convert-emoji').not('[data-emoji-converted]').each(function() {
 		$(this).attr('data-emoji-converted', true);
 		$(this).html(emojione.toImage($(this).html()));
@@ -604,9 +607,7 @@ function init_datatables() {
 				$('#table_stats_filter input').attr('type', 'text')
 						.attr('data-type', 'search');
 				$('#table_stats_filter input').textinput();
-				if (typeof emojione != 'undefined') {
-					emoji_update();
-				}
+				emoji_update();
 			}
 		});
 		$('#table_stats').show();
