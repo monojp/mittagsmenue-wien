@@ -10,20 +10,6 @@ require_once(__DIR__ . '/customuserid.inc.php');
 mb_internal_encoding('UTF-8');
 ini_set("user_agent", "Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0");
 
-// valid session for 3 hours
-$server_name = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : '';
-session_set_cookie_params(3 * 60, '/', $server_name, !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off', true);
-$session_name = session_name('MENU_SESSID') ? 'MENU_SESSID' : session_name();
-
-// cleanup client session id if invalid
-// otherwise hacking-attempts result in php warnings and maybe more at worst
-if (isset($_COOKIE[$session_name]) && !preg_match('/^[a-z0-9]{0,32}$/', $_COOKIE[$session_name])) {
-	$_COOKIE[$session_name] = null;
-	session_regenerate_id(true);
-}
-
-session_start();
-
 header("Vary: Accept-Encoding");
 header("Content-Type: text/html; charset=UTF-8");
 
@@ -229,7 +215,7 @@ END;
 	$text = str_replace([ '`', '´', '’', ], '\'', $text);
 
 	// unify strange dashes
-	$text = str_replace([ '–' ], '-', $text);
+	$text = str_replace([ '‐', '‑', '‒', '–', '—', '―', '⁻', '₋', '−', '－' ], '-', $text);
 
 	// completely remove dirty chars
 	$text = str_replace([ '¸', '', '' ], '', $text);
@@ -744,72 +730,6 @@ function date_from_offset($offset) {
 		return date('Y-m-d', strtotime(date('Y-m-d') . " - $offset days"));
 	}
 }
-
-/*function create_ingredient_hrefs($string, $statistic_keyword, $a_class='', $use_html_entities = false) {
-	global $cacheDataExplode;
-	global $cacheDataIgnore;
-	global $dateOffset;
-
-	if (empty($string))
-		return $string;
-
-	// sort cacheDataExplode (longer stuff first)
-	usort($cacheDataExplode, function($a,$b) {
-		return mb_strlen($b) - mb_strlen($a);
-	});
-
-	$date = date_from_offset($dateOffset);
-
-	// multi food support (e.g. 1. pizza with ham, 2. pizza with bacon, ..)
-	// mark each ingredient by an href linking to search
-	$foodMulti = explode_by_array($cacheDataExplode, $string);
-	foreach ($foodMulti as &$food) {
-		$food = str_ireplace($cacheDataIgnore, '', $food);
-		$food = cleanText($food);
-	}
-	unset($food);
-	$foodMulti = array_unique($foodMulti);
-
-	// sort after array length, begin with longest first
-	usort($foodMulti, function($a, $b) {
-		return mb_strlen($b) - mb_strlen($a);
-	});
-
-	$replace_pairs = [];
-	if (count($foodMulti) > 1) {
-		// build replace pairs
-		foreach ($foodMulti as $foodSingle) {
-			$foodSingle = str_ireplace($cacheDataIgnore, '', $foodSingle);
-			$foodSingle = cleanText($foodSingle);
-			$foodSingle_gui = $use_html_entities ? htmlentities($foodSingle) : $foodSingle;
-
-			if (empty($foodSingle) || mb_strlen($foodSingle) < 3)
-				continue;
-
-			$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($foodSingle);
-			if (isset($_GET['minimal']))
-				$url .= '&minimal';
-			if ($use_html_entities)
-				$url = htmlentities($url);
-			$replace_pairs[$foodSingle] = "<a class='{$a_class} no_decoration' title='Statistik zu {$foodSingle}' href='{$url}'>{$foodSingle_gui}</a>";
-		}
-		// replace via strtr and built replace_pairs to avoid
-		// double replacements for keywords which appear in other ones like CheeseBurger and Burger
-		$string = strtr($string, $replace_pairs);
-	}
-	// if nothing found, replace whole string with link to stats
-	if (empty($replace_pairs)) {
-		$string_gui = $use_html_entities ? htmlentities($string) : $string;
-		$url = trim(SITE_URL, '/') . "/statistics.php?date={$date}&keyword=" . urlencode($statistic_keyword) . "&food=" . urlencode($string);
-		if (isset($_GET['minimal']))
-			$url .= '&minimal';
-		if ($use_html_entities)
-			$url = htmlentities($url);
-		$string = "<a class='{$a_class} no_decoration' title='Statistik zu {$string}' href='{$url}'>{$string_gui}</a>";
-	}
-
-	return $string;
-}*/
 
 // gets an anonymized name of an ip
 function ip_anonymize($ip = null, $user_config = null) {
