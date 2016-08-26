@@ -415,10 +415,12 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Rudi\'s Beisl', 'Nam Nam', 'Restaurant Zum Andreas Hofer', 'Eduard Fruth',
 			'Wald/4 ler Stub\'n', 'Pro Vino Lang & Partner KG - Vinothek und Weinhandel', 'Entler',
 			'TIP TOP TABLE GmbH', 'Cafe Jelinek', 'Pizzeria Tanti Saluti', 'Bangkok Vienna',
-			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin',
+			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin', 'Rori\'s',
 			'Kulinario - Vinzenz Gruppe Service GmbH (Geschäftsbereich Küchen Wien)', 'Wieden Bräu',
 			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter',
-			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus',
+			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Billa', 'Duspara',
+			'Österreichische Warenhandels-Aktiengesellschaft', 'Noodles & More', 'Panarea Buffet',
+			'MOTTO Catering GmbH',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty
