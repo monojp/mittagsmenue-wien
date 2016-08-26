@@ -28,7 +28,7 @@ class CacheHandler_MySql extends CacheHandler {
 		if (!$this->db_ok()) {
 			return;
 		}
-	
+
 		$data = cleanText($data);
 		if (empty($data) || empty($date)) {
 			return;
@@ -59,7 +59,7 @@ class CacheHandler_MySql extends CacheHandler {
 		if (!$this->db_ok()) {
 			return;
 		}
-	
+
 		$timestamp = date('Y-m-d', $this->timestamp);
 
 		// prepare statement
@@ -142,9 +142,6 @@ class CacheHandler_MySql extends CacheHandler {
 		}
 
 		$timestamp = date('Y-m-d', $this->timestamp);
-		// update 2013-07-23: use json instead of serialized data
-		// because of better read- & editability
-		$priceDB = json_encode($price);
 
 		// prepare statement
 		if (!($stmt = $this->db->prepare("DELETE FROM foodCache WHERE timestamp=? AND dataSource=?"))) {
