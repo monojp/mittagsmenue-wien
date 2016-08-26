@@ -46,7 +46,8 @@ class AltesFassl extends FoodGetterVenue {
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
-		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1), [ 'Menü 1' ]);
+		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1),
+				[ 'Menü 1', 'Guten Appetit' ]);
 		//return error_log($data);
 		if (!$data || is_numeric($data)) {
 			return $this->data = $data;

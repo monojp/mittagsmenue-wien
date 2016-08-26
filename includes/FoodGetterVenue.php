@@ -513,36 +513,33 @@ abstract class FoodGetterVenue {
 		if ($posStart === false) {
 			return;
 		}
+		$posEnds = [];
 		foreach ($string_next_day as $tomorrow) {
 			$posEnd = mb_stripos($data, $tomorrow, $posStart);
 			// stop if match found
 			if ($posEnd !== false) {
 				//error_log("'${tomorrow}' found on pos ${posEnd}");
-				break;
+				$posEnds[] = $posEnd;
 			}
 		}
 		//error_log("'${string_next_day}' search returned ${posEnd}");
-		// last day of the week (string)
-		if ($posEnd === false && !is_array($string_last_day_next)) {
-			$posEnd = mb_stripos($data, $string_last_day_next, $posStart);
-			//error_log("'${string_last_day_next}' search returned ${posEnd}");
 		// last day of the week (array of strings)
-		} else if ($posEnd === false) {
+		if (empty($posEnds)) {
 			foreach ($string_last_day_next as $last_day_next) {
 				$posEnd = mb_stripos($data, $last_day_next, $posStart);
 				if ($posEnd !== false) {
-				//error_log("'${last_day_next}' found on pos ${posEnd}");
-					break;
+					//error_log("'${last_day_next}' found on pos ${posEnd}");
+					$posEnds[] = $posEnd;
 				}
 			}
 		}
-		if ($posEnd === false) {
+		if (empty($posEnds)) {
 			//error_log('no end found');
 			return;
 		 }
-		//return error_log($posEnd) && false;
+		//return error_log(min($posEnd)) && false;
 
-		$data = mb_substr($data, $posStart, $posEnd - $posStart);
+		$data = mb_substr($data, $posStart, min($posEnds) - $posStart);
 		//return error_log($data) && false;
 
 		// check if holiday
