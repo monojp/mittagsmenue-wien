@@ -88,7 +88,7 @@ if ($action == 'vote_delete') {
 } else if ($action == 'vote_set_note') {
 	check_voting_time();
 
-	$note = trim($_POST['note']);
+	$note = trim(iconv('UTF-8', 'ASCII//TRANSLIT', $_POST['note']));
 
 	// check vote length
 	if (mb_strlen($note) > VOTE_NOTE_MAX_LENGTH) {

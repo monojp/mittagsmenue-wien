@@ -83,7 +83,7 @@ function getWebsiteFromVenueClass($venue_class) {
 		}
 		// google fallback
 		if ($website === null) {
-			$website = 'https://www.google.com/search?q=' . urlencode($venue_class);
+			$website = 'https://duckduckgo.com/?q=' . urlencode($venue_class);
 		}
 		return $website;
 	}
@@ -115,7 +115,7 @@ function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'te
 			$venue_title .= '<sup> | </sup>';
 			$venue_title .= " <sup title='Vote Down'><a href='javascript:void(0)' onclick='vote_down(\"{$venue_class}\")' style='color: red ! important'>-1</a></sup>";
 		}
-		$venue_class = $venue_title;
+		$venue_class = trim($venue_title);
 	}
 	unset($venue_class);
 	return $votes;
@@ -257,14 +257,23 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 		$upVotes = array_keys($vote_data, 'up');
 		$downVotes = array_keys($vote_data, 'down');
 		$specialVote = isset($vote_data['special']) ? $vote_data['special'] : null;
+		// replace invalid case versions of special votes
+		foreach ($votes_valid_special as $vote_valid) {
+			// ignore different notes
+			if (stripos($specialVote, $vote_valid) !== 0
+					|| strlen($specialVote) !== strlen($vote_valid)) {
+				continue;
+			}
+			$specialVote = str_ireplace($vote_valid, $vote_valid, $specialVote);
+		}
 
 		sort($upVotes);
 		sort($downVotes);
 
 		// style adaptions according to vote
-		if (mb_stripos($specialVote, 'verweigerung') !== false) {
+		if ($specialVote === $votes_valid_special[0]) {
 			$row_style = 'color: #f99';
-		} else if (mb_stripos($specialVote, 'egal') !== false) {
+		} elseif ($specialVote === $votes_valid_special[1]) {
 			$row_style = 'color: #999';
 		} else {
 			$row_style = '';
