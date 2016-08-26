@@ -69,11 +69,17 @@ class FB_Helper {
 		return $posts_return;
 	}
 
-	public function get_download_url($object_id) {
-		return "https://www.facebook.com/photo/download/?fbid={$object_id}";
+	public function get_graph_object($object_id) {
+		return "https://graph.facebook.com/{$object_id}?{$this->auth_token}";
 	}
 
-	public function download_object($object_id) {
-		return $this->fetchUrl($this->get_download_url($object_id));
+	public function get_picture_url($object_id) {
+		// get image date from graph object
+		$images = json_decode($this->fetchUrl($this->get_graph_object($object_id)), true);
+		if ($images === null || empty($images['images'])) {
+			return null;
+		}
+		// use the first image which should be the biggest
+		return reset($images['images'])['source'];
 	}
 }

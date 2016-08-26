@@ -178,7 +178,7 @@ $custom_venues = [
 		'website' => 'http://www.al-chile.info/',
 		'reference' => -1,
 	],
-	[
+	/*[
 		'id' => -15,
 		'geometry' => [
 			'location' => [
@@ -189,7 +189,7 @@ $custom_venues = [
 		'name' => 'Duspara',
 		'website' => 'http://www.duspara.at/',
 		'reference' => -1,
-	],
+	],*/
 ];
 
 // searches for venue data in the nearplaces cache

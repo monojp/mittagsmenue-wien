@@ -12,7 +12,7 @@ $votes_valid_normal = [ 'AltesFassl', 'CafeAmacord', 'Ausklang', 'CoteSud', 'Del
 		'FalkensteinerStueberl', 'Gondola', 'HaasBeisl', 'Lambrecht', 'MINIRESTAURANT',
 		'MensaFreihaus', 'MensaSchroedinger', 'NamNam', 'RadioCafe', 'SchlossquadratMargareta',
 		'SchlossquadratSilberwirt', 'Stoeger', 'TasteOfIndia', 'Waldviertlerhof', 'Woracziczky',
-		'Erbsenzaehlerei', 'Bierometer2' ];
+		'Erbsenzaehlerei', 'Bierometer2', 'Duspara', 'Stefan2' ];
 
 function ip_username_sort($a, $b) {
 	$a_real = ip_anonymize($a);

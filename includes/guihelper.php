@@ -24,7 +24,7 @@ function get_venues_html() {
 		new SchlossquadratMargareta(),
 		new SchlossquadratSilberwirt(),
 		new AltesFassl(),
-		new HaasBeisl(),
+		//new HaasBeisl(),
 		new TasteOfIndia(),
 		new DeliciousMonster(),
 		new Ausklang(),
@@ -43,6 +43,8 @@ function get_venues_html() {
 		//new MINIRESTAURANT(),
 		new Erbsenzaehlerei(),
 		new Bierometer2(),
+		new Duspara(),
+		new Stefan2(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
@@ -281,7 +283,7 @@ function get_vote_setting_html() {
 		';
 	}
 
-	return '
+	$response = '
 		<div style="display: none" id="userid">' . $custom_userid . '</div>
 			<fieldset>
 				<label for="name">Benutzername</label>
@@ -306,10 +308,13 @@ function get_vote_setting_html() {
 				</label>
 			</fieldset>
 			' . $custom_userid_gui_output . '
-			<br>
-			<script>
+			<br>';
+	if (!isset($_GET['minimal'])) {
+		$response .= '<script>
 				$("#setVoteSettingsDialog input").on("change keyup", function() { vote_settings_save(); });
 			</script>';
+	}
+	return $response;
 }
 
 function get_button_vote_summary_toggle_html() {
