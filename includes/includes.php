@@ -404,21 +404,21 @@ function getCacheData($keyword, $foodKeyword) {
 				}
 				$foodOrig = implode('<br />', array_unique($foodOrig));
 
-				if (!isset($dates[$foodSingle]) || !in_array($row['timestamp'], $dates[$foodSingle])) {
+				if (!isset($dates[$foodSingle]) || !in_array($row['date'], $dates[$foodSingle])) {
 					$compositions[$foodSingle][$foodOrig] = '';
-					$dates[$foodSingle][] = $row['timestamp'];
+					$dates[$foodSingle][] = $row['date'];
 				}
 
 				// composition absolute counter without ingredient association
 				if (isset($compositionsAbsolute[$foodOrig])) {
-					if (!in_array($row['timestamp'], $compositionsAbsolute[$foodOrig]['dates'])) {
+					if (!in_array($row['date'], $compositionsAbsolute[$foodOrig]['dates'])) {
 						$compositionsAbsolute[$foodOrig]['cnt'] += 1;
-						$compositionsAbsolute[$foodOrig]['dates'][] = $row['timestamp'];
+						$compositionsAbsolute[$foodOrig]['dates'][] = $row['date'];
 					}
 				}
 				else {
 					$compositionsAbsolute[$foodOrig]['cnt'] = 1;
-					$compositionsAbsolute[$foodOrig]['dates'][] = $row['timestamp'];
+					$compositionsAbsolute[$foodOrig]['dates'][] = $row['date'];
 				}
 			}
 		}

@@ -15,21 +15,21 @@ abstract class VenueStateSpecial {
 abstract class FoodGetterVenue {
 	public $title = null;
 	public $url = null;
+
 	protected $title_notifier = null; // presented small highlighted next to the title
 	protected $addressLat = null;
 	protected $addressLng = null;
 	protected $dataSource = null;
 	protected $menu = null;
 	protected $data = null;
-	protected $changed = null;
-	protected $date = null;
 	protected $price = null;
-	protected $statisticsKeyword = null;
 	protected $no_menu_days = []; // 0 sunday - 6 saturday
 	protected $lookaheadSafe = false; // future lookups possible? otherwise only current week (e.g. because dayname check)
 	protected $dataFromCache = false;
+	protected $dataParsed = false;
 	protected $price_nested_info = null;
-	private $CSSid = null;
+
+	private $id = null;
 
 	const SECONDS_EMPTY_CACHE = 300;
 
@@ -45,7 +45,7 @@ abstract class FoodGetterVenue {
 		$this->addressLat = str_replace(',', '.', $this->addressLat);
 		$this->addressLng = str_replace(',', '.', $this->addressLng);
 
-		$this->CSSid = 'id_' . md5($this->dataSource . $this->title);
+		$this->id = get_class($this);
 	}
 
 	// overwrite in inherited class
@@ -57,38 +57,21 @@ abstract class FoodGetterVenue {
 	// should parse datasource, set data, date, price, cache it and return it
 	abstract protected function parseDataSource();
 
-	// checks if the data is from today
-	// used for caching
-	protected function isDataUpToDate() {
-		// new today check
-		if ($this->date == date('Y-m-d', $this->timestamp)) {
-			return true;
-		}
-		// old today check
-		foreach ($this->get_today_variants() as $today) {
-			if ($this->date == $today) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	// writes data to the cache
 	protected function cacheWrite() {
-		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->dataSource,
-				date('Y-m-d', $this->timestamp), $this->price, $this->data);
+		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->id, $this->data,
+				$this->price);
 	}
 	// reads data from the cache
 	protected function cacheRead() {
 		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache(
-				$this->dataSource, $this->date, $this->price, $this->data,
-				$this->changed);
+				$this->id, $this->changed, $this->data, $this->price);
 		// reset too old empty cached data
 		if ($this->data == VenueStateSpecial::None
 				&& (time() - strtotime($this->changed)) > self::SECONDS_EMPTY_CACHE) {
 			$this->data = null;
 			$this->dataFromCache = false;
-			CacheHandler_MySql::getInstance($this->timestamp)->deleteCache($this->dataSource);
+			CacheHandler_MySql::getInstance($this->timestamp)->deleteCache($this->id);
 		}
 	}
 
@@ -104,13 +87,13 @@ abstract class FoodGetterVenue {
 				url:  "/venue.php",
 				cache: ' . $cache . ',
 				data: {
-					"classname": "' . get_class($this) . '",
+					"classname": "' . $this->id . '",
 					"timestamp": "' . $this->timestamp . '",
 					"dateOffset": "' . $this->dateOffset . '",
 					"date": "'. $date_GET . '"
 				},
 				success: function(result) {
-					$("#' . $this->CSSid . '_data").html(result);
+					$("#' . $this->id . '_data").html(result);
 					emoji_update();
 				},
 				error: function() {
@@ -118,8 +101,8 @@ abstract class FoodGetterVenue {
 					errMsg.attr("class", "error");
 					errMsg.html("Fehler beim Abfragen der Daten :(");
 					errMsg.prepend($(document.createElement("br")));
-					$("#' . $this->CSSid . '_data").empty();
-					$("#' . $this->CSSid . '_data").append(errMsg);
+					$("#' . $this->id . '_data").empty();
+					$("#' . $this->id . '_data").append(errMsg);
 				}
 			});
 		';
@@ -127,11 +110,11 @@ abstract class FoodGetterVenue {
 
 	public function parse_check() {
 		// data valid and ok, do nothing
-		if ($this->data && ($this->isDataUpToDate() || $this->isStateSpecial())) {
+		if ($this->data || $this->dataFromCache) {
 			return $this->data;
 		}
 
-		// another year, also do nothing. nevery parse another year!
+		// another year, also do nothing. never parse another year!
 		if (date('Y') != date('Y', $this->timestamp)) {
 			return $this->data;
 		}
@@ -148,7 +131,8 @@ abstract class FoodGetterVenue {
 		if (!$this->lookaheadSafe && $currentWeekYear != $wantedWeekYear) {
 			return $this->data;
 		}
-
+		
+		$this->dataParsed = true;
 		return $this->parseDataSource();
 	}
 
@@ -173,7 +157,7 @@ abstract class FoodGetterVenue {
 		}
 
 		// save special data to cache
-		if ($this->isStateSpecial() && !$this->dataFromCache) {
+		if ($this->isStateSpecial() && !$this->dataFromCache && $this->dataParsed) {
 			$this->cacheWrite();
 		}
 
@@ -201,9 +185,9 @@ abstract class FoodGetterVenue {
 		// prepare return
 		$return = isset($_GET['minimal']) ? '<br>' : '';
 
-		if (!empty($this->data) && $this->isDataUpToDate()) {
+		if (!empty($this->data)) {
 			// not from cache? => write back
-			if (!$this->dataFromCache) {
+			if (!$this->dataFromCache && $this->dataParsed) {
 				$this->cacheWrite();
 			}
 
@@ -256,19 +240,19 @@ abstract class FoodGetterVenue {
 			// do randomized ajax reloads (60 - 120 seconds) of menu data
 			$reload_code = '
 				<script type="text/javascript">
-					function reload_' . $this->CSSid . '() {
-						var id = "' . $this->CSSid . '_data";
+					function reload_' . $this->id . '() {
+						var id = "' . $this->id . '_data";
 						$("#" + id).html(\'<div class="throbber middle">Lade...</div>\');
 						' . $this->get_ajax_venue_code($date_GET, false) . '
 					}
-					function set_rand_reload_' . $this->CSSid . '() {
+					function set_rand_reload_' . $this->id . '() {
 						setTimeout(function() {
-							reload_' . $this->CSSid . '();
+							reload_' . $this->id . '();
 						}, Math.floor((Math.random() * 60) + 60) * 1000);
 					}
-					set_rand_reload_' . $this->CSSid . '();
+					set_rand_reload_' . $this->id . '();
 				</script>
-				<a href="javascript:void(0)" onclick="reload_' . $this->CSSid . '()">aktualisieren</a>
+				<a href="javascript:void(0)" onclick="reload_' . $this->id . '()">aktualisieren</a>
 			';
 			$return .= '<span class="error">Leider nichts gefunden :(</span>';
 			$return .= '<br />';
@@ -295,7 +279,7 @@ abstract class FoodGetterVenue {
 			$attributeStyle = '';
 		}
 
-		$string .= "<div id='{$this->CSSid}' class='venueDiv' style='{$attributeStyle}'>";
+		$string .= "<div id='{$this->id}' class='venueDiv' style='{$attributeStyle}'>";
 		// hidden lat/lng spans
 		if (!isset($_GET['minimal'])) {
 			$string .= "<span class='hidden lat'>{$this->addressLat}</span>";
@@ -308,7 +292,7 @@ abstract class FoodGetterVenue {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		}
 		if (!isset($_GET['minimal'])) {
-			$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->CSSid}\");' style='color: red ! important'>x</a></sup>";
+			$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->id}\");' style='color: red ! important'>x</a></sup>";
 		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
@@ -318,8 +302,8 @@ abstract class FoodGetterVenue {
 		}
 		// vote icon
 		if (!isset($_GET['minimal']) && show_voting()) {
-			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-plus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_up(\"" . get_class($this) . "\")' title='Vote Up'>Vote Up</div>";
-			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"" . get_class($this) . "\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</div>";
+			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-plus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_up(\"{$this->id}\")' title='Vote Up'>Vote Up</div>";
+			$string .= "<div data-enhanced='true' class='ui-link ui-btn ui-icon-minus ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' onclick='vote_down(\"{$this->id}\")' data-role='button' data-inline='true' data-icon='minus' data-iconpos='notext' title='Vote Down'>Vote Down</div>";
 		}
 
 		// check no menu days
@@ -341,7 +325,7 @@ abstract class FoodGetterVenue {
 			// new data getter via ajax
 			else
 				$string .= '
-					<div id="' . $this->CSSid . '_data">
+					<div id="' . $this->id . '_data">
 						<script type="text/javascript">
 							' . $this->get_ajax_venue_code($date_GET) . '
 						</script>
@@ -606,10 +590,6 @@ abstract class FoodGetterVenue {
 		$foods = explode_by_array([ "\n", "\r" ], $dataTmp);
 		//return error_log(print_r($foods, true)) && false;
 
-		// set date
-		$today_variants = $this->get_today_variants();
-		$this->date = reset($today_variants);
-
 		// immediately return if we only have 1 element
 		/*if (count($foods) == 1)
 			return $dataTmp;*/
@@ -794,10 +774,6 @@ abstract class FoodGetterVenue {
 		$all_posts = $fb_helper->get_all_posts($page_id);
 
 		$data = null;
-
-		// set date to first today variant
-		$today_variants = $this->get_today_variants();
-		$this->date = reset($today_variants);
 
 		foreach ((array)$all_posts as $post) {
 			if (!isset($post['message']) || !isset($post['created_time'])

@@ -11,7 +11,6 @@ class Bierometer2 extends FoodGetterVenue {
 		$this->url = 'http://www.bierometer-2.at';
 		$this->dataSource = 'http://www.bierometer-2.at/menueplan';
 		$this->menu = 'http://www.bierometer-2.at/speisekarte/suppen-salate';
-		$this->statisticsKeyword = 'bierometer-2';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

@@ -11,7 +11,6 @@ class RadioCafe extends FoodGetterVenue {
 		$this->url = 'http://www.kulturcafe.eu/index.php?home';
 		$this->dataSource = 'http://www.kulturcafe.eu/index.php?wochenkarte';
 		$this->menu = 'http://www.kulturcafe.eu/index.php?speisen';
-		$this->statisticsKeyword = 'kulturcafe';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'Menü 1 / Menü 2 / Menü 2 BIO';

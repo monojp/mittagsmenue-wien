@@ -10,7 +10,6 @@ class Ausklang extends FoodGetterVenue {
 		$this->url = 'http://ausklang.at/';
 		$this->dataSource = 'http://ausklang.at/essen/menue.html';
 		$this->menu = 'http://ausklang.at/essen.html';
-		$this->statisticsKeyword = 'ausklang';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'Vorspeise oder Dessert / Vorspeise und Dessert';

@@ -13,7 +13,6 @@ class Woracziczky extends FoodGetterVenue {
 		$this->url = 'http://www.woracziczky.at/';
 		$this->dataSource = 'https://facebook.com/WORACZICZKY';
 		$this->menu = 'https://facebook.com/WORACZICZKY/mediaset?album=pb.350394680695.-2207520000.1417430572.';
-		$this->statisticsKeyword = 'woracziczky';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

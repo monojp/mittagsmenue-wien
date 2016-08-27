@@ -11,7 +11,6 @@ class Stefan2 extends FoodGetterVenue {
 		$this->url = 'http://www.stefan2.at/';
 		$this->dataSource = 'http://www.stefan2.at/';
 		$this->menu = 'http://www.stefan2.at/index.php/speisekarte/';
-		$this->statisticsKeyword = 'stefan2';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

@@ -11,7 +11,6 @@ class FalkensteinerStueberl extends FoodGetterVenue {
 		$this->url = 'http://www.falkensteinerstueberl.at/';
 		$this->dataSource = 'http://www.falkensteinerstueberl.at/menueplankleistgasse.pdf';
 		$this->menu = 'http://www.falkensteinerstueberl.at/html/speisekarte.htm';
-		$this->statisticsKeyword = 'falkensteinerstueberl';
 		$this->no_menu_days = [];
 		$this->lookaheadSafe = true;
 

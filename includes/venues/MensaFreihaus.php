@@ -11,7 +11,6 @@ class MensaFreihaus extends FoodGetterVenue {
 		$this->url = 'http://menu.mensen.at/index/index/locid/9';
 		$this->dataSource = 'http://menu.mensen.at/index/index/locid/9';
 		$this->menu = $this->dataSource;
-		$this->statisticsKeyword = 'mensen';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'kleine / große Portion';

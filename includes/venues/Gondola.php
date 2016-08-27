@@ -11,7 +11,6 @@ class Gondola extends FoodGetterVenue {
 		$this->url = 'http://www.gondola.at/';
 		$this->dataSource = 'http://www.gondola.at/files/menu/menu.pdf';
 		$this->menu = 'http://www.gondola.at/files/tages/tageskarte.pdf';
-		$this->statisticsKeyword = 'gondola';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

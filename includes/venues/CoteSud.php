@@ -11,7 +11,6 @@ class CoteSud extends FoodGetterVenue {
 		$this->url               = 'http://www.cotesud.at/';
 		$this->dataSource        = 'http://www.cotesud.at/Menu.pdf';
 		$this->menu              = 'http://www.cotesud.at/Speisekarte.pdf';
-		$this->statisticsKeyword = 'cotesud';
 		$this->no_menu_days      = [ 0, 6 ];
 		$this->lookaheadSafe     = true;
 

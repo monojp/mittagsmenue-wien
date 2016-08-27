@@ -13,7 +13,6 @@ class Duspara extends FoodGetterVenue {
 		$this->url = 'http://www.duspara.at/';
 		$this->dataSource = 'https://www.facebook.com/restaurantduspara';
 		$this->menu = 'https://www.facebook.com/restaurantduspara';
-		$this->statisticsKeyword = 'duspara';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

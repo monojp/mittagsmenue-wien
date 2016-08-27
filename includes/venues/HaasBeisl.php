@@ -10,7 +10,6 @@ class HaasBeisl extends FoodGetterVenue {
 		$this->url = 'http://www.haasbeisl.at/';
 		$this->dataSource = 'http://www.haasbeisl.at/pdf/aktuelles.pdf';
 		$this->menu = 'http://www.haasbeisl.at/pdf/tageskarte.pdf';
-		$this->statisticsKeyword = 'haasbeisl';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

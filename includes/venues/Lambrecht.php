@@ -11,7 +11,6 @@ class Lambrecht extends FoodGetterVenue {
 		$this->url               = 'http://www.lambrecht.wien/';
 		$this->dataSource        = 'http://www.lambrecht.wien/mittagsteller/';
 		$this->menu              = 'http://www.lambrecht.wien/aus-kueche-und-keller/';
-		$this->statisticsKeyword = 'lambrecht';
 		$this->no_menu_days      = [ 0, 6 ];
 		$this->lookaheadSafe     = true;
 		$this->price_nested_info = 'Mittagsteller mit Suppe / Tagessuppe / Mittagsteller';

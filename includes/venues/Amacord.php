@@ -11,7 +11,6 @@ class CafeAmacord extends FoodGetterVenue {
 		$this->url = 'http://www.amacord-cafe.at/';
 		$this->dataSource = 'http://www.amacord-cafe.at/speisen/wochenmen%C3%BC-1/';
 		$this->menu = 'http://www.amacord-cafe.at/speisen/';
-		$this->statisticsKeyword = 'amacord';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'ohne Suppe / mit Suppe oder wahlweise Salat';

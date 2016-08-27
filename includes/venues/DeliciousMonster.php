@@ -10,7 +10,6 @@ class DeliciousMonster extends FoodGetterVenue {
 		$this->url = 'http://www.deliciousmonster.at/';
 		$this->dataSource = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/wochenkarte-delicious-monster-restaurant-wien.pdf';
 		$this->menu = 'http://www.deliciousmonster.at/images/mittagsmenue-1040-wien/speisekarte-lokal-1040-wien-delicious-monster.pdf';
-		$this->statisticsKeyword = 'deliciousmonster';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

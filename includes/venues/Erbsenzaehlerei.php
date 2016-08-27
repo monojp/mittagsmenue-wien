@@ -13,7 +13,6 @@ class Erbsenzaehlerei extends FoodGetterVenue {
 		$this->url = 'http://www.xn--die-erbsenzhlerei-0qb.at/';
 		$this->dataSource = 'https://www.facebook.com/Die-Erbsenz%C3%A4hlerei-989556534441500';
 		$this->menu = 'http://www.xn--die-erbsenzhlerei-0qb.at/das-angebot/';
-		$this->statisticsKeyword = 'erbsenzaehlerei';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 

@@ -11,7 +11,6 @@ class MINIRESTAURANT extends FoodGetterVenue {
 		$this->url = 'http://www.minirestaurant.at/';
 		$this->dataSource = 'http://www.minirestaurant.at/system/controllers/ajax_bridge.php';
 		$this->menu = $this->url;
-		$this->statisticsKeyword = 'minirestaurant';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 		$this->price_nested_info = 'ohne Dessert / mit Dessert';
