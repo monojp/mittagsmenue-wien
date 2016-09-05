@@ -468,7 +468,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'topfenstrudel') +
 			mb_substr_count($string, 'fruchtsalat') +
 			mb_substr_count($string, 'zwetschkenfleck') +
-			mb_substr_count($string, 'zwetschkentraum')
+			mb_substr_count($string, 'zwetschkentraum') +
+			mb_substr_count($string, 'schwarzwälderkirsch')
 		);
 	}
 
