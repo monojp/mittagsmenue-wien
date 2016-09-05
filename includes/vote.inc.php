@@ -257,15 +257,6 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 		$upVotes = array_keys($vote_data, 'up');
 		$downVotes = array_keys($vote_data, 'down');
 		$specialVote = isset($vote_data['special']) ? $vote_data['special'] : null;
-		// replace invalid case versions of special votes
-		foreach ($votes_valid_special as $vote_valid) {
-			// ignore different notes
-			if (stripos($specialVote, $vote_valid) !== 0
-					|| strlen($specialVote) !== strlen($vote_valid)) {
-				continue;
-			}
-			$specialVote = str_ireplace($vote_valid, $vote_valid, $specialVote);
-		}
 
 		sort($upVotes);
 		sort($downVotes);
