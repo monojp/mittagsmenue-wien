@@ -402,7 +402,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Bar Tabacchi', 'Zum Stöger e.U', 'Vinoto', 'La Casa Grande - Cucina Di Tino', 'Victor',
 			'Gregors Konditorei', 'Admiral Wettcafé', 'Tanzcafe Jenseits', 'Gergely\'s', 'Ströck',
 			'Anker Snack & Coffee Gastronomiebetriebs GmbH', 'Tchibo Filiale', 'Rori\'s Margareten',
-			'Restaurant Schwarzer Adler', 'Die Erbsenzählerei', 'Pizza Hotline', 'Burger Bring',
+			'Restaurant Schwarzer Adler', 'Die Erbsenzählerei', 'Pizza Hotline 5', 'Burger Bring',
 			'Schnaps-Bar Club Hofstöckl', 'Margareta', 'Silberwirt', 'Partyservice Schlögl', 'SPAR',
 			'LA VITA È BELLA - BAR - ENOTECA', 'Vinothek La Cave', 'broetchen4you.at', 'BILLA AG',
 			'Pizza Da Capo', 'Woracziczky Gasthaus', 'Pizza Mann Wien 5', 'Schlacher Event OG',
