@@ -83,7 +83,7 @@ function get_header_html() {
 	// javascript
 	if (!isset($_GET['minimal']))
 		$response .= '
-			<script src="' . cacheSafeUrl('/js/jquery-3.0.0.min.js') . '"></script>
+			<script src="' . cacheSafeUrl('/js/jquery-3.1.0.min.js') . '"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-migrate-3.0.0.js') . '"></script>
 			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
 			<script src="' . cacheSafeUrl($basic_js) . '"></script>
