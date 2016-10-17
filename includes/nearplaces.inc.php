@@ -420,7 +420,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter',
 			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Billa', 'Duspara',
 			'Österreichische Warenhandels-Aktiengesellschaft', 'Noodles & More', 'Panarea Buffet',
-			'MOTTO Catering GmbH',
+			'MOTTO Catering GmbH', 'Eventmöbel Verleih',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty
