@@ -38,7 +38,7 @@ class Duspara extends FoodGetterVenue {
 			$object_id = $post['object_id'];
 
 			// check message for keywords
-			if (!stringsExist($message, [ 'Menüplan' ])) {
+			if (!stringsExist($message, [ 'Menüplan', 'Mittagsmenü' ])) {
 				continue;
 			// we're done if we found one (because object_id was set already)
 			} else {
