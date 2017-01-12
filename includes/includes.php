@@ -622,7 +622,8 @@ function pdftotxt_ocr($file, $lang = 'deu') {
 	file_put_contents($tmpPath, $data);
 
 	// convert to tiff
-	shell_exec("convert -density 300 ${tmpPath} -depth 8 ${tmpPath_tif}");
+	//shell_exec("convert -density 300 ${tmpPath} -depth 8 ${tmpPath_tif}");
+	shell_exec(__DIR__ . "/../misc/textcleaner.sh -g -e none ${tmpPath} ${tmpPath_tif}");
 
 	// do tesseract ocr
 	shell_exec("tesseract ${tmpPath_tif} ${tmpPath} -l ${lang}");
