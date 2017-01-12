@@ -30,20 +30,20 @@ function get_venues_html() {
 		new Ausklang(),
 		new NamNam(),
 		new Waldviertlerhof(),
-		new MensaFreihaus(),
-		new MensaSchroedinger(),
+		//new MensaFreihaus(),
+		//new MensaSchroedinger(),
 		new Woracziczky(),
 		//new CoteSud(),
 		new FalkensteinerStueberl(),
 		//new Lambrecht(),
-		new CafeAmacord(),
+		//new CafeAmacord(), // zu mittag nicht mehr offen
 		//new Gondola(), // unparsbar zurzeit (spalten-pdf)
 		//new RadioCafe(), // encoding-probleme
 		new Stoeger(),
 		//new MINIRESTAURANT(),
 		new Erbsenzaehlerei(),
 		new Bierometer2(),
-		new Duspara(),
+		//new Duspara(),
 		new Stefan2(),
 	];
 	foreach ($venues as $venue) {

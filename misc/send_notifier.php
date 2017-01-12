@@ -84,6 +84,8 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	} elseif ($action == 'remind' && $vote_reminder && !isset($votes[$ip])) {
 		// build html
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
+		$html .= '<h3>Zwischenstand:</h3>';
+		$html .= vote_summary_html($votes, true, false, true);
 		$html = wrap_in_email_html($html, $custom_userid_access_url);
 		$html = html_compress($html);
 

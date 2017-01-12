@@ -34,10 +34,10 @@ class Waldviertlerhof extends FoodGetterVenue {
 		// try to set parsing offset to avoid non useful data
 		$dataTmp = mb_substr($dataTmp, mb_strripos($dataTmp, 'Mittagsmenü'));
 
-		// check date range
-		if (!$this->in_date_range_string($dataTmp, $this->timestamp)) {
+		// check date range (UPDATE 2016-11: not possible any more)
+		/*if (!$this->in_date_range_string($dataTmp, $this->timestamp)) {
 			return;
-		}
+		}*/
 
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1),

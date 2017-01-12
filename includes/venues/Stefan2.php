@@ -4,7 +4,7 @@ class Stefan2 extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Stefan II';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Hofmühlgasse 19, 1060 Wien';
 		$this->addressLat = 48.194070;
 		$this->addressLng = 16.351237;

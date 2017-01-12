@@ -418,9 +418,8 @@ abstract class FoodGetterVenue {
 		$string = str_replace([ "'", '"', '`', '´', ' ' ], '', $string);
 
 		return (
-			mb_substr_count($string, 'feiertag') +
+			mb_substr_count($string, 'außer feiertag') ? 0 : mb_substr_count($string, 'feiertag') +
 			mb_substr_count($string, 'urlaub') +
-			//mb_substr_count($string, 'geöffne') + // for e.g. Waldviertlerhof "Wir haben am 1. Mai geöffnet!" which is parsed as "ai geöffne"
 			mb_substr_count($string, 'weihnacht') +
 			mb_substr_count($string, 'oster') +
 			mb_substr_count($string, 'himmelfahrt') +
@@ -490,6 +489,7 @@ abstract class FoodGetterVenue {
 		$data = str_replace([ 'Montag-Samstag', 'Montag-Freitag' ], '', $data);
 
 		foreach ($today_variants as $today) {
+			//error_log("looking for {$today}");
 			$posStart = strposAfter($data, $today);
 			// set date and stop if match found
 			if ($posStart !== false) {
@@ -498,6 +498,7 @@ abstract class FoodGetterVenue {
 			}
 		}
 		if ($posStart === false) {
+			//error_log('no start found');
 			return;
 		}
 		$posEnds = [];
@@ -509,7 +510,7 @@ abstract class FoodGetterVenue {
 				$posEnds[] = $posEnd;
 			}
 		}
-		//error_log("'${string_next_day}' search returned ${posEnd}");
+		//error_log("'${tomorrow}' search returned ${posEnd}");
 		// last day of the week (array of strings)
 		if (empty($posEnds)) {
 			foreach ($string_last_day_next as $last_day_next) {
@@ -524,7 +525,7 @@ abstract class FoodGetterVenue {
 			//error_log('no end found');
 			return;
 		 }
-		//return error_log(min($posEnd)) && false;
+		//return error_log(min($posEnds)) && false;
 
 		$data = mb_substr($data, $posStart, min($posEnds) - $posStart);
 		//return error_log($data) && false;
@@ -542,7 +543,7 @@ abstract class FoodGetterVenue {
 		// this also prevents some of the following menu autonumber magic
 		$data = preg_replace("/[\r\n]{1,}/", $newline_replacer, $data);
 
-		//return error_log($data) && false;
+		//~ return error_log($data) && false;
 
 		// menu magic via common parser helper (auto numbering and stuff)
 		return $this->parse_foods_helper($data, $newline_replacer, $prices, true, true, false, true,
@@ -578,7 +579,8 @@ abstract class FoodGetterVenue {
 			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
 			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
 			'Bombay Aloo', 'Beef Palak', 'Chicken Mushroom', 'Beef Dal', 'Chicken Curry',
-			'Fish Adriaki', 'Raj Mah', 'Beef Korma', 'Turkey Masala',
+			'Fish Adriaki', 'Raj Mah', 'Beef Korma', 'Turkey Masala', 'Turkey Korma', 'Sur Korma',
+			'Shahi Paneer',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü)+[ ]*[0-9,\. ]*/i';
@@ -589,7 +591,7 @@ abstract class FoodGetterVenue {
 		//return error_log($dataTmp);
 		// split per new line
 		$foods = explode_by_array([ "\n", "\r" ], $dataTmp);
-		//return error_log(print_r($foods, true)) && false;
+		//~ return error_log(print_r($foods, true)) && false;
 
 		// immediately return if we only have 1 element
 		/*if (count($foods) == 1)
@@ -644,7 +646,7 @@ abstract class FoodGetterVenue {
 						'Solange der Vorrat reicht',
 					], true))
 			) {
-				//error_log("skip ${food}");
+				//~ error_log("skip ${food}");
 				continue;
 			// keywords indicating end
 			} else if (
@@ -663,12 +665,14 @@ abstract class FoodGetterVenue {
 					$data = $food;
 				}
 				$foodCount++;
+				//~ error_log("got first food part with '{$food}'");
 			// second part of menu
 			} else if (
 				!$foodDone &&
 				($foodCount == ($weekday+1) || !$use_weekday_feature) /*&&
 				!empty($data)*/ // don't use this, otherwise we need a soup
 			) {
+				//~ error_log("got second food part with '{$food}'");
 				$data_lines = explode_by_array($newline_replacer, $data);
 				// do newline replacers when the output string is not empty
 				// OR whole menu contains a number marker and new food doesn't (avoids problems with menus stretching over multiple lines)
@@ -679,13 +683,16 @@ abstract class FoodGetterVenue {
 							|| mb_strpos($food, 'dazu') === 0 || endswith($data, 'dazu')
 							|| mb_strpos($food, 'und')  === 0 || endswith($data, 'und')
 							|| mb_strpos($food, 'auf')  === 0 || endswith($data, 'auf')) {
+						//~ error_log("continue old food with '{$food}'");
 						$data .= ' ';
 					// we have a food part and title that is already written
 					} elseif (stringsExist(end($data_lines), $foods_title)
 							&& !stringsExist($food, $foods_title)) {
+						//~ error_log("title part already written with '{$food}'");
 						$data .= ': ';
 					// use default newline replacer
 					} else {
+						//~ error_log("default food '{$food}'");
 						$data .= $newline_replacer;
 					}
 				}
@@ -693,7 +700,7 @@ abstract class FoodGetterVenue {
 			}
 			//error_log($food);
 		}
-		//return error_log($data) && false;
+		//~ return error_log($data) && false;
 
 		$foods = explode_by_array([ "\n", "\r" ], $data);
 		//return error_log(print_r($foods, true)) && false;

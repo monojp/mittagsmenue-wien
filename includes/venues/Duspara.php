@@ -6,13 +6,14 @@ class Duspara extends FoodGetterVenue {
 
 	function __construct() {
 		$this->title = 'Duspara';
-		$this->title_notifier = 'NEU';
+		//$this->title_notifier = 'NEU';
 		$this->address = 'Wiedner Hauptstraße 115, 1050 Wien';
 		$this->addressLat = 48.184198;
 		$this->addressLng = 16.361702;
 		$this->url = 'http://www.duspara.at/';
-		$this->dataSource = 'https://www.facebook.com/restaurantduspara';
-		$this->menu = 'https://www.facebook.com/restaurantduspara';
+		//$this->dataSource = 'https://www.facebook.com/restaurantduspara';
+		$this->dataSource = 'http://www.duspara.at/wochenkarte';
+		$this->menu = $this->dataSource;
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 
@@ -27,7 +28,9 @@ class Duspara extends FoodGetterVenue {
 
 	protected function parseDataSource() {
 		global $fb_app_id, $fb_app_secret;
-		$fb_helper = new FB_Helper($fb_app_id, $fb_app_secret);
+
+		// image from fb
+		/*$fb_helper = new FB_Helper($fb_app_id, $fb_app_secret);
 		$all_posts = $fb_helper->get_all_picture_posts(self::FACEBOOK_ID);
 
 		// use the first best picture with a keyword match in the message
@@ -49,7 +52,17 @@ class Duspara extends FoodGetterVenue {
 			return false;
 		}
 
-		$dataTmp = pdftotxt_ocr($fb_helper->get_picture_url($object_id));
+		$dataTmp = pdftotxt_ocr($fb_helper->get_picture_url($object_id));*/
+
+		// image from hp
+		$url_image = file_get_contents($this->dataSource);
+		preg_match('/http(s).*?.jpg/i', $url_image, $matches);
+		if (empty($matches)) {
+			return;
+		}
+		$url_image = reset($matches);
+		$dataTmp = pdftotxt_ocr($url_image);
+
 		//error_log($dataTmp);
 
 		// check date range

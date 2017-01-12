@@ -8,8 +8,8 @@ class TasteOfIndia extends FoodGetterVenue {
 		$this->addressLat = 48.1959393;
 		$this->addressLng = 16.3641738;
 		$this->url = 'http://www.taste-of-india.at/';
-		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue.html';
-		$this->menu = 'http://www.taste-of-india.at/speisekarte/speisemain2.html';
+		$this->dataSource = 'http://www.taste-of-india.at/mittagsmenue/';
+		$this->menu = 'http://www.taste-of-india.at/speisen/';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
 
@@ -17,77 +17,46 @@ class TasteOfIndia extends FoodGetterVenue {
 	}
 
 	protected function get_today_variants() {
-		return [ date_offsetted('d.m.y') ];
+		return [
+			date_offsetted('d.m.y'),
+			date_offsetted('d:m:y'),
+			date_offsetted('d.m.Y'),
+			date_offsetted('d:m:Y'),
+		];
 	}
 
 	protected function parseDataSource() {
+		// get pdf link
 		$dataTmp = file_get_contents($this->dataSource);
 		if (!$dataTmp) {
 			return;
 		}
-
-		// get menu data for the chosen day
-		$today_variants = $this->get_today_variants();
-		//return error_log(print_r($today, true));
-
-		$today = null;
-		foreach ($today_variants as $today) {
-			$posStart = strposAfter($dataTmp, $today);
-			if ($posStart !== false) {
-				break;
-			}
-		}
-		if ($posStart === false) {
+		$dataTmp = preg_match('/("|\')(.*?\.pdf)("|\')/i', $dataTmp, $matches);
+		//return error_log(print_r($matches, true)) && false;
+		if (!isset($matches[2]) || empty($matches[2])) {
 			return;
 		}
-		$posEnd = mb_stripos($dataTmp, getGermanDayName(1), $posStart);
-		// last day of the week
-		if (!$posEnd) {
-			$posEnd = mb_stripos($dataTmp, '</table>', $posStart);
+		$this->dataSource = trim($matches[2]);
+
+		// download pdf data
+		$dataTmp = pdftotext($this->dataSource);
+		if (!$dataTmp) {
+			return;
 		}
-		$data = mb_substr($dataTmp, $posStart, $posEnd-$posStart);
+		//~ return error_log($dataTmp) && false;
 
-		$data = strip_tags($data);
-		$data = str_replace([ '1', '2', '3', '4', "\t" ], '', $data);
-		$data = preg_replace("/([a-z])\n([a-z])/i", '$1 $2', $data);
-		// remove multiple newlines
-		$data = preg_replace("/(\n)+/i", "\n", $data);
-		$data = trim($data);
-
-		// check if holiday
-		if ($this->get_holiday_count($data)) {
-			return VenueStateSpecial::Urlaub;
+		// get menu data for the chosen day
+		$data = $this->parse_foods_inbetween_days($dataTmp, getGermanDayName(1),
+				[ 'Newsletter', 'Join us', 'Copyright' ]);
+		//return error_log($data) && false;
+		if (!$data || is_numeric($data)) {
+			return $this->data = $data;
 		}
-
-		$foods = explode("\n", $data);
-		//unset($foods[0]); // date
-		$data = cleanText($foods[0]); // soup
-		unset($foods[0]);
-		for ($i=1; $i<=count($foods); $i++) {
-			$foods[$i] = cleanText($foods[$i]);
-			if (empty($foods[$i])) {
-				continue;
-			}
-
-			if ($i % 2 == 1) {
-				$nr = round($i / 2);
-				$data .= "\n$nr. " . $foods[$i];
-			} else {
-				$data .= ': ' . $foods[$i];
-			}
-		}
-
-		$data = str_replace("\n", "<br />", $data);
-		$this->data = $data;
-
-		// set date
-		$this->date = $today;
 
 		// set price
-		$posStart = striposAfter($dataTmp, 'Men&uuml;');
-		$posEnd = mb_stripos($dataTmp, '&euro;', $posStart);
-		$this->price = cleanText(mb_substr($dataTmp, $posStart, $posEnd-$posStart));
+		$this->price = $this->parse_prices_regex($dataTmp, [ '/\d{1},\d{2}\€/' ]);
+		//return error_log(print_r($this->price, true)) && false;
 
-		return $this->data;
+		return ($this->data = $data);
 	}
 }

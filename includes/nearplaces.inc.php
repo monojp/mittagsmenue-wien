@@ -178,7 +178,7 @@ $custom_venues = [
 		'website' => 'http://www.al-chile.info/',
 		'reference' => -1,
 	],
-	/*[
+	[
 		'id' => -15,
 		'geometry' => [
 			'location' => [
@@ -189,7 +189,20 @@ $custom_venues = [
 		'name' => 'Duspara',
 		'website' => 'http://www.duspara.at/',
 		'reference' => -1,
-	],*/
+	],
+	[
+                'id' => -16,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.192429,
+                                'lng' => 16.360060,
+                        ],
+                ],
+                'name' => 'Mosquito Mexican Restaurant',
+                'website' => 'http://www.mosquito-mexican-restaurant-wien.at/',
+                'reference' => -1,
+        ],
+
 ];
 
 // searches for venue data in the nearplaces cache
@@ -418,9 +431,10 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin', 'Rori\'s',
 			'Kulinario - Vinzenz Gruppe Service GmbH (Geschäftsbereich Küchen Wien)', 'Wieden Bräu',
 			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter',
-			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Billa', 'Duspara',
+			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Billa', 'Cafe 60',
 			'Österreichische Warenhandels-Aktiengesellschaft', 'Noodles & More', 'Panarea Buffet',
-			'MOTTO Catering GmbH', 'Eventmöbel Verleih',
+			'MOTTO Catering GmbH', 'Eventmöbel Verleih', 'Hofer', 'PONGANIC Fisch & Greissler',
+			'Zur bunten Kuh', 'Schick Hotel Erzherzog Rainer', 'Cafe Drechsler', 'Steirer Stuben',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty

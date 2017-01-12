@@ -34,11 +34,6 @@ class DeliciousMonster extends FoodGetterVenue {
 		$dataTmp = html_clean($dataTmp);
 		//return error_log($dataTmp);
 
-		// check whole pdf for holiday
-		if ($this->get_holiday_count($dataTmp)) {
-			return VenueStateSpecial::Urlaub;
-		}
-
 		$data = $this->parse_foods_inbetween_days($dataTmp, '*', [ 'Alle', 'Al e' ]);
 		if (!$data || is_numeric($data)) {
 			return $this->data = $data;
