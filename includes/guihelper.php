@@ -76,7 +76,6 @@ function get_header_html() {
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.textcomplete.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/emojione.min.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/sprites/emojione.sprites.css') . '" />';
 	// javascript
@@ -88,7 +87,7 @@ function get_header_html() {
 			<script src="' . cacheSafeUrl($basic_js) . '"></script>
 			<script src="' . cacheSafeUrl('/js/jquery.cookie.js') . '" async="async" onload="init_cookie()"></script>
 			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
-			<script src="' . cacheSafeUrl('/js/jquery.textcomplete.min.js') . '" async="async"></script>
+			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
 			<script src="' . cacheSafeUrl('/emojione/emojione.min.js') . '" async="async" onload="init_emoji()"></script>
 		';
 
