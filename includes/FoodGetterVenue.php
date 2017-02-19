@@ -597,20 +597,6 @@ abstract class FoodGetterVenue {
 			'1 ', '2 ', '3 ', '4 ',
 		];
 
-		$foods_title = [
-			'Chicken Palak', 'Beef Shahi', 'Chana Masala', 'Beef Dusheri', 'Chicken Madras',
-			'Aloo Palak', 'Chicken Masala', 'Beef Bhuna', 'Tarka Dal', 'Chicken Vindaloo',
-			'Fish Madras', 'Mixed Sabji', 'Beef Chana', 'Navratan Korma', 'Chicken Ananas',
-			'Butter Chicken', 'Chicken Makhani', 'Fish Masala', 'Zucchini Curry',
-			'Chicken Tikka Masala', 'Chicken Sabji', 'Turkey Madras', 'Aloo Gobi Matar',
-			'Chicken Malai', 'Beef Vindaloo', 'Beef Mango', 'Fish Bhuna', 'Chicken Dusheri',
-			'Beef Madras', 'Aloo Gobi', 'Beef Kashmiri', 'Palak Paneer', 'Chicken Bhuna',
-			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
-			'Bombay Aloo', 'Beef Palak', 'Chicken Mushroom', 'Beef Dal', 'Chicken Curry',
-			'Fish Adriaki', 'Raj Mah', 'Beef Korma', 'Turkey Masala', 'Turkey Korma', 'Sur Korma',
-			'Shahi Paneer', 'Dal Tarka',
-		];
-
 		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü)+[ ]*[0-9,\. ]*/i';
 
 		// remove multiple newlines
@@ -714,11 +700,6 @@ abstract class FoodGetterVenue {
 							|| mb_strpos($food, ',')  === 0 || endswith($data, ',')) {
 						//~ error_log("continue old food with '{$food}'");
 						$data .= ' ';
-					// we have a food part and title that is already written
-					} elseif (stringsExist(end($data_lines), $foods_title)
-							&& !stringsExist($food, $foods_title)) {
-						//~ error_log("title part already written with '{$food}'");
-						$data .= ': ';
 					// use default newline replacer
 					} else {
 						//~ error_log("default food '{$food}'");

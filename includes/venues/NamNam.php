@@ -30,6 +30,10 @@ class NamNam extends FoodGetterVenue {
 		if (!$dataTmp ) {
 			return;
 		}
+		// strip spaces on the end of lines
+		$dataTmp = preg_replace('/ \n/', "\n", $dataTmp);
+		// get food title and food description into one line
+		$dataTmp = preg_replace('/([a-zA-Z])\n([a-zA-Z])/', '$1: $2', $dataTmp);
 		//return error_log($dataTmp);
 
 		// get menu data for the chosen day
