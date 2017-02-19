@@ -58,7 +58,6 @@ function vote_helper(action, identifier, note, try_count) {
 			'action': action,
 			'identifier': identifier,
 			'note': note,
-			'userid': $('#userid').html(),
 			'date': $('#date').val(),
 			'lat': $('#lat').html(),
 			'lng': $('#lng').html(),
@@ -171,7 +170,7 @@ function positionHandler(position) {
 	$.ajax({
 		type: 'GET',
 		url: '/locator.php',
-		data: { 'action': 'latlngToAddress', 'lat': lat, 'lng': lng, 'userid' : $('#userid').html()},
+		data: { 'action': 'latlngToAddress', 'lat': lat, 'lng': lng },
 		dataType: 'json',
 		success: function(result) {
 
@@ -274,7 +273,7 @@ function setLocation(location, force_geolocation, try_count) {
 	$.ajax({
 		type: 'GET',
 		url: '/locator.php',
-		data: { 'action': 'addressToLatLong', 'address': location, 'userid' : $('#userid').html()},
+		data: { 'action': 'addressToLatLong', 'address': location },
 		dataType: 'json',
 		success: function(result) {
 
@@ -379,8 +378,7 @@ function handle_href_reference_details(id, reference, name, try_count) {
 			'action': 'details',
 			'id': id,
 			'reference': reference,
-			'sensor': (typeof navigator.geolocation != 'undefined'),
-			'userid': $('#userid').html()
+			'sensor': (typeof navigator.geolocation != 'undefined')
 		},
 		dataType: 'json',
 		async: false,
@@ -419,8 +417,7 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 			'lng': lng,
 			'radius': radius,
 			'radius_max': radius_max,
-			'sensor': (typeof navigator.geolocation != 'undefined'),
-			'userid': $('#userid').html()
+			'sensor': (typeof navigator.geolocation != 'undefined')
 		},
 		dataType: 'json',
 		success: function(result) {
@@ -450,8 +447,7 @@ function vote_settings_save() {
 			'email': $('#email').val(),
 			'vote_reminder': $('#vote_reminder').is(':checked'),
 			'voted_mail_only': $('#voted_mail_only').is(':checked'),
-			'vote_always_show': $('#vote_always_show').is(':checked'),
-			'userid': $('#userid').html()
+			'vote_always_show': $('#vote_always_show').is(':checked')
 		},
 		dataType: "json",
 		success: function(result) {
@@ -650,12 +646,7 @@ $(document).ready(function() {
 
 	// date change handler
 	$('#date').bind('change', function() {
-		var userid = $('#userid').html();
-		if (userid && userid.length) {
-			document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val() + "&userid=" + userid;
-		} else {
-			document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
-		}
+		document.location = window.location.protocol + "//" + window.location.host + window.location.pathname + "?date=" + $(this).val();
 	});
 
 	// set submit handler for location input form

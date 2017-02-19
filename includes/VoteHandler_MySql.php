@@ -70,11 +70,11 @@ class VoteHandler_MySql extends VoteHandler {
 		$return = [];
 
 		// prepare statement
-		if ($day && $ip && $category && !($stmt = $this->db->prepare("SELECT ip, category, vote FROM foodVote WHERE day=? AND ip=? AND category=?"))) {
+		if ($day && $ip && $category && !($stmt = $this->db->prepare("SELECT user.name, user.ip, category, vote FROM foodVote vote JOIN foodUser user ON vote.ip=user.ip WHERE day=? AND user.ip=? AND vote.category=? ORDER BY name"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
-		} else if ($ip && !$category && !($stmt = $this->db->prepare("SELECT ip, category, vote FROM foodVote WHERE day=? AND ip=?"))) {
+		} else if ($ip && !$category && !($stmt = $this->db->prepare("SELECT user.name, user.ip, category, vote FROM foodVote vote JOIN foodUser user ON vote.ip=user.ip WHERE day=? AND user.ip=? ORDER BY name"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
-		} else if (!$ip && !$category && !($stmt = $this->db->prepare("SELECT ip, category, vote FROM foodVote WHERE day=?"))) {
+		} else if (!$ip && !$category && !($stmt = $this->db->prepare("SELECT user.name, user.ip, category, vote FROM foodVote vote JOIN foodUser user ON vote.ip=user.ip WHERE day=? ORDER BY name"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		}
 
@@ -92,12 +92,18 @@ class VoteHandler_MySql extends VoteHandler {
 			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// bind result variables
-		if (!$stmt->bind_result($ip, $category, $vote)) {
+		if (!$stmt->bind_result($name, $ip, $category, $vote)) {
 			return error_log("Binding results failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// fetch results
 		while ($stmt->fetch()) {
-			$return[$ip][$category] = $vote;
+			if (!isset($return[$ip])) {
+				$return[$ip] = [
+					'name' => $name,
+					'votes' => [],
+				];
+			}
+			$return[$ip]['votes'][$category] = $vote;
 		}
 		$stmt->free_result();
 
@@ -115,7 +121,7 @@ class VoteHandler_MySql extends VoteHandler {
 		$week_start_end = getStartAndEndDate($weeknumber, $yearnumber);
 
 		// prepare statement
-		if (!($stmt = $this->db->prepare("SELECT ip, category, vote FROM foodVote WHERE day BETWEEN ? AND ?"))) {
+		if (!($stmt = $this->db->prepare("SELECT user.name, user.ip, vote.category, vote.vote FROM foodVote vote JOIN foodUser user ON vote.ip = user.ip WHERE day BETWEEN ? AND ?"))) {
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		}
 		// bind params
@@ -127,12 +133,18 @@ class VoteHandler_MySql extends VoteHandler {
 			return error_log("Execute failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// bind result variables
-		if (!$stmt->bind_result($ip, $category, $vote)) {
+		if (!$stmt->bind_result($name, $ip, $category, $vote)) {
 			return error_log("Binding results failed: (" . $stmt->errno . ") " . $stmt->error);
 		}
 		// fetch results
 		while ($stmt->fetch()) {
-			$return[$ip][$category][] = $vote;
+			if (!isset($return[$ip])) {
+				$return[$ip] = [
+					'name' => $name,
+					'votes' => [],
+				];
+			}
+			$return[$ip]['votes'][$category] = $vote;
 		}
 		$stmt->free_result();
 

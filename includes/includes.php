@@ -5,7 +5,6 @@ require_once(__DIR__ . '/config.php');
 require_once(__DIR__ . '/textfixes.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
 require_once(__DIR__ . '/UserHandler_MySql.php');
-require_once(__DIR__ . '/customuserid.inc.php');
 
 mb_internal_encoding('UTF-8');
 ini_set("user_agent", "Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0");
@@ -58,10 +57,11 @@ if ($date_GET) {
 // to avoid problems with timestamps where the hours are not important but set
 $timestamp_base = strtotime(date('Y-m-d') . ' 00:00:00');
 //error_log(date('r', $timestamp_base));
-if ($dateOffset != 0)
-	$timestamp = strtotime($dateOffset . ' days', $timestamp_base);
-else
-	$timestamp = time($timestamp_base);
+if ($dateOffset != 0) {
+    $timestamp = strtotime($dateOffset . ' days', $timestamp_base);
+} else {
+    $timestamp = time();
+}
 
 /*
  * Utils
@@ -292,31 +292,15 @@ function array_occurence_count($needle, $haystack) {
 	}
 	return $counter;
 }
-function get_identifier_ip($user_config = null) {
-	if ( !$user_config && ($custom_userid = custom_userid_current()) ) {
-		$user_config = UserHandler_MySql::getInstance()->get(null, custom_userid_current());
-		$user_config = (is_array($user_config) && count($user_config) == 1) ? reset($user_config) : null;
-	}
-
-	$ip = isset($user_config['ip']) ? $user_config['ip'] : null;
-	if (!$ip && isset($_SERVER['REMOTE_ADDR'])) {
-		$ip = $_SERVER['REMOTE_ADDR'];
-	}
-	return $ip;
+function get_ip() {
+	return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
 }
-function is_intern_ip($user_config = null) {
-	//return true; // DEBUG
-	$ip = get_identifier_ip($user_config);
-	$allow_voting_ip_prefix = ALLOW_VOTING_IP_PREFIX;
-	if (empty($allow_voting_ip_prefix) || mb_strpos($ip, $allow_voting_ip_prefix) === 0) {
-		return true;
-	}
-	return false;
+function is_intern_ip($ip = null) {
+	return true; // DEBUG
+	return (empty(ALLOW_VOTING_IP_PREFIX) || mb_strpos($ip ?: get_ip(), ALLOW_VOTING_IP_PREFIX) === 0);
 }
 function show_voting() {
-	return (
-		is_intern_ip()
-	);
+	return is_intern_ip();
 }
 
 /* returns an array with all the foods, the dates
@@ -463,16 +447,15 @@ function getCacheData($keyword, $foodKeyword) {
 }
 
 function pdftohtml($file) {
-	$fileUniq = $file . uniqid();
-
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_pdf_');
 	$tmpPath_html = $tmpPath . '.html';
 	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
-	if (empty($data))
-		return null;
+	if (empty($data)) {
+        return null;
+    }
 
 	file_put_contents($tmpPath, $data);
 
@@ -504,16 +487,15 @@ function pdftohtml($file) {
 }
 
 function pdftotext($file) {
-	$fileUniq = $file . uniqid();
-
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_pdf_');
 	$tmpPath_txt = $tmpPath . '.txt';
 	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
-	if (empty($data))
-		return null;
+	if (empty($data)) {
+        return null;
+    }
 
 	file_put_contents($tmpPath, $data);
 
@@ -533,15 +515,14 @@ function pdftotext($file) {
 }
 
 function doctotxt($file) {
-	$fileUniq = $file . uniqid();
-
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_txt_');
 	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
-	if (empty($data))
-		return null;
+	if (empty($data)) {
+        return null;
+    }
 
 	file_put_contents($tmpPath, $data);
 
@@ -585,7 +566,7 @@ function html_get_clean($url, $from_encoding = null) {
 	// download html
 	$html = file_get_contents($url);
 	if ($html === false) {
-		return;
+		return null;
 	}
 	// return clean data
 	return html_clean($html, $from_encoding);
@@ -605,8 +586,6 @@ function curl_post_helper($url, $post_vars) {
 }
 
 function pdftotxt_ocr($file, $lang = 'deu') {
-	$fileUniq = $file . uniqid();
-
 	// read data to uniqe tmp file
 	$tmpPath = tempnam('/tmp', 'food_pdf_');
 	$tmpPath_tif = $tmpPath . '.tif';
@@ -614,8 +593,9 @@ function pdftotxt_ocr($file, $lang = 'deu') {
 	$data = file_get_contents($file);
 
 	// abort if pdf data empty / invalid
-	if (empty($data))
-		return null;
+	if (empty($data)) {
+        return null;
+    }
 
 	file_put_contents($tmpPath, $data);
 
@@ -728,37 +708,6 @@ function date_from_offset($offset) {
 		$offset = abs($offset);
 		return date('Y-m-d', strtotime(date('Y-m-d') . " - $offset days"));
 	}
-}
-
-// gets an anonymized name of an ip
-function ip_anonymize($ip = null, $user_config = null) {
-	if (!$ip) {
-		$ip = get_identifier_ip();
-	}
-
-	if (!$user_config) {
-		$user_config = UserHandler_MySql::getInstance()->get($ip);
-		$user_config = (is_array($user_config) && count($user_config) == 1) ? reset($user_config) : null;
-	}
-
-	// do ip <=> name stuff
-	// anonymyze ip
-	$ip_parts = explode('.', $ip);
-	$ipLast = end($ip_parts);
-	for ($i=0; $i<count($ip_parts)-1; $i++) {
-		$ip_parts[$i] = 'x';
-	}
-	$ipPrint = implode('.', $ip_parts);
-	// set username
-	if (isset($user_config['name'])) {
-		$ipPrint = $user_config['name'];
-	} else if (is_intern_ip()) {
-		$ipPrint = 'Guest_' . $ipLast;
-	} else {
-		$ipPrint = 'Unknown/extern IP, check config';
-	}
-
-	return $ipPrint;
 }
 
 /*

@@ -29,7 +29,7 @@ foreach ($nearplaces as $nearplace) {
 
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
-$ip = get_identifier_ip();
+$ip = get_ip();
 $action = get_var('action');
 
 // delete vote
@@ -56,8 +56,7 @@ if ($action == 'vote_delete') {
 	}
 
 	$vote = ($action == 'vote_up') ? 'up' : 'down';
-	if (empty(VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp),
-			$ip, $identifier))) {
+	if (empty(getAllVotes($ip, $identifier))) {
 		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp),
 				$ip, $identifier, $vote);
 	} else {
@@ -75,9 +74,7 @@ if ($action == 'vote_delete') {
 	$votes['venue'][$ip]['special'] = $identifier;
 	ksort($votes['venue'][$ip]);
 
-	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp),
-			$ip, 'special');
-	if (empty($vote_data)) {
+	if (empty(getAllVotes($ip, 'special'))) {
 		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp), $ip,
 				'special', $identifier);
 	} else {
@@ -98,9 +95,7 @@ if ($action == 'vote_delete') {
 		exit(json_encode([ 'alert' => js_message_prepare('Bitte eine Notiz angeben!') ]));
 	}
 
-	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp),
-			$ip, 'special');
-	if (empty($vote_data)) {
+	if (empty(getAllVotes($ip, 'special'))) {
 		VoteHandler_MySql::getInstance($timestamp)->save(date(VOTE_DATE_FORMAT, $timestamp), $ip,
 				'special', $note);
 	} else {

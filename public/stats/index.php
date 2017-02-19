@@ -45,6 +45,8 @@ if (empty($errors)) {
 		shuffle_assoc($foods);
 	if ($compositionsAbsolute)
 		shuffle_assoc($compositionsAbsolute);
+} else {
+	$stats = [];
 }
 
 // show minimal (no JS) site notice

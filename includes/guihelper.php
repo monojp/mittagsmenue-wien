@@ -2,7 +2,6 @@
 
 require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/vote.inc.php');
-require_once(__DIR__ . '/customuserid.inc.php');
 
 // default location for JS
 $city = LOCATION_FALLBACK;
@@ -178,9 +177,9 @@ function get_page_location() {
 
 function get_page_note() {
 	global $timestamp;
-	$ip        = get_identifier_ip();
-	$vote_data = VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip);
-	$note      = isset($vote_data[$ip]['special']) ? $vote_data[$ip]['special'] : '';
+	$ip        = get_ip();
+	$vote_data = getAllVotes($ip, 'special');
+	$note      = isset($vote_data[$ip]['votes']['special']) ? $vote_data[$ip]['votes']['special'] : '';
 	return '
 		<div id="setNoteDialog" class="hidden" data-role="page">
 			<div data-role="header">
@@ -232,14 +231,13 @@ function get_alt_venue_html() {
 function get_vote_setting_html() {
 	global $voting_over_time;
 
-	if (!is_intern_ip()) {
+	$ip = get_ip();
+	$user_config = UserHandler_MySql::getInstance()->get($ip);
+	if (!is_intern_ip($ip) || empty($user_config)) {
 		return;
 	}
 
-	$ip = get_identifier_ip();
-
-	$user_config = UserHandler_MySql::getInstance()->get($ip);
-	$user_config = is_array($user_config) ? reset($user_config) : null;
+	$user_config = reset($user_config);
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
 	$email = isset($user_config['email']) ? $user_config['email'] : '';
@@ -250,54 +248,30 @@ function get_vote_setting_html() {
 	$vote_always_show = isset($user_config['vote_always_show']) ? $user_config['vote_always_show'] : false;
 	$vote_always_show = filter_var($vote_always_show, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
-	$custom_userid_gui_output = '';
-	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
-	if (!$custom_userid) {
-		$custom_userid = custom_userid_current();
-	}
-
-	// only show the custom_userid GUI intern
-	// otherwise users could lock themselves out from extern
-	if (!custom_userid_current()) {
-		$custom_userid_url = custom_userid_access_url_get($custom_userid);
-		$custom_userid_url = empty($custom_userid_url) ? 'nicht gesetzt' : $custom_userid_url;
-		$custom_userid_gui_output = '
-			<br>
-			<fieldset>
-				<label>Externe Zugriffs-URL</label>
-				<p id="custom_userid_url">
-					<a href="' . $custom_userid_url . '" target="_blank" data-ajax="false">' . $custom_userid_url . '</a>
-				</p>
-			</fieldset>
-		';
-	}
-
 	$response = '
-		<div style="display: none" id="userid">' . $custom_userid . '</div>
-			<fieldset>
-				<label for="name">Benutzername</label>
-				<p>
-					<input type="text" name="name" id="name" value="' . ip_anonymize($ip, $user_config) . '" style="width: 100%" />
-				</p>
-			</fieldset>
-			<br>
-			<fieldset>
-				<label for="email">Email-Benachrichtigung an</label>
-				<p>
-					<input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
-				</p>
-				<label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
-					<input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende
-				</label>
-				<label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
-					<input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Ergebnis-Email nur versenden, wenn teilgenommen wurde
-				</label>
-				<label for="vote_always_show" title="Zeigt den Voting-Dialog immer offen an. Erspart evtl. einen Klick.">
-					<input type="checkbox" name="vote_always_show" id="vote_always_show" ' . $vote_always_show . ' /> Voting immer offen anzeigen
-				</label>
-			</fieldset>
-			' . $custom_userid_gui_output . '
-			<br>';
+        <fieldset>
+            <label for="name">Benutzername</label>
+            <p>
+                <input type="text" name="name" id="name" value="' . $user_config['name'] . '" style="width: 100%" />
+            </p>
+        </fieldset>
+        <br>
+        <fieldset>
+            <label for="email">Email-Benachrichtigung an</label>
+            <p>
+                <input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
+            </p>
+            <label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
+                <input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende
+            </label>
+            <label for="voted_mail_only" title="Benachrichtigungs-Emails werden nur versendet, wenn vorher aktiv gevoted wurde">
+                <input type="checkbox" name="voted_mail_only" id="voted_mail_only" ' . $voted_mail_only . ' /> Ergebnis-Email nur versenden, wenn teilgenommen wurde
+            </label>
+            <label for="vote_always_show" title="Zeigt den Voting-Dialog immer offen an. Erspart evtl. einen Klick.">
+                <input type="checkbox" name="vote_always_show" id="vote_always_show" ' . $vote_always_show . ' /> Voting immer offen anzeigen
+            </label>
+        </fieldset>
+        <br>';
 	if (!isset($_GET['minimal'])) {
 		$response .= '<script>
 				$("#setVoteSettingsDialog input").on("change keyup", function() { vote_settings_save(); });

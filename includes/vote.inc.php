@@ -14,23 +14,10 @@ $votes_valid_normal = [ 'AltesFassl', 'CafeAmacord', 'Ausklang', 'CoteSud', 'Del
 		'SchlossquadratSilberwirt', 'Stoeger', 'TasteOfIndia', 'Waldviertlerhof', 'Woracziczky',
 		'Erbsenzaehlerei', 'Bierometer2', 'Duspara', 'Stefan2' ];
 
-function ip_username_sort($a, $b) {
-	$a_real = ip_anonymize($a);
-	$b_real = ip_anonymize($b);
-	if ($a_real == $b_real) {
-		return 0;
-	}
-	return ($a_real < $b_real) ? -1 : 1;
-}
-
 function returnVotes($votes) {
 	global $voting_over_time;
 
 	if (is_array($votes) && !empty($votes)) {
-		if (is_array($votes)) {
-			uksort($votes, 'ip_username_sort');
-		}
-
 		echo json_encode([
 			'voting_over' => (time() >= $voting_over_time),
 			'html' => vote_summary_html($votes),
@@ -59,9 +46,9 @@ function check_voting_time() {
 	}
 }
 
-function getAllVotes() {
+function getAllVotes($ip = null, $category = null) {
 	global $timestamp;
-	return VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp));
+	return VoteHandler_MySql::getInstance($timestamp)->get(date(VOTE_DATE_FORMAT, $timestamp), $ip, $category);
 }
 
 // tries to get the website from the venue class
@@ -106,7 +93,7 @@ function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'te
 				<span style='{$style_custom}'>{$title}</span>
 			</a>";
 		// current user => add delete functionality
-		if ($show_js_actions && $user == get_identifier_ip()) {
+		if ($show_js_actions && $user == get_ip()) {
 			$venue_title .= " <sup title='Löschen'><a href='javascript:void(0)' onclick='vote_delete_part(\"{$venue_class}\")' title='' style='color: red ! important'>x</a></sup>";
 		// otherwise => add vote actions
 		} else if ($show_js_actions) {
@@ -126,7 +113,7 @@ function vote_get_rankings($votes, $preserve_only_top=3) {
 	$venue_rating = [];
 
 	foreach ($votes as $user => $vote_data) {
-		foreach ($vote_data as $venue => $vote) {
+		foreach ($vote_data['votes'] as $venue => $vote) {
 			if (is_array($vote)) {
 				foreach ($vote as $vote_part) {
 					if (!isset($venue_rating[$venue])) {
@@ -242,7 +229,6 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 	}
 
 	// table with details
-	uksort($votes, 'ip_username_sort');
 	// note: use inline style here for email
 	$html .= '<table style="border-spacing: 5px" data-role="table">
 		<thead>
@@ -253,10 +239,10 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 				<th style="text-align: center"><b>Notizen</b></th>
 			</tr>
 		</thead><tbody>';
-	foreach ($votes as $user => $vote_data) {
-		$upVotes = array_keys($vote_data, 'up');
-		$downVotes = array_keys($vote_data, 'down');
-		$specialVote = isset($vote_data['special']) ? $vote_data['special'] : null;
+	foreach ($votes as $user_ip => $vote_data) {
+		$upVotes = array_keys($vote_data['votes'], 'up');
+		$downVotes = array_keys($vote_data['votes'], 'down');
+		$specialVote = isset($vote_data['votes']['special']) ? $vote_data['votes']['special'] : null;
 
 		sort($upVotes);
 		sort($downVotes);
@@ -274,15 +260,15 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 		$downVotes_style = empty($downVotes) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; color: #FF0000;';
 		$specialVote_style = empty($specialVote) ? 'text-decoration: none ! important; color: #999; text-align: center;' : 'text-decoration: none ! important; text-align: center;';
 
-		$upVotes = votes_adapt($upVotes, $user, $show_js_actions, $upVotes_style);
-		$downVotes = votes_adapt($downVotes, $user, $show_js_actions, $downVotes_style);
+		$upVotes = votes_adapt($upVotes, $user_ip, $show_js_actions, $upVotes_style);
+		$downVotes = votes_adapt($downVotes, $user_ip, $show_js_actions, $downVotes_style);
 
 		// cleanup other data for output
 		$specialVote = htmlspecialchars($specialVote);
 		// replace urls with an a tag
 		$specialVote = preg_replace('/(https?:\/\/[^\s]+)/', '<a href="$1" target="_blank">$1</a>', $specialVote);
 		// current user => add delete functionality
-		if ($show_js_actions && $user == get_identifier_ip()) {
+		if ($show_js_actions && $user_ip == get_ip()) {
 			if (!empty($specialVote)) {
 				$specialVote .= ' <sup title="Löschen"><a href="javascript:void(0)" onclick="vote_delete_part(\'special\')" style="color: red ! important">x</a></sup>';
 			} else {
@@ -310,7 +296,7 @@ function vote_summary_html($votes, $display_menus = false, $show_js_actions = tr
 		}
 
 		$html .= "<tr style='$row_style'>
-			<td>" . htmlspecialchars(ip_anonymize($user)) . "</td>
+			<td>" . htmlspecialchars($vote_data['name']) . "</td>
 			<td style='$upVotes_style'>{$upVotes}</td>
 			<td style='$downVotes_style'>{$downVotes}</td>
 			<td class='convert-emoji' style='$specialVote_style'>{$specialVote}</td>

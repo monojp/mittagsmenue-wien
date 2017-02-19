@@ -2,18 +2,22 @@
 
 require_once(__DIR__ . '/VoteHandler.php');
 
+/**
+ * Class MySqlConnection
+ * @property mysqli db
+ */
 class MySqlConnection {
 
 	private static $instance;
 	private $db = null;
 
-	function __construct($timestamp=null) {
-
+	function __construct($timestamp = null) {
 		// open db connection, try different configs after each other if connection fails
 		global $DB_CONFIGS;
 		$this->db = mysqli_init();
-		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3))
-			return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+		if (!$this->db->options(MYSQLI_OPT_CONNECT_TIMEOUT, 3)) {
+            return error_log('Options Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+        }
 		$db_connect_ok = false;
 		foreach ($DB_CONFIGS as $db_config) {
 			if (!$this->db->real_connect($db_config['DB_SERVER'], $db_config['DB_USER'], $db_config['DB_PASSWORD'], $db_config['DB_NAME'])) {
@@ -25,7 +29,7 @@ class MySqlConnection {
 		}
 		if (!$db_connect_ok) {
 			$this->db = null;
-			return;
+			return null;
 		}
 		// set charset
 		if (!$this->db->set_charset('utf8mb4')) {
@@ -33,6 +37,7 @@ class MySqlConnection {
 				error_log('could not set charset');
 			}
 		}
+		return null;
 	}
 
 	function __destruct() {

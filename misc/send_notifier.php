@@ -5,14 +5,10 @@ require_once(__DIR__ . '/../includes/vote.inc.php');
 
 mb_language('uni');
 
-function wrap_in_email_html($body, $custom_userid_access_url) {
-	$css_basic = file_get_contents(__DIR__ . '/../public/css/basic.css');
-	$html = '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">' . $css_basic . '</style><meta charset="UTF-8"/></head><body>';
-	$html .= $body;
-	$html .= '<br />';
-	$html .= "<div style='margin: 5px'>Adresse für den externen Zugriff: <a href='{$custom_userid_access_url}' style='font-weight: bold'>{$custom_userid_access_url}</a></div>";
-	$html .= '</body></html>';
-	return $html;
+function wrap_in_email_html($body) {
+	return '<!DOCTYPE html><html lang="de"><head><title>Voting</title><style type="text/css">'
+        . file_get_contents(__DIR__ . '/../public/css/basic.css')
+        . '</style><meta charset="UTF-8"/></head><body>' . $body . '</body></html>';
 }
 
 $valid_actions = [ 'remind', 'notify', 'dryrun', 'remind_html_test' ];
@@ -42,20 +38,12 @@ $voting_over_time_print = date('H:i', $voting_over_time);
 
 // loop user configs and send emails
 foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) {
-	$user = ip_anonymize($ip, $user_config);
 	// get user config values
 	$email = isset($user_config['email']) ? $user_config['email'] : '';
 	$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN);
 	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN);
-
-	// get/generate custom_userid_access_url
-	$custom_userid = isset($user_config['custom_userid']) ? $user_config['custom_userid'] : '';
-	if (!$custom_userid) {
-		$custom_userid = custom_userid_generate($ip);
-	}
-	$custom_userid_access_url = custom_userid_access_url_get($custom_userid);
 
 	// no valid email
 	if (empty($email) || $email == 'null') {
@@ -71,7 +59,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	if ($action == 'notify' && $votes && !empty($votes)) {
 		// build html
 		$html = vote_summary_html($votes, true, false, true);
-		$html = wrap_in_email_html($html, $custom_userid_access_url);
+		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 
 		$success = mb_send_mail($email, "Voting-Ergebnis", $html, implode("\r\n", $headers));
@@ -86,7 +74,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 		$html .= '<h3>Zwischenstand:</h3>';
 		$html .= vote_summary_html($votes, true, false, true);
-		$html = wrap_in_email_html($html, $custom_userid_access_url);
+		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 
 		$success = mb_send_mail($email, "Voting-Erinnerung", $html, implode("\r\n", $headers));
@@ -105,7 +93,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	// remind html output test
 	} elseif ($action == 'remind_html_test') {
 		$html = vote_summary_html($votes, true, false, true);
-		$html = wrap_in_email_html($html, $custom_userid_access_url);
+		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 		echo $html;
 		break;

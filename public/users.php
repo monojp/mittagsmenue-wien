@@ -7,7 +7,7 @@ $action = get_var('action');
 
 // set user config
 if ($action == 'user_config_set') {
-	$ip = get_identifier_ip();
+	$ip = get_ip();
 	$name = get_var('name');
 	$email = get_var('email');
 	$vote_reminder = (get_var('vote_reminder') == 'true');
