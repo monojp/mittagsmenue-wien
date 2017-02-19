@@ -202,6 +202,18 @@ $custom_venues = [
                 'website' => 'http://www.mosquito-mexican-restaurant-wien.at/',
                 'reference' => -1,
         ],
+	[
+                'id' => -17,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.189569,
+                                'lng' => 16.352020,
+                        ],
+                ],
+                'name' => 'Vietnam Bistro',
+                'website' => 'https://www.tripadvisor.at/Restaurant_Review-g190454-d2236734-Reviews-Vietnam_Bistro-Vienna.html',
+                'reference' => -1,
+        ]
 
 ];
 
