@@ -131,9 +131,36 @@ abstract class FoodGetterVenue {
 		if (!$this->lookaheadSafe && $currentWeekYear != $wantedWeekYear) {
 			return $this->data;
 		}
-		
+
+		// lock if semaphores are usable
+		if (USE_SEMAPHORES) {
+			// create simple positive crc32 "hash" for class semaphore
+			$sem_key = crc32(get_class($this));
+			if ($sem_key < 0) {
+				$sem_key *= -1;
+			}
+			// get semaphore id
+			$sem_id = sem_get($sem_key);
+			if ($sem_id === false) {
+				throw new Exception("Could not get semaphore with key {$sem_key}");
+			}
+			// aquire semaphore (this does the locking!)
+			if (sem_acquire($sem_id) === false) {
+				throw new Exception('Could not acquire semaphore');
+			}
+		}
+
+		// do parsing
 		$this->dataParsed = true;
-		return $this->parseDataSource();
+		$data = $this->parseDataSource();
+
+		// release semaphore (although this should be done automatically on shutdown)
+		if (USE_SEMAPHORES) {
+			sem_release($sem_id);
+		}
+
+		// return parsed data
+		return $data;
 	}
 
 	// main methode which will be called

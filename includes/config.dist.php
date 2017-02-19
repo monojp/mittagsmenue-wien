@@ -26,6 +26,7 @@ $fb_app_id = '<your fb app id>';
 $fb_app_secret = '<your fb app secret>';
 
 define('USE_MINIMZED_JS_CSS', true);
+define('USE_SEMAPHORES', true);
 
 define('SITE_TITLE', 'Mittagsmenü Wien');
 define('SITE_URL', '<url>');
