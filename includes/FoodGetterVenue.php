@@ -468,7 +468,8 @@ abstract class FoodGetterVenue {
 			mb_substr_count($string, 'fruchtsalat') +
 			mb_substr_count($string, 'zwetschkenfleck') +
 			mb_substr_count($string, 'zwetschkentraum') +
-			mb_substr_count($string, 'schwarzwälderkirsch')
+			mb_substr_count($string, 'schwarzwälderkirsch') +
+			mb_substr_count($string, 'topfenwelle')
 		);
 	}
 
@@ -580,7 +581,7 @@ abstract class FoodGetterVenue {
 			'Fish Goa', 'Chicken Korma', 'Dal Makhani', 'Beef Malai', 'Fish Tikka Masala',
 			'Bombay Aloo', 'Beef Palak', 'Chicken Mushroom', 'Beef Dal', 'Chicken Curry',
 			'Fish Adriaki', 'Raj Mah', 'Beef Korma', 'Turkey Masala', 'Turkey Korma', 'Sur Korma',
-			'Shahi Paneer',
+			'Shahi Paneer', 'Dal Tarka',
 		];
 
 		$regex_price = '/[0-9,\. ]*(€|eur|euro|tagesteller|fischmenü)+[ ]*[0-9,\. ]*/i';
@@ -682,7 +683,8 @@ abstract class FoodGetterVenue {
 					if (mb_strpos($food, 'mit')  === 0 || endswith($data, 'mit')
 							|| mb_strpos($food, 'dazu') === 0 || endswith($data, 'dazu')
 							|| mb_strpos($food, 'und')  === 0 || endswith($data, 'und')
-							|| mb_strpos($food, 'auf')  === 0 || endswith($data, 'auf')) {
+							|| mb_strpos($food, 'auf')  === 0 || endswith($data, 'auf')
+							|| mb_strpos($food, ',')  === 0 || endswith($data, ',')) {
 						//~ error_log("continue old food with '{$food}'");
 						$data .= ' ';
 					// we have a food part and title that is already written
