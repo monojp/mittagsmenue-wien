@@ -191,30 +191,41 @@ $custom_venues = [
 		'reference' => -1,
 	],
 	[
-                'id' => -16,
-                'geometry' => [
-                        'location' => [
-                                'lat' => 48.192429,
-                                'lng' => 16.360060,
-                        ],
-                ],
-                'name' => 'Mosquito Mexican Restaurant',
-                'website' => 'http://www.mosquito-mexican-restaurant-wien.at/',
-                'reference' => -1,
-        ],
+		'id' => -16,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.192429,
+				'lng' => 16.360060,
+			],
+		],
+		'name' => 'Mosquito Mexican Restaurant',
+		'website' => 'http://www.mosquito-mexican-restaurant-wien.at/',
+		'reference' => -1,
+	],
 	[
-                'id' => -17,
-                'geometry' => [
-                        'location' => [
-                                'lat' => 48.189569,
-                                'lng' => 16.352020,
-                        ],
-                ],
-                'name' => 'Vietnam Bistro',
-                'website' => 'https://www.tripadvisor.at/Restaurant_Review-g190454-d2236734-Reviews-Vietnam_Bistro-Vienna.html',
-                'reference' => -1,
-        ]
-
+		'id' => -17,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.189569,
+				'lng' => 16.352020,
+			],
+		],
+		'name' => 'Vietnam Bistro',
+		'website' => 'https://www.tripadvisor.at/Restaurant_Review-g190454-d2236734-Reviews-Vietnam_Bistro-Vienna.html',
+		'reference' => -1,
+	],
+	[
+		'id' => -18,
+		'geometry' => [
+			'location' => [
+				'lat' => 48.189222,
+				'lng' => 16.351730,
+			],
+		],
+		'name' => 'ghisallo',
+		'website' => 'http://www.ghisallo.cc/',
+		'reference' => -1,
+	],
 ];
 
 // searches for venue data in the nearplaces cache
@@ -447,6 +458,8 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Österreichische Warenhandels-Aktiengesellschaft', 'Noodles & More', 'Panarea Buffet',
 			'MOTTO Catering GmbH', 'Eventmöbel Verleih', 'Hofer', 'PONGANIC Fisch & Greissler',
 			'Zur bunten Kuh', 'Schick Hotel Erzherzog Rainer', 'Cafe Drechsler', 'Steirer Stuben',
+			'Cafe Willendorf', 'CHILI-WERKSTATT', 'Budapest Bistro', 'B.K Curry Indian Restaurant',
+			'Chocolaterie Pâtisserie Fruth',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty
