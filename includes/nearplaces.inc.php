@@ -448,7 +448,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'SPAR Supermarkt', 'Flying Diner', 'Weinbar - Vinothek Pub Klemo', 'Pizzeria La Carne',
 			'Nam Nam Deli', 'Supermarkt', 'Lidl Österreich GmbH', 'Public-theplacetobe', 'Winzig',
 			'Mc. Curry', 'Schlupfwinkel Abendbeisl', 'Café Rüdigerhof', 'Restaurant Goldene Glocke',
-			'Rudi\'s Beisl', 'Nam Nam', 'Restaurant Zum Andreas Hofer', 'Eduard Fruth',
+			'Rudi\'s Beisl', /*'Nam Nam', */'Restaurant Zum Andreas Hofer', 'Eduard Fruth',
 			'Wald/4 ler Stub\'n', 'Pro Vino Lang & Partner KG - Vinothek und Weinhandel', 'Entler',
 			'TIP TOP TABLE GmbH', 'Cafe Jelinek', 'Pizzeria Tanti Saluti', 'Bangkok Vienna',
 			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin', 'Rori\'s',
@@ -459,7 +459,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'MOTTO Catering GmbH', 'Eventmöbel Verleih', 'Hofer', 'PONGANIC Fisch & Greissler',
 			'Zur bunten Kuh', 'Schick Hotel Erzherzog Rainer', 'Cafe Drechsler', 'Steirer Stuben',
 			'Cafe Willendorf', 'CHILI-WERKSTATT', 'Budapest Bistro', 'B.K Curry Indian Restaurant',
-			'Chocolaterie Pâtisserie Fruth',
+			'Chocolaterie Pâtisserie Fruth', 'Kaffee von Sascha', 'Hotel Ananas', 'Johnny\'s Pub',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty

@@ -29,7 +29,7 @@ class UserHandler_MySql extends UserHandler {
 		}
 
 		// prepare statement
-		if (!($stmt = $this->db->prepare("INSERT INTO foodUser VALUES (?, ?, ?, ?, ?)")))
+		if (!($stmt = $this->db->prepare("INSERT INTO foodUser VALUES (?, ?, ?, ?, ?, ?)")))
 			return error_log("Prepare failed: (" . $this->db->errno . ") " . $this->db->error);
 		// bind params
 		if (!$stmt->bind_param("sssiii", $ip, $name, $email, $vote_reminder, $voted_mail_only, $vote_always_show))

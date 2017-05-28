@@ -27,13 +27,13 @@ function get_venues_html() {
 		new TasteOfIndia(),
 		new DeliciousMonster(),
 		new Ausklang(),
-		new NamNam(),
+		//new NamNam(),
 		new Waldviertlerhof(),
 		//new MensaFreihaus(),
 		//new MensaSchroedinger(),
 		new Woracziczky(),
 		//new CoteSud(),
-		new FalkensteinerStueberl(),
+		//new FalkensteinerStueberl(),
 		//new Lambrecht(),
 		//new CafeAmacord(), // zu mittag nicht mehr offen
 		//new Gondola(), // unparsbar zurzeit (spalten-pdf)
@@ -232,7 +232,7 @@ function get_vote_setting_html() {
 
 	$ip = get_ip();
 	$user_config = UserHandler_MySql::getInstance()->get($ip);
-	if (!is_intern_ip($ip) || empty($user_config)) {
+	if (!is_intern_ip($ip)) {
 		return;
 	}
 

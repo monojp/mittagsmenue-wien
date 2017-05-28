@@ -296,8 +296,8 @@ function get_ip() {
 	return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
 }
 function is_intern_ip($ip = null) {
-	//return true; // DEBUG
-	return (empty(ALLOW_VOTING_IP_PREFIX) || mb_strpos($ip ?: get_ip(), ALLOW_VOTING_IP_PREFIX) === 0);
+	return (!defined('ALLOW_VOTING_IP_PREFIX') || empty(ALLOW_VOTING_IP_PREFIX)
+			|| mb_strpos($ip ?: get_ip(), ALLOW_VOTING_IP_PREFIX) === 0);
 }
 function show_voting() {
 	return is_intern_ip();
