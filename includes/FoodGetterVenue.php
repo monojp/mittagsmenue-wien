@@ -59,11 +59,19 @@ abstract class FoodGetterVenue {
 
 	// writes data to the cache
 	protected function cacheWrite() {
+		if (!PERSIST_MENU_DATA) {
+			return;
+		}
+
 		CacheHandler_MySql::getInstance($this->timestamp)->saveToCache($this->id, $this->data,
 				$this->price);
 	}
 	// reads data from the cache
 	protected function cacheRead() {
+		if (!PERSIST_MENU_DATA) {
+			return;
+		}
+
 		$this->dataFromCache = CacheHandler_MySql::getInstance($this->timestamp)->getFromCache(
 				$this->id, $this->changed, $this->data, $this->price);
 		// reset too old empty cached data
@@ -184,7 +192,8 @@ abstract class FoodGetterVenue {
 		}
 
 		// save special data to cache
-		if ($this->isStateSpecial() && !$this->dataFromCache && $this->dataParsed) {
+		if (CACHE_SPECIAL_DATA && $this->isStateSpecial()
+				&& !$this->dataFromCache && $this->dataParsed) {
 			$this->cacheWrite();
 		}
 
@@ -795,12 +804,12 @@ abstract class FoodGetterVenue {
 
 		foreach ((array)$all_posts as $post) {
 			if (!isset($post['message']) || !isset($post['created_time'])
-					|| !isset($post['from'])) {
+					|| !isset($post['id'])) {
 				continue;
 			}
 
 			// ignore posts other than from the wanted page
-			if ($post['from']['id'] != $page_id) {
+			if (explode('_', $post['id'])[0] != $page_id) {
 				continue;
 			}
 

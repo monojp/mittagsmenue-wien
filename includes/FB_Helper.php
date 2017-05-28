@@ -6,17 +6,20 @@ class FB_Helper {
 	// constructor, creates an auth token with app id and secret
 	// throws an exception if authentication fails
 	public function __construct($app_id, $app_secret) {
-		$response = $this->fetchUrl("https://graph.facebook.com/oauth/access_token?grant_type=client_credentials&client_id={$app_id}&client_secret={$app_secret}");
-		$response_decoded = json_decode($this->auth_token, true);
-		if ($response && isset($response['error'])) {
-			throw new Exception($response['error']['message'], $response['error']['code']);
+		$response = $this->request("https://graph.facebook.com/oauth/access_token?grant_type=client_credentials&client_id={$app_id}&client_secret={$app_secret}");
+		if (!isset($response['access_token'])) {
+			throw new Exception('access_token not set');
 		}
 
-		$this->auth_token = $response;
+		if (empty($response['access_token'])) {
+			throw new Exception('access_token empty');
+		}
+
+		$this->auth_token = $response['access_token'];
 	}
 
 	// curl fetch helper function
-	private function fetchUrl($url){
+	private function request($url){
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -25,17 +28,27 @@ class FB_Helper {
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0');
 
-		$feedData = curl_exec($ch);
+		$response = curl_exec($ch);
 		curl_close($ch);
 
-		return $feedData;
+		// decode json response and handle json errors
+		$response = json_decode($response, true);
+		if ($response === null) {
+			throw new Exception(json_last_error_msg(), json_last_error());
+		}
+
+		// handle api errors
+		if (isset($response['error'])) {
+			throw new Exception($response['error']['message'], $response['error']['code']);
+		}
+
+		return $response;
 	}
 
 	// gets all (public) facebook posts of a profile / page
 	// returns null if something went wrong
 	public function get_all_posts($profile_id) {
-		$response = $this->fetchUrl("https://graph.facebook.com/{$profile_id}/feed?{$this->auth_token}");
-		$response = json_decode($response, true);
+		$response = $this->request("https://graph.facebook.com/{$profile_id}/feed?access_token={$this->auth_token}");
 		if (!$response || !isset($response['data'])) {
 			return null;
 		}
@@ -70,12 +83,12 @@ class FB_Helper {
 	}
 
 	public function get_graph_object($object_id) {
-		return "https://graph.facebook.com/{$object_id}?{$this->auth_token}";
+		return "https://graph.facebook.com/{$object_id}?access_token={$this->auth_token}";
 	}
 
 	public function get_picture_url($object_id) {
 		// get image date from graph object
-		$images = json_decode($this->fetchUrl($this->get_graph_object($object_id)), true);
+		$images = $this->request($this->get_graph_object($object_id));
 		if ($images === null || empty($images['images'])) {
 			return null;
 		}
