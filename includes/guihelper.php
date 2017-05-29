@@ -106,7 +106,7 @@ function get_header_html() {
 	return $response;
 }
 function get_footer_html() {
-	global $tracking_code, $dateOffset;
+	global $dateOffset;
 
 	//$response = "</div>";
 	$response = '';
@@ -134,8 +134,6 @@ function get_footer_html() {
 	$response .= '<div data-role="footer">
 		<h2>' . implode(' | ', $outputs) . '</h2>
 	</div>';
-
-	$response .= "${tracking_code}";
 
 	return $response;
 }
