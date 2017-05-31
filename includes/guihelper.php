@@ -43,7 +43,7 @@ function get_venues_html() {
 		new Erbsenzaehlerei(),
 		new Bierometer2(),
 		//new Duspara(),
-		new Stefan2(),
+		//new Stefan2(),
 	];
 	foreach ($venues as $venue) {
 		$response .= $venue;
