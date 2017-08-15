@@ -39,7 +39,7 @@ define('CONTACT_HREF', '<url>');
 define('IMPRESSUM_HREF', '<url>');
 define('PRIVACY_INFO', '<text>');
 
-define('SEARCH_PROVIDER', 'https://duckduckgo.com/?q=');
+define('SEARCH_PROVIDER', 'https://searx.info/?q=');
 
 $locales = [ 'de_AT.UTF-8', 'de_DE.UTF-8' ];
 $locale_new = setlocale(LC_ALL, $locales);
