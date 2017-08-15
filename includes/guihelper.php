@@ -25,7 +25,6 @@ function get_venues_html() {
 		new AltesFassl(),
 		//new HaasBeisl(),
 		new TasteOfIndia(),
-		new DeliciousMonster(),
 		new Ausklang(),
 		//new NamNam(),
 		new Waldviertlerhof(),
