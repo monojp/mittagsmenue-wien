@@ -332,7 +332,7 @@ abstract class FoodGetterVenue {
 		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
+			$string .= "<a href='https://www.openstreetmap.org/directions?engine=mapzen_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
 				<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='OpenStreetMap Route'>OpenStreetMap Route</div>
 			</a>";
 		}

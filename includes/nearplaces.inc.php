@@ -484,8 +484,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$rating = isset($result['rating']) ? $result['rating'] : null;
 		$id = isset($result['id']) ? $result['id'] : null;
 		$reference = isset($result['reference']) ? $result['reference'] : null;
-		$maps_href = htmlspecialchars("https://www.openstreetmap.org/directions?engine=graphhopper_foot&route=$lat_orig,$lng_orig;$lat,$lng");
-		//$maps_href = htmlspecialchars("https://maps.google.com/maps?dirflg=r&saddr=$lat_orig,$lng_orig&daddr=$lat,$lng");
+		$maps_href = htmlspecialchars("https://www.openstreetmap.org/directions?engine=mapzen_foot&route=$lat_orig,$lng_orig;$lat,$lng");
 		$name_url_safe = urlencode($name);
 		$name_escaped = htmlspecialchars($name, ENT_QUOTES);
 		$name_escaped = str_replace("'", '', $name_escaped);
