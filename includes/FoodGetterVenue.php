@@ -558,9 +558,10 @@ abstract class FoodGetterVenue {
 				}
 			}
 		}
+		// use whole string if no end was found or specified
 		if (empty($posEnds)) {
+			$posEnds = [mb_strlen($data)];
 			//error_log('no end found');
-			return;
 		 }
 		//return error_log(min($posEnds)) && false;
 
