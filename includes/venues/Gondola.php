@@ -9,7 +9,7 @@ class Gondola extends FoodGetterVenue {
 		$this->addressLat = 48.189628;
 		$this->addressLng = 16.352214;
 		$this->url = 'http://www.gondola.at/';
-		$this->dataSource = 'http://www.gondola.at/ristorante/';
+		$this->dataSource = 'http://www.gondola.at/ristorante/#1494412403287-c66a79b9-2e2f';
 		$this->menu = 'http://www.gondola.at/ristorante/#1495145120688-21d3555d-3784';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;

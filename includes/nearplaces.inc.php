@@ -105,7 +105,7 @@ $custom_venues = [
 		'name' => 'New Point',
 		'website' => 'http://www.newpointrestaurant.at/',
 		'reference' => -1,
-	],*/
+	],
 	[
 		'id' => -9,
 		'geometry' => [
@@ -118,7 +118,7 @@ $custom_venues = [
 		'website' => 'http://www.gondola.at/',
 		'reference' => -1,
 	],
-	/*[
+	[
 		'id' => -10,
 		'geometry' => [
 			'location' => [
