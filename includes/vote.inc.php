@@ -8,11 +8,7 @@ define('VOTE_NOTE_MAX_LENGTH', 128);
 define('VOTE_DATE_FORMAT', 'Y-m-d');
 
 $votes_valid_special = [ 'Verweigerung', 'Egal' ];
-$votes_valid_normal = [ 'AltesFassl', 'CafeAmacord', 'Ausklang', 'CoteSud', 'DeliciousMonster',
-		'FalkensteinerStueberl', 'Gondola', 'HaasBeisl', 'Lambrecht', 'MINIRESTAURANT',
-		'MensaFreihaus', 'MensaSchroedinger', 'NamNam', 'RadioCafe', 'SchlossquadratMargareta',
-		'SchlossquadratSilberwirt', 'Stoeger', 'TasteOfIndia', 'Waldviertlerhof', 'Woracziczky',
-		'Erbsenzaehlerei', 'Bierometer2', 'Duspara', 'Stefan2' ];
+$votes_valid_normal = [];
 
 function returnVotes($votes) {
 	global $voting_over_time;

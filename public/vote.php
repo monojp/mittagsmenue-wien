@@ -51,7 +51,7 @@ if ($action == 'vote_delete') {
 } else if (in_array($action, [ 'vote_up', 'vote_down' ])) {
 	check_voting_time();
 
-	if (!$identifier || !in_array($identifier, $votes_valid_normal)) {
+	if (!$identifier || !in_array($identifier, $votes_valid_normal) && !class_exists($identifier)) {
 		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
