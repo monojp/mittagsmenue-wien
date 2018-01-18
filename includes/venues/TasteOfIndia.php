@@ -24,6 +24,7 @@ class TasteOfIndia extends FoodGetterVenue {
 			date_offsetted('d.m.Y'),
 			date_offsetted('d:m:Y'),
 			date_offsetted('d,m,Y'),
+			date_offsetted('d.m,Y'),
 		];
 	}
 
