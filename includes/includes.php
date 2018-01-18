@@ -243,9 +243,7 @@ function cleanText($text) {
 	$text = str_replace_wrapper($searchReplace, $text);
 
 	// remove EU allergy warnings
-	$text = preg_replace('/(( |\(|,|;)*[ABCDEFGHLMNOPR]( |\)|,|;)+)+/', ' ', " ${text} ");
-	$text = preg_replace('/[ABCDEFGHLMNOPR,\. ]+(<br>)+/', '<br>', $text);
-	$text = preg_replace("/[ABCDEFGHLMNOPR,\. ]+(\n)+/", "\n", $text);
+	$text = preg_replace('/(( |\(|,|;)+[ABCDEFGHLMNOPR]( |\)|,|;)+)+/', ' ', " ${text} ");
 
 	$words_trim = [ 'oder', 'Vegan' ];
 	foreach ($words_trim as $word) {
