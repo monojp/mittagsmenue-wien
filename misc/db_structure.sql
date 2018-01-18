@@ -36,7 +36,6 @@ DROP TABLE IF EXISTS `foodUser`;
 CREATE TABLE `foodUser` (
   `ip` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
-  `custom_userid` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL,
   `email` varchar(128) CHARACTER SET utf8mb4 DEFAULT NULL,
   `vote_reminder` tinyint(1) NOT NULL DEFAULT '0',
   `voted_mail_only` tinyint(1) NOT NULL DEFAULT '0',
