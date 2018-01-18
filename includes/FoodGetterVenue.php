@@ -658,17 +658,7 @@ abstract class FoodGetterVenue {
 				!stringsExist($food, $number_markers) &&
 				(mb_strlen($food) <= 5 ||
 					mb_strlen(count_chars($food, 3)) <= 5 ||
-					stringsExist($food, [
-						'cafe', 'espresso', 'macchiato', 'capuccino', 'gondola', 'montag',
-						'dienstag', 'mittwoch', 'donnerstag', 'freitag', 'samstag', 'sonntag',
-						'gilt in', 'uhr', 'schanigarten', 'bieten', 'fangfrisch', 'ambiente',
-						'reichhaltig', 'telefonnummer', 'willkommen', 'freundlich', 'donnerstag',
-						'kleistgasse', 'tcpdf', 'take away', 'über die gasse', 'konsumation',
-						'nur im haus', 'sehr geehrte', 'alle jahre wieder', 'location', 'feier',
-						'unterstützen', 'angebote', 'grüße', 'team', 'gerne', 'termin', 'details',
-						'anspruch', 'nummer', 'geöffnet', 'wünscht', 'frohe',
-						'Solange der Vorrat reicht',
-					], true))
+					stringsExist($food, [/* place to add noise keywords */], true))
 			) {
 				//~ error_log("skip ${food}");
 				continue;
