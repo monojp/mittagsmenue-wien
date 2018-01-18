@@ -56,6 +56,8 @@ class Stoeger extends FoodGetterVenue {
 					. getGermanMonthName() . date(' Y', $this->timestamp),
 			getGermanDayName() . date(' j. ', $this->timestamp)
 					. getGermanMonthName() . date(' Y', $this->timestamp),
+			getGermanDayName() . date(' d.m.Y', $this->timestamp),
+			getGermanDayName() . date(' y.n.Y', $this->timestamp),
 		];
 	}
 
