@@ -22,6 +22,7 @@ function get_venues_html() {
 	$venues = [
 		new SchlossquadratMargareta(),
 		new SchlossquadratSilberwirt(),
+		new SchlossquadratCuadro(),
 		new AltesFassl(),
 		//new HaasBeisl(),
 		new TasteOfIndia(),
@@ -35,7 +36,7 @@ function get_venues_html() {
 		//new FalkensteinerStueberl(),
 		//new Lambrecht(),
 		//new CafeAmacord(), // zu mittag nicht mehr offen
-		new Gondola(),
+		//new Gondola(),
 		//new RadioCafe(), // encoding-probleme
 		new Stoeger(),
 		//new MINIRESTAURANT(),
