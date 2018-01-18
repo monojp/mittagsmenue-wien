@@ -226,6 +226,78 @@ $custom_venues = [
 		'website' => 'http://www.ghisallo.cc/',
 		'reference' => -1,
 	],
+	[
+                'id' => -19,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.1883225,
+                                'lng' => 16.3517071,
+                        ],
+                ],
+                'name' => 'Pasham Kebap',
+                'website' => 'https://www.yelp.de/biz/pasham-wien',
+                'reference' => -1,
+        ],
+        [
+                'id' => -20,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.183731,
+                                'lng' => 16.355765,
+                        ],
+                ],
+                'name' => 'Pferdefleischer Schuller Rudolf',
+                'website' => 'http://diefleischer.at/1050/schuller-1050.html',
+                'reference' => -1,
+        ],
+        [
+                'id' => -21,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.184739,
+                                'lng' => 16.352949,
+                        ],
+                ],
+                'name' => 'Anadolu Backshop',
+                'website' => 'https://www.yelp.de/biz/anadolu-backshop-wien',
+                'reference' => -1,
+        ],
+	[
+                'id' => -22,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.192937,
+                                'lng' => 16.349373,
+                        ],
+                ],
+                'name' => 'Thai Isaan Kitchen',
+                'website' => 'http://www.thai-isaan.at/',
+                'reference' => -1,
+        ],
+	/*[
+                'id' => -23,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.188364,
+                                'lng' => 16.351627,
+                        ],
+                ],
+                'name' => 'Xu \' s Cooking',
+                'website' => 'http://www.xu-s-cooking-wien.at/',
+                'reference' => -1,
+        ],*/
+	/*[
+                'id' => -24,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.190641,
+                                'lng' => 16.348541,
+                        ],
+                ],
+                'name' => 'JAS',
+                'website' => 'http://www.jas-restaurant.at/',
+                'reference' => -1,
+        ],*/
 ];
 
 // searches for venue data in the nearplaces cache
@@ -436,16 +508,16 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		// clean name from unwanted stuff
 		$name = trim(str_replace([ 'Little Stage', 'WerkzeugH', 'Osteria Vinoteca Panarea',
 			'Bar Tabacchi', 'Zum Stöger e.U', 'Vinoto', 'La Casa Grande - Cucina Di Tino', 'Victor',
-			'Gregors Konditorei', 'Admiral Wettcafé', 'Tanzcafe Jenseits', 'Gergely\'s', 'Ströck',
+			'Gregors Konditorei', 'Admiral Wettcafé', 'Tanzcafe Jenseits', 'Gergely\'s', 
 			'Anker Snack & Coffee Gastronomiebetriebs GmbH', 'Tchibo Filiale', 'Rori\'s Margareten',
 			'Restaurant Schwarzer Adler', 'Die Erbsenzählerei', 'Pizza Hotline 5', 'Burger Bring',
-			'Schnaps-Bar Club Hofstöckl', 'Margareta', 'Silberwirt', 'Partyservice Schlögl', 'SPAR',
+			'Schnaps-Bar Club Hofstöckl', 'Margareta', 'Silberwirt', 'Partyservice Schlögl', 
 			'LA VITA È BELLA - BAR - ENOTECA', 'Vinothek La Cave', 'broetchen4you.at', 'BILLA AG',
 			'Pizza Da Capo', 'Woracziczky Gasthaus', 'Pizza Mann Wien 5', 'Schlacher Event OG',
-			'Hofer Wien 5., Margareten', 'Bäckerei Cafe Felzl', 'McDonald\'s', 'Zum alten Fassl',
+			'Bäckerei Cafe Felzl', 'McDonald\'s', 'Zum alten Fassl', 'Gasthaus Tschani',
 			'Motto - Restaurant.Bar', 'ristorante GONDOLA', 'FAIRLEIH - Eventausstattung', 'Aromat',
 			'Flying Diner 1050', 'Senhor Vinho', 'Café Standard', 'Waldviertlerhof', 'HaasBeisl',
-			'SPAR Supermarkt', 'Flying Diner', 'Weinbar - Vinothek Pub Klemo', 'Pizzeria La Carne',
+			'Flying Diner', 'Weinbar - Vinothek Pub Klemo', 'Pizzeria La Carne',
 			'Nam Nam Deli', 'Supermarkt', 'Lidl Österreich GmbH', 'Public-theplacetobe', 'Winzig',
 			'Mc. Curry', 'Schlupfwinkel Abendbeisl', 'Café Rüdigerhof', 'Restaurant Goldene Glocke',
 			'Rudi\'s Beisl', /*'Nam Nam', */'Restaurant Zum Andreas Hofer', 'Eduard Fruth',
@@ -454,11 +526,11 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'Café Wortner Kaffeehaus', 'Goldener Spiegel', 'China Restaurant Zhong Xin', 'Rori\'s',
 			'Kulinario - Vinzenz Gruppe Service GmbH (Geschäftsbereich Küchen Wien)', 'Wieden Bräu',
 			'Taste of India Restaurant', 'Pizzeria Vesuvio da Mario', 'Café Ritter', 'Punkt 404',
-			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Billa', 'Cafe 60',
+			'FILMQUARTIER WIEN - Filmlocations + Requisitenfundus', 'Cafe 60',
 			'Österreichische Warenhandels-Aktiengesellschaft', 'Noodles & More', 'Panarea Buffet',
-			'MOTTO Catering GmbH', 'Eventmöbel Verleih', 'Hofer', 'PONGANIC Fisch & Greissler',
+			'MOTTO Catering GmbH', 'Eventmöbel Verleih', 'PONGANIC Fisch & Greissler',
 			'Zur bunten Kuh', 'Schick Hotel Erzherzog Rainer', 'Cafe Drechsler', 'Steirer Stuben',
-			'Cafe Willendorf', 'CHILI-WERKSTATT', 'Budapest Bistro', 'B.K Curry Indian Restaurant',
+			'Cafe Willendorf', 'CHILI-WERKSTATT', 'Budapest Bistro',
 			'Chocolaterie Pâtisserie Fruth', 'Kaffee von Sascha', 'Hotel Ananas', 'Johnny\'s Pub',
 			'Panino e Vino DELIKATessen Da Giacomo', 'Radatz Markt Margaretenstraße', 'Salzberg',
 			'Donhauser GmbH', 'Pizzeria Valentino', 'Pizzeria La Casa Grande', 'migrating kitchen',
@@ -470,6 +542,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 			'MINIRESTAURANT', 'Gartencafe', 'Barmherzige Schwestern Wirtschaftsbetriebe GmbH',
 			'Leschanz GmbH - Wiener Schokoladen Manufaktur', 'Finkh', 'Bauernbräu',
 			'Falkensteiner Hotel Wien Margareten', 'Restaurant zu den 3 Buchteln', 
+			'Mendocino - Dein Lokal in Wien', 'donhauser', 'Grill & Restaurant SEMENDRIA 1050',
 		], '', $result['name']), ',.;_.-:"& ');
 
 		// name empty
@@ -484,7 +557,7 @@ function build_response($lat_orig, $lng_orig, $api_response) {
 		$rating = isset($result['rating']) ? $result['rating'] : null;
 		$id = isset($result['id']) ? $result['id'] : null;
 		$reference = isset($result['reference']) ? $result['reference'] : null;
-		$maps_href = htmlspecialchars("https://www.openstreetmap.org/directions?engine=mapzen_foot&route=$lat_orig,$lng_orig;$lat,$lng");
+		$maps_href = "https://www.openstreetmap.org/directions?engine=mapzen_foot&route=$lat_orig,$lng_orig;$lat,$lng";
 		$name_url_safe = urlencode($name);
 		$name_escaped = htmlspecialchars($name, ENT_QUOTES);
 		$name_escaped = str_replace("'", '', $name_escaped);
