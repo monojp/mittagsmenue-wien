@@ -17,18 +17,12 @@ $radius = is_var('radius') ? get_var('radius') : '100';
 $radius_max = is_var('radius_max') ? get_var('radius_max') : LOCATION_DEFAULT_DISTANCE;
 $sensor = is_var('sensor') ? get_var('sensor') : 'false';
 
-$api_results = nearbysearch_full($lat, $lng, $radius, $sensor);
-$api_results = array_merge($api_results, nearbysearch_full($lat, $lng, $radius_max, $sensor));
-$nearplaces = build_response($lat, $lng, $api_results);
-foreach ($nearplaces as $nearplace) {
-	if (empty($nearplace['name']) || in_array($nearplace['name'], $votes_valid_normal)) {
-		continue;
-	}
-	$votes_valid_normal[] = $nearplace['name'];
-}
-
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
+// checking the nearplace cache should be done as last resort because it is the slowest
+if ($identifier && !class_exists($identifier) && !nearplace_cache_search($identifier)) {
+	$identifier = null;
+}
 $ip = get_ip();
 $action = get_var('action');
 
@@ -51,7 +45,7 @@ if ($action == 'vote_delete') {
 } else if (in_array($action, [ 'vote_up', 'vote_down' ])) {
 	check_voting_time();
 
-	if (!$identifier || !in_array($identifier, $votes_valid_normal) && !class_exists($identifier)) {
+	if (!$identifier) {
 		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
