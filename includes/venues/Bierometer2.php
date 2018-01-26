@@ -13,6 +13,7 @@ class Bierometer2 extends FoodGetterVenue {
 		$this->menu = 'http://www.bierometer-2.at/speisekarte/suppen-salate';
 		$this->no_menu_days = [ 0, 6 ];
 		$this->lookaheadSafe = true;
+		$this->price_nested_info = 'mit Suppe / ohne Suppe';
 
 		parent::__construct();
 	}
@@ -31,7 +32,6 @@ class Bierometer2 extends FoodGetterVenue {
 		if (!$dataTmp ) {
 			return;
 		}
-		//return error_log($dataTmp);
 
 		// strip full dates (which appear in the page header)
 		$dataTmp = preg_replace('/\d{2}\.\d{2}\.\d{4}/', '', $dataTmp);
@@ -39,14 +39,12 @@ class Bierometer2 extends FoodGetterVenue {
 		// get menu data for the chosen day
 		$data = $this->parse_foods_inbetween_days($dataTmp,
 				date('d.', strtotime('+1 day', $this->timestamp)),
-				[ 'MENÜ-ALTERNATIVE', 'NEWSLETTER', 'Bierometer', '©' ]);
+				[ 'MENÜPREIS', 'MENÜ-ALTERNATIVE', 'NEWSLETTER', 'Bierometer', '©' ]);
 		if (!$data || is_numeric($data)) {
 			return ($this->data = $data);
 		}
-		//return error_log($data);
 
-		$this->price = [ 5.8, 6.3 ];
-		//return error_log(print_r($this->price, true));
+		$this->price = [$this->parse_prices_regex($dataTmp, ['/€ [\d],[\d]{2}/'])];
 
 		return ($this->data = $data);
 	}
