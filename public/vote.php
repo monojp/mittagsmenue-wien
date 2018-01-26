@@ -20,7 +20,8 @@ $sensor = is_var('sensor') ? get_var('sensor') : 'false';
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
 // checking the nearplace cache should be done as last resort because it is the slowest
-if ($identifier && !class_exists($identifier) && !nearplace_cache_search($identifier)) {
+if ($identifier && !in_array($identifier, $votes_valid_special) && !class_exists($identifier)
+		&& !nearplace_cache_search($identifier)) {
 	$identifier = null;
 }
 $ip = get_ip();
@@ -61,7 +62,7 @@ if ($action == 'vote_delete') {
 } else if ($action == 'vote_special') {
 	check_voting_time();
 
-	if (!$identifier || !in_array($identifier, $votes_valid_special)) {
+	if (!$identifier) {
 		exit(json_encode([ 'alert' => js_message_prepare('invalid identifier') ]));
 	}
 
