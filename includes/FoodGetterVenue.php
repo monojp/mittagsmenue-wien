@@ -721,7 +721,7 @@ abstract class FoodGetterVenue {
 			// replace common numbering strings (if they start the line)
 			foreach ($number_markers as $number_marker) {
 				if (startswith($food, $number_marker)) {
-					$food = mb_substr($food, strlen($number_marker));
+					$food = mb_substr($food, mb_strlen($number_marker));
 				}
 			}
 			$food = cleanText($food);
