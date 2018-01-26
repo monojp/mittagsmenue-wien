@@ -9,9 +9,13 @@ class SchlossquadratMargareta extends SchlossquadratCommon {
 		$this->addressLng = 16.3588115;
 		$this->url = 'http://www.margareta.at/';
 		$this->dataSource = 'http://www.margareta.at/pdf.php?days=23';
-		$this->menu = 'http://www.margareta.at/fileadmin/files/margareta/pdf/KAMargareta161001.pdf';
 		$this->no_menu_days = [ 0 ];
 		$this->lookaheadSafe = true;
+
+		$data = file_get_contents('http://www.margareta.at/essen-trinken.html');
+		if (preg_match('/fileadmin.*KAMargareta.*\.pdf/', $data, $matches) && count($matches)) {
+			$this->menu = $this->url . $matches[0];
+		}
 
 		parent::__construct();
 	}

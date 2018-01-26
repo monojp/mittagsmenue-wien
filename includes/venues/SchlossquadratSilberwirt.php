@@ -9,9 +9,13 @@ class SchlossquadratSilberwirt extends SchlossquadratCommon {
 		$this->addressLng = 16.3593266;
 		$this->url = 'http://www.silberwirt.at/';
 		$this->dataSource = 'http://www.silberwirt.at/pdf.php?days=23';
-		$this->menu = 'http://www.silberwirt.at/fileadmin/files/silberwirt/pdf/KaSilber161001.pdf';
 		$this->no_menu_days = [ 0 ];
 		$this->lookaheadSafe = true;
+
+		$data = file_get_contents('http://www.silberwirt.at/essen-trinken.html');
+		if (preg_match('/fileadmin.*KaSilber.*\.pdf/', $data, $matches) && count($matches)) {
+			$this->menu = $this->url . $matches[0];
+		}
 
 		parent::__construct();
 	}

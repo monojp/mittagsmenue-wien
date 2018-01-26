@@ -9,9 +9,13 @@ class SchlossquadratCuadro extends SchlossquadratCommon {
 		$this->addressLng = 16.358338;
 		$this->url = 'http://www.cuadro.at/';
 		$this->dataSource = 'http://www.cuadro.at/pdf.php?days=23';
-		$this->menu = 'http://www.cuadro.at/fileadmin/files/cuadro/pdf/KaCuadro_170501.pdf';
 		$this->no_menu_days = [0, 6];
 		$this->lookaheadSafe = true;
+
+		$data = file_get_contents('http://www.cuadro.at/essen-trinken.html');
+		if (preg_match('/fileadmin.*KaCuadro.*\.pdf/', $data, $matches) && count($matches)) {
+			$this->menu = $this->url . $matches[0];
+		}
 
 		parent::__construct();
 	}
