@@ -162,6 +162,7 @@ function ranking_summary_html($rankings, $title, $display_menus=false, $show_js_
 		$all_sane_rating_cnt += $rating;
 	}
 	foreach ($rankings as $rating => $venues) {
+		sort($venues);
 		// resolve class names to venue titles
 		foreach ($venues as &$venue_class) {
 			$website = getWebsiteFromVenueClass($venue_class);
