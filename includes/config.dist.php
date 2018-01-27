@@ -30,6 +30,8 @@ define('USE_SEMAPHORES', true);
 define('CACHE_SPECIAL_DATA', true);
 define('PERSIST_MENU_DATA', true);
 
+define('CONTENT_CUTOFF_LENGTH', 280);
+
 define('SITE_TITLE', 'Mittagsmenü Wien');
 define('SITE_URL', '<url>');
 define('SITE_FROM_MAIL', 'Your Name <<email>>');

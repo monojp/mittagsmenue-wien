@@ -218,6 +218,12 @@ abstract class FoodGetterVenue {
 		// replace newlines with html breaks
 		$this->data = str_replace($explodeNewLines, '<br>', $this->data);
 
+		if (mb_strlen($this->data) > CONTENT_CUTOFF_LENGTH) {
+			$this->data = '<span>' . mb_substr($this->data, 0, CONTENT_CUTOFF_LENGTH) . '</span>'
+				. "<span id='content_cutoff_{$this->id}' style='display: none'>" . mb_substr($this->data, CONTENT_CUTOFF_LENGTH) . '</span>'
+				.  "<span id='content_toggler_{$this->id}'>.. <a href='javascript:void(0)' onclick='$(\"#content_cutoff_{$this->id}\").show(); $(\"#content_toggler_{$this->id}\").remove()'>anzeigen</a></span>";
+		}
+
 		// prepare return
 		$return = isset($_GET['minimal']) ? '<br>' : '';
 
