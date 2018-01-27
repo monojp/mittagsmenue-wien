@@ -84,6 +84,8 @@ function votes_adapt($votes, $user, $show_js_actions = true, $style_custom = 'te
 	foreach ($votes as &$venue_class) {
 		$website = getWebsiteFromVenueClass($venue_class);
 		$title = htmlspecialchars(getTitleFromVenueClass($venue_class));
+		// Dirty convert quotes to HTML entities in order avoid escaping problems in JS
+		$venue_class = htmlspecialchars($venue_class, ENT_QUOTES);
 		$venue_title = "<a href='{$website}' target='_blank' title='Homepage' style='{$style_custom}'>
 				<span style='{$style_custom}'>{$title}</span>
 			</a>";
