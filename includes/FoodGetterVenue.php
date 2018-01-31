@@ -218,12 +218,6 @@ abstract class FoodGetterVenue {
 		// replace newlines with html breaks
 		$this->data = str_replace($explodeNewLines, '<br>', $this->data);
 
-		if (mb_strlen($this->data) > CONTENT_CUTOFF_LENGTH) {
-			$this->data = '<span>' . mb_substr($this->data, 0, CONTENT_CUTOFF_LENGTH) . '</span>'
-				. "<span id='content_cutoff_{$this->id}' style='display: none'>" . mb_substr($this->data, CONTENT_CUTOFF_LENGTH) . '</span>'
-				.  "<span id='content_toggler_{$this->id}'>.. <a href='javascript:void(0)' onclick='$(\"#content_cutoff_{$this->id}\").show(); $(\"#content_toggler_{$this->id}\").remove()'>anzeigen</a></span>";
-		}
-
 		// prepare return
 		$return = isset($_GET['minimal']) ? '<br>' : '';
 
@@ -231,6 +225,12 @@ abstract class FoodGetterVenue {
 			// not from cache? => write back
 			if (!$this->dataFromCache && $this->dataParsed) {
 				$this->cacheWrite();
+			}
+
+			if (mb_strlen($this->data) > CONTENT_CUTOFF_LENGTH) {
+				$this->data = '<span>' . mb_substr($this->data, 0, CONTENT_CUTOFF_LENGTH) . '</span>'
+					. "<span id='content_cutoff_{$this->id}' style='display: none'>" . mb_substr($this->data, CONTENT_CUTOFF_LENGTH) . '</span>'
+					.  "<span id='content_toggler_{$this->id}'>.. <a href='javascript:void(0)' onclick='$(\"#content_cutoff_{$this->id}\").show(); $(\"#content_toggler_{$this->id}\").remove()'>anzeigen</a></span>";
 			}
 
 			$return .= "<div class='menu '>
@@ -338,7 +338,7 @@ abstract class FoodGetterVenue {
 		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a href='https://www.openstreetmap.org/directions?engine=mapzen_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
+			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
 				<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='OpenStreetMap Route'>OpenStreetMap Route</div>
 			</a>";
 		}
