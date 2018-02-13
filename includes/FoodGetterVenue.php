@@ -354,7 +354,7 @@ abstract class FoodGetterVenue {
 		foreach ((array)$this->no_menu_days as $day) {
 			if ($dayNr == $day) {
 				$dayName = getGermanDayName();
-				$string .= "<br /><span class='error'>Leider kein Mittagsmenü am {$dayName} :(</span><br />";
+				$string .= "<br /><span class='bold'>Leider kein Mittagsmenü am {$dayName} :(</span><br />";
 				$no_menu_day = true;
 				break;
 			}
