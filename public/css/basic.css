@@ -116,6 +116,13 @@ input {
 	font-weight: bold;
 }
 
+#banner {
+	padding: .2em;
+}
+#banner img {
+	max-width: 100%;
+}
+
 /* fix header div inputs */
 div.ui-header div.ui-input-text {
 	display: inline-block ! important;

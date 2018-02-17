@@ -2,6 +2,7 @@
 
 require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/vote.inc.php');
+require_once(__DIR__ . '/BannerHandler_MySql.php');
 
 // default location for JS
 $city = LOCATION_FALLBACK;
@@ -10,6 +11,22 @@ $lng = LOCATION_FALLBACK_LNG;
 $distance = LOCATION_DEFAULT_DISTANCE;
 $lat = str_replace(',', '.', $lat);
 $lng = str_replace(',', '.', $lng);
+
+function get_banner_html() {
+	// query for the banner of the day, return immediately if no banner configured
+	if (empty($banner = BannerHandler_MySql::getInstance()->get(date_offsetted('w')))) {
+		return '';
+	}
+
+	$img = "<img src='{$banner['url']}' />";
+	// link to vote up if voting enabled and venue is set
+	if (show_voting() && $banner['venue']) {
+		$venue_class = htmlspecialchars($banner['venue'], ENT_QUOTES);
+		return "<a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")'>{$img}</a>";
+	} else {
+		return $img;
+	}
+}
 
 function get_venues_html() {
 	$response = '';
