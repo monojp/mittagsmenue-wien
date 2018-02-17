@@ -286,7 +286,7 @@ $custom_venues = [
                 'website' => 'http://www.xu-s-cooking-wien.at/',
                 'reference' => -1,
         ],*/
-	/*[
+	[
                 'id' => -24,
                 'geometry' => [
                         'location' => [
@@ -297,7 +297,20 @@ $custom_venues = [
                 'name' => 'JAS',
                 'website' => 'http://www.jas-restaurant.at/',
                 'reference' => -1,
-        ],*/
+        ],
+	[
+                'id' => -25,
+                'geometry' => [
+                        'location' => [
+                                'lat' => 48.189375,
+                                'lng' => 16.355823,
+                        ],
+                ],
+                'name' => 'Tawa Indian Restaurant',
+                'website' => 'https://www.tripadvisor.at/Restaurant_Review-g190454-d12637347-Reviews-Tawa_Indian_Restaurant-Vienna.html',
+                'reference' => -1,
+        ],
+	
 ];
 
 // searches for venue data in the nearplaces cache
