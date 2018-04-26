@@ -646,23 +646,6 @@ function latlngToAddress($lat, $lng) {
 	}
 	return null;
 }
-function latlngToPostalCode($lat, $lng) {
-	$lat = trim(str_replace(',', '.', $lat));
-	$lng = trim(str_replace(',', '.', $lng));
-	$latlng = urlencode("$lat,$lng");
-	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latlng&sensor=false";
-	$data = file_get_contents($api_url);
-	$data = json_decode($data, true);
-	if ($data['status'] == 'OK') {
-		if (empty($data['results']))
-			return null;
-		foreach ($data['results'][0]['address_components'] as $result) {
-			if (count($result['types']) == 1 && reset($result['types']) == 'postal_code')
-				return trim($result['short_name']);
-		}
-	}
-	return null;
-}
 function distance($lat1, $lng1, $lat2, $lng2, $miles = true) {
 	$lat1 = floatval($lat1);
 	$lng1 = floatval($lng1);

@@ -9,19 +9,11 @@ if (!is_intern_ip()) {
 	exit(json_encode([ 'alert' => js_message_prepare('access denied') ]));
 }
 
-// add nearplace results to valid normal votes
-// we just want to prevent that users can set anything here
-$lat = is_var('lat') ? get_var('lat') : LOCATION_FALLBACK_LAT;
-$lng = is_var('lng') ? get_var('lng') : LOCATION_FALLBACK_LNG;
-$radius = is_var('radius') ? get_var('radius') : '100';
-$radius_max = is_var('radius_max') ? get_var('radius_max') : LOCATION_DEFAULT_DISTANCE;
-$sensor = is_var('sensor') ? get_var('sensor') : 'false';
-
 // check identifier if valid vote
 $identifier = isset($_POST['identifier']) ? trim($_POST['identifier']) : null;
 // checking the nearplace cache should be done as last resort because it is the slowest
 if ($identifier && !in_array($identifier, $votes_valid_special) && !class_exists($identifier)
-		&& !nearplace_cache_search($identifier)) {
+		&& !nearby_venue_valid($identifier)) {
 	$identifier = null;
 }
 $ip = get_ip();

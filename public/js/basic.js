@@ -6,7 +6,6 @@ var ajax_retry_time_max = 3000;
 var ajax_retry_count_max = 10;
 var location_max_delay = 10000;
 var nearplace_radius_default = 500;
-var nearplace_radius_max_default = 1000;
 
 var SHOW_DETAILS_MIN_WIDTH = 800;
 
@@ -58,12 +57,7 @@ function vote_helper(action, identifier, note, try_count) {
 			'action': action,
 			'identifier': identifier,
 			'note': note,
-			'date': $('#date').val(),
-			'lat': $('#lat').html(),
-			'lng': $('#lng').html(),
-			'radius': nearplace_radius_default,
-			'radius_max': nearplace_radius_max_default,
-			'sensor': (typeof navigator.geolocation != 'undefined')
+			'date': $('#date').val()
 		},
 		dataType: 'json',
 		success: function(result) {
@@ -370,54 +364,15 @@ function updateNotePreview() {
 	$('#notePreview').html(emojione.toImage($("#noteInput").val()));
 }
 
-function handle_href_reference_details(id, reference, name, try_count) {
+function get_alt_venues(lat, lng, radius, success_function) {
 	$.ajax({
 		type: 'GET',
 		url: '/nearplaces.php',
 		data: {
-			'action': 'details',
-			'id': id,
-			'reference': reference,
-			'sensor': (typeof navigator.geolocation != 'undefined')
-		},
-		dataType: 'json',
-		async: false,
-		success: function(result) {
-			if (typeof result.alert != 'undefined') {
-				alert(result.alert);
-			}
-
-			// got website via details api
-			if (typeof result.result.website != 'undefined') {
-				window.open(result.result.website, '_blank');
-			// no website, open search
-			} else {
-				window.open($('#SEARCH_PROVIDER').html() + name, '_blank');
-			}
-		},
-		error: function() {
-			// retry
-			if (try_count < ajax_retry_count_max) {
-				window.setTimeout(function() { handle_href_reference_details(id, reference, name, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
-			} else {
-				alert('Fehler beim Abholen der Restaurants in der Nähe.');
-			}
-		}
-	});
-}
-
-function get_alt_venues(lat, lng, radius, radius_max, success_function, try_count) {
-	$.ajax({
-		type: 'GET',
-		url: '/nearplaces.php',
-		data: {
-			'action': 'nearbysearch_staged', // takes so long, is it worth it?
-			//'action': 'nearbysearch_full',
+			'action': 'nearbysearch',
 			'lat': lat,
 			'lng': lng,
 			'radius': radius,
-			'radius_max': radius_max,
-			'sensor': (typeof navigator.geolocation != 'undefined')
 		},
 		dataType: 'json',
 		success: function(result) {
@@ -428,11 +383,7 @@ function get_alt_venues(lat, lng, radius, radius_max, success_function, try_coun
 			}
 		},
 		error: function() {
-			if (try_count < ajax_retry_count_max) {
-				window.setTimeout(function() { get_alt_venues(lat, lng, radius, radius_max, success_function, try_count+1); }, (Math.random()*ajax_retry_time_max)+1);
-			} else {
-				alert('Fehler beim Abholen der Restaurants in der Nähe.');
-			}
+			alert('Fehler beim Abholen der Restaurants in der Nähe.');
 		}
 	});
 }
@@ -693,7 +644,7 @@ $(document).ready(function() {
 
 			// get venues in default defined distance radius
 			var results = new Array();
-			get_alt_venues(lat, lng, nearplace_radius_default, nearplace_radius_max_default, function (results) {
+			get_alt_venues(lat, lng, nearplace_radius_default, function (results) {
 				// destroy old table
 				if ($.fn.DataTable.isDataTable('#table_voting_alt'))
 					$('#table_voting_alt').dataTable().fnDestroy();
@@ -702,7 +653,6 @@ $(document).ready(function() {
 					'columns': [
 						{ 'title': 'Name' },
 						{ 'title': 'Distanz' },
-						//{ 'title': 'Rating' },
 						{ 'title': 'Aktionen' }
 					],
 					'order': [[ 1, 'asc' ]],

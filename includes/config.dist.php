@@ -18,10 +18,6 @@ define('LOCATION_FALLBACK_LAT', 48.190341);
 define('LOCATION_FALLBACK_LNG', 16.356591);
 define('LOCATION_DEFAULT_DISTANCE', 5000);
 
-$GOOGLE_API_KEYS = [
-	/* put a list of api keys here (1 is also enough) */
-];
-
 $fb_app_id = '<your fb app id>';
 $fb_app_secret = '<your fb app secret>';
 

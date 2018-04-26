@@ -55,15 +55,8 @@ function getWebsiteFromVenueClass($venue_class) {
 		return $venueTmp->url;
 		$venue_title = '<a href="' . $venueTmp->url . '" target="_blank" title="Homepage" style="color: inherit ! important; font-weight: inherit ! important;">' . htmlspecialchars($venueTmp->title) . '</a>';
 	} else {
-		// query nearplace cache (finds fake venues)
-		$website = nearplace_cache_search($venue_class);
-		$website = isset($website['website']) ? $website['website'] : null;
-		// query nearplace details cache (finds already clicked on real venues)
-		if ($website === null) {
-			$website = nearplace_details_cache_search($venue_class);
-			$website = isset($website['website']) ? $website['website'] : null;
-		}
-		// google fallback
+		$website = nearby_venue_website($venue_class);
+		// search provider fallback
 		if ($website === null) {
 			$website = SEARCH_PROVIDER . urlencode($venue_class);
 		}
