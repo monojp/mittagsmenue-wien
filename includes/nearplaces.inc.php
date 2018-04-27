@@ -158,7 +158,7 @@ function nearby_search($lat, $lng, $radius) {
 
 			$response[] = [
 				'name' => $name,
-				"<a href='{$data['website']}' title='Homepage'>{$name_escaped}</a>",
+				"<a href='{$data['website']}' title='Homepage' target='_blank'>{$name_escaped}</a>",
 				round(distance($lat, $lng, $lat_venue, $lng_venue, false) * 1000),
 				$actions,
 			];
