@@ -160,10 +160,9 @@ div.ui-header div.ui-input-text {
 .paginate_button.previous {
 	padding-left: 0 ! important;
 }
-/*table {
-	margin: 0 ! important;
-	width: auto ! important;
-}*/
+.ui-table td {
+	vertical-align: middle ! important;
+}
 
 /* AutoComplete styles for Emoji One */
 .dropdown-menu {
