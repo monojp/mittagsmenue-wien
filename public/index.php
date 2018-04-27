@@ -12,12 +12,10 @@ echo "
 <div id='page_main' data-role='page'>
 	<div data-role='header'>
 		<h1>
-			" . SITE_TITLE . ', ' . getGermanDayName() . "
+			" . SITE_TITLE . "
 			<input type='date' id='date' title='' value='" . date_offsetted('Y-m-d') . "'
 					data-inline='false' data-ajax='false' data-role='date' style='padding: 0;' />
 		</h1>
-		<a id='location' href='#setLocationDialog' data-role='button' data-inline='true' data-mini='true' data-icon='location'
-				data-rel='dialog' data-transition='pop' title='Adresse festlegen' class='ui-btn-right'>" . LOCATION_FALLBACK . "</a>
 	</div>
 	<div data-role='main' class='ui-content'>
 		<div id='banner'>" . get_banner_html() . "</div>
@@ -50,8 +48,6 @@ echo "
 
 // other pages used as dialogs
 if (!isset($_GET['minimal'])) {
-	// location dialog
-	echo get_page_location();
 	// note dialog
 	echo get_page_note();
 }

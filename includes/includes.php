@@ -1,6 +1,5 @@
 <?php
 
-require_once(__DIR__ . '/dependencycheck.php');
 require_once(__DIR__ . '/config.php');
 require_once(__DIR__ . '/textfixes.php');
 require_once(__DIR__ . '/CacheHandler_MySql.php');
@@ -616,35 +615,6 @@ function pdftotxt_ocr($file, $lang = 'deu') {
 	/*if (!mb_check_encoding($txt, 'UTF-8'))
 		$txt = utf8_encode($txt);*/
 	return $txt;
-}
-
-// api see https://developers.google.com/maps/documentation/geocoding
-function addressToLatLong($address) {
-	$address = urlencode(trim($address));
-	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?address=$address&sensor=false";
-	$data = file_get_contents($api_url);
-	$data = json_decode($data);
-	if ($data->status == 'OK') {
-		return [
-			'lat' => str_replace(',', '.', trim($data->results[0]->geometry->location->lat)),
-			'lng' => str_replace(',', '.', trim($data->results[0]->geometry->location->lng))
-		];
-	}
-	return null;
-}
-function latlngToAddress($lat, $lng) {
-	$lat = trim(str_replace(',', '.', $lat));
-	$lng = trim(str_replace(',', '.', $lng));
-	$latlng = urlencode("$lat,$lng");
-	$api_url = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latlng&sensor=false";
-	$data = file_get_contents($api_url);
-	$data = json_decode($data, true);
-	if ($data['status'] == 'OK') {
-		if (empty($data['results']))
-			return null;
-		return trim($data['results'][0]['formatted_address']);
-	}
-	return null;
 }
 function distance($lat1, $lng1, $lat2, $lng2, $miles = true) {
 	$lat1 = floatval($lat1);

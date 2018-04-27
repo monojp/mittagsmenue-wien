@@ -4,14 +4,6 @@ require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/vote.inc.php');
 require_once(__DIR__ . '/BannerHandler_MySql.php');
 
-// default location for JS
-$city = LOCATION_FALLBACK;
-$lat = LOCATION_FALLBACK_LAT;
-$lng = LOCATION_FALLBACK_LNG;
-$distance = LOCATION_DEFAULT_DISTANCE;
-$lat = str_replace(',', '.', $lat);
-$lng = str_replace(',', '.', $lng);
-
 function get_banner_html() {
 	// query for the banner of the day, return immediately if no banner configured
 	if (empty($banner = BannerHandler_MySql::getInstance()->get(date_offsetted('w')))) {
@@ -62,6 +54,24 @@ function get_venues_html() {
 		//new Duspara(),
 		//new Stefan2(),
 	];
+
+	// sort venues after distance
+	usort($venues, function ($a, $b) {
+		$distance_a = distance(LOCATION_FALLBACK_LAT,
+			LOCATION_FALLBACK_LNG, $a->addressLat,
+			$a->addressLng);
+		$distance_b = distance(LOCATION_FALLBACK_LAT,
+			LOCATION_FALLBACK_LNG, $b->addressLat,
+			$b->addressLng);
+
+		if ($distance_a == $distance_b) {
+			return 0;
+		}
+
+		return ($distance_a < $distance_b) ? -1 : 1;
+	});
+
+	// output venues
 	foreach ($venues as $venue) {
 		$response .= $venue;
 	}
@@ -102,7 +112,6 @@ function get_header_html() {
 			<script src="' . cacheSafeUrl('/js/jquery-migrate-3.0.0.js') . '"></script>
 			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
 			<script src="' . cacheSafeUrl($basic_js) . '"></script>
-			<script src="' . cacheSafeUrl('/js/jquery.cookie.js') . '" async="async" onload="init_cookie()"></script>
 			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
 			<script src="' . cacheSafeUrl('/emojione/emojione.min.js') . '" async="async" onload="init_emoji()"></script>
@@ -153,40 +162,6 @@ function get_footer_html() {
 	</div>';
 
 	return $response;
-}
-
-function get_page_location() {
-	global $lat, $lng, $city, $distance;
-
-	return '
-		<div class="hidden" id="lat">' . $lat . '</div>
-		<div class="hidden" id="lng">' . $lng . '</div>
-		<div class="hidden" id="distance_default">' . $distance . '</div>
-
-		<div id="setLocationDialog" class="hidden" data-role="page">
-			<div data-role="header">
-				<h1>Adresse festlegen</h1>
-			</div>
-			<div data-role="content">
-				<form id="locationForm" action="index.php">
-					<fieldset>
-						<label for="locationInput">Adresse</label>
-						<input type="text" name="location" id="locationInput" value="' . $city . '" style="width: 100%" />
-						<a href="javascript:void(0)" onclick="setLocation(\'' . $city . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a> | <a href="javascript:void(0)" onclick="setLocation(null, true);$(\'#setLocationDialog\').dialog(\'close\')">Standort bestimmen</a>
-					</fieldset>
-					<br>
-					<fieldset>
-						<label for="distance">Umkreis</label>
-						<input type="range" name="distance" id="distance" value="' . $distance . '" min="0" max="10000" step="100" />
-						<a href="javascript:void(0)" onclick="setDistance(\'' . $distance . '\');$(\'#setLocationDialog\').dialog(\'close\')">Auf Standard setzen</a>
-					</fieldset>
-					<br>
-					<button data-icon="check">Speichern</button>
-				</form>
-			</div>
-			<div data-role="footer"></div>
-		</div>
-	';
 }
 
 function get_page_note() {

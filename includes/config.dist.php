@@ -10,12 +10,10 @@ $DB_CONFIGS = [
 	],
 ];
 
-define('TMP_PATH', dirname(__FILE__) . '/../tmp/');
 define('ALLOW_VOTING_IP_PREFIX', '192.168.0.');
 
-define('LOCATION_FALLBACK', 'Bräuhausgasse 4, 1050 Wien');
-define('LOCATION_FALLBACK_LAT', 48.190341);
-define('LOCATION_FALLBACK_LNG', 16.356591);
+define('LOCATION_FALLBACK_LAT', 48.18903);
+define('LOCATION_FALLBACK_LNG', 16.35278);
 define('LOCATION_DEFAULT_DISTANCE', 5000);
 
 $fb_app_id = '<your fb app id>';

@@ -15,10 +15,10 @@ abstract class VenueStateSpecial {
 abstract class FoodGetterVenue {
 	public $title = null;
 	public $url = null;
+	public $addressLat = null;
+	public $addressLng = null;
 
 	protected $title_notifier = null; // presented small highlighted next to the title
-	protected $addressLat = null;
-	protected $addressLng = null;
 	protected $dataSource = null;
 	protected $menu = null;
 	protected $data = null;
@@ -312,33 +312,16 @@ abstract class FoodGetterVenue {
 	public function __toString() {
 		global $date_GET;
 
-		$string = '';
-
-		// if minimal (JS free) site requested => show venues immediately
-		if (!isset($_GET['minimal'])) {
-			$attributeStyle = 'display: none';
-		} else {
-			$attributeStyle = '';
-		}
-
-		$string .= "<div id='{$this->id}' class='venueDiv' style='{$attributeStyle}'>";
-		// hidden lat/lng spans
-		if (!isset($_GET['minimal'])) {
-			$string .= "<span class='hidden lat'>{$this->addressLat}</span>";
-			$string .= "<span class='hidden lng'>{$this->addressLng}</span>";
-		}
+		$string = "<div id='{$this->id}' class='venueDiv'>";
 
 		// title
 		$string .= "<span class='title' title='Homepage'><a href='{$this->url}' class='no_decoration' target='_blank'>{$this->title}</a></span>";
 		if ($this->title_notifier) {
 			$string .= "<span class='title_notifier'>{$this->title_notifier}</span>";
 		}
-		if (!isset($_GET['minimal'])) {
-			$string .= "<sup title='Ausblenden'><a href='javascript:void(0)' onclick='venue_hide(\"{$this->id}\");' style='color: red ! important'>x</a></sup>";
-		}
 		// address icon with route planner
 		if ($this->addressLat && $this->addressLng) {
-			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=@@lat_lng@@;{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
+			$string .= "<a href='https://www.openstreetmap.org/directions?engine=graphhopper_foot&amp;route=" . LOCATION_FALLBACK_LAT  . "," . LOCATION_FALLBACK_LNG . ";{$this->addressLat},{$this->addressLng}' class='no_decoration lat_lng_link' target='_blank'>
 				<div data-enhanced='true' class='ui-link ui-btn ui-icon-location ui-btn-icon-notext ui-btn-inline ui-shadow ui-corner-all' title='OpenStreetMap Route'>OpenStreetMap Route</div>
 			</a>";
 		}

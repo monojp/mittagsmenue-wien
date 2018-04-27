@@ -114,8 +114,8 @@ $venues = [
 		'website' => 'http://www.zumstoeger.at/',
 	],
 	'Semendria' => [
-		'lat' => 48.193565,
-		'lng' => 16.361259,
+		'lat' => 48.189132,
+		'lng' => 16.350553,
 		'website' => 'http://www.semendria.at/',
 	],
 	'Colombo Hoppers' => [
