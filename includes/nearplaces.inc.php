@@ -133,16 +133,29 @@ $venues = [
 		'lng' => 16.352531,
 		'website' => 'https://www.hofer.at/',
 	],
+	'Zum Lieben Augustin' => [
+                'lat' => 48.187229,
+                'lng' => 16.352319,
+                'website' => 'http://www.gasthaus-zumliebenaugustin.at/',
+        ],
+	'YAK+YETI' => [
+		'lat' => 48.194207,
+		'lng' => 16.351047,
+		'website' => 'http://www.yakundyeti.at/',
+	],
 ];
 
 function nearby_search($lat, $lng, $radius) {
 	global $venues;
 
+	$lat = sprintf('%F', $lat);
+	$lng = sprintf('%F', $lng);
+
 	// add custom venues that are in reach
 	$response = [];
 	foreach ($venues as $name => $data) {
-		$lat_venue = str_replace(',', '.', $data['lat']);
-		$lng_venue = str_replace(',', '.', $data['lng']);
+		$lat_venue = sprintf('%F', $data['lat']);
+		$lng_venue = sprintf('%F', $data['lng']);
 		if (distance($lat_venue, $lng_venue, $lat, $lng, false) <= $radius) {
 			$maps_href = "https://www.openstreetmap.org/directions?engine=graphhopper_foot&route=$lat,$lng;$lat_venue,$lng_venue";
 			$name_escaped = htmlspecialchars($name, ENT_QUOTES);
