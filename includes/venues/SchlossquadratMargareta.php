@@ -15,5 +15,11 @@ class SchlossquadratMargareta extends SchlossquadratCommon {
 
 		parent::__construct();
 	}
+	
+	protected function parseDataSource() {
+		parent::parseDataSource();
+		$this->price = [ 6.40 ];
+		return $this->data;
+	}
 
 }
