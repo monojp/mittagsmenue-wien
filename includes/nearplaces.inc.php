@@ -143,6 +143,11 @@ $venues = [
 		'lng' => 16.351047,
 		'website' => 'http://www.yakundyeti.at/',
 	],
+	'Beste Freunde Burger' => [
+                'lat' => 48.194953,
+                'lng' => 16.343135,
+                'website' => 'https://bestefreundeburger.at/',
+        ],
 ];
 
 function nearby_search($lat, $lng, $radius) {
