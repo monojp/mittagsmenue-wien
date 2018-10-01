@@ -134,14 +134,19 @@ $venues = [
 		'website' => 'https://www.hofer.at/',
 	],
 	'Zum Lieben Augustin' => [
-                'lat' => 48.187229,
-                'lng' => 16.352319,
-                'website' => 'http://www.gasthaus-zumliebenaugustin.at/',
-        ],
+		'lat' => 48.187229,
+		'lng' => 16.352319,
+		'website' => 'http://www.gasthaus-zumliebenaugustin.at/',
+	],
 	'YAK+YETI' => [
 		'lat' => 48.194207,
 		'lng' => 16.351047,
 		'website' => 'http://www.yakundyeti.at/',
+	],
+	'Beste Freunde Burger' => [
+		'lat' => 48.194953,
+		'lng' => 16.343135,
+		'website' => 'https://bestefreundeburger.at/',
 	],
 	'Pizzeria Maria Rosa' => [
 		'lat' => 48.18566,
