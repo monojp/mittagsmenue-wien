@@ -143,7 +143,7 @@ $venues = [
 		'lng' => 16.351047,
 		'website' => 'http://www.yakundyeti.at/',
 	],
-	'Pizzeria Maria Rosa – Die beste Pizza am ganzen Siebenbrunnenplatz' => [
+	'Pizzeria Maria Rosa' => [
 		'lat' => 48.18566,
 		'lng' => 16.35342,
 		'website' => 'https://www.7brunnen.com/',
