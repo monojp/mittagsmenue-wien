@@ -55,8 +55,6 @@ function vote_helper(action, identifier, note) {
 				}
 			}
 			oldVoteData = result;
-			// handle emoji replaces
-			emoji_update();
 		},
 		error: function() {
 			alert('Fehler beim Abfragen/Setzen der Votes.');
@@ -105,10 +103,6 @@ function vote_delete_part(identifier) {
 	vote_helper('vote_delete_part', identifier, null, 0);
 }
 
-function updateNotePreview() {
-	$('#notePreview').html(emojione.toImage($("#noteInput").val()));
-}
-
 function get_alt_venues(success_function) {
 	$.ajax({
 		type: 'GET',
@@ -154,17 +148,6 @@ function vote_settings_save() {
 	});
 }
 
-// handle missing emoji replaces
-function emoji_update() {
-	if (typeof emojione == 'undefined') {
-		return;
-	}
-	$('.convert-emoji').not('[data-emoji-converted]').each(function() {
-		$(this).attr('data-emoji-converted', true);
-		$(this).html(emojione.toImage($(this).html()));
-	});
-}
-
 function adapt_button_vote_summary_toggle() {
 	if ($('#dialog_vote_summary').is(':visible')) {
 		$('#button_vote_summary_toggle').val('Voting Ausblenden').html('Voting Ausblenden');
@@ -189,79 +172,6 @@ function venue_hide(id) {
 	$('#' + id).hide();
 }
 
-function init_emoji() {
-	$(document).ready(function() {
-		// default options
-		emojione.ascii = true;
-		emojione.imageType = 'png';
-		//emojione.imagePathSVGSprites = 'emojione/sprites/emojione.sprites.svg';
-		emojione.sprites = true;
-
-		// handly emoji replaces
-		emoji_update();
-
-		// stop inits if input not found
-		if (!$("#noteInput").length) {
-			return;
-		}
-
-		// note input handles
-		$("#noteInput").on('keyup change input',function(e) {
-			updateNotePreview();
-		});
-		updateNotePreview();
-
-		// emoji shortname textcomplete for note input
-		$.getJSON('emojione/emoji.json?3', function (emojiStrategy) {
-			// append custom keywords
-			emojiStrategy.toilet.keywords.push('heisl');
-			emojiStrategy.spaghetti.keywords.push('pasta');
-
-			// init input
-			$("#noteInput").textcomplete([ {
-				match: /\B:([\-+\w]*)$/,
-				search: function (term, callback) {
-					var results = [];
-					var results2 = [];
-					var results3 = [];
-					$.each(emojiStrategy,function(shortname,data) {
-						if(shortname.indexOf(term) > -1) { results.push(shortname); }
-						else {
-							if((data.aliases !== null) && (data.aliases.indexOf(term) > -1)) {
-								results2.push(shortname);
-							}
-							else if((data.keywords !== null) && (data.keywords.indexOf(term) > -1)) {
-								results3.push(shortname);
-							}
-						}
-					});
-
-					if(term.length >= 3) {
-						results.sort(function(a,b) { return (a.length > b.length); });
-						results2.sort(function(a,b) { return (a.length > b.length); });
-						results3.sort();
-					}
-					var newResults = results.concat(results2).concat(results3);
-
-					callback(newResults);
-				},
-				template: function (shortname) {
-					return '<img class="emojione" src="./emojione/png/'+emojiStrategy[shortname].unicode+'.png"> :'+shortname+':';
-					//return ' :'+shortname+':';
-				},
-				replace: function (shortname) {
-					return ':'+shortname+': ';
-				},
-				index: 1,
-				maxCount: 10
-			}
-			],{
-				footer: '<a href="http://www.emoji.codes" target="_blank">Alle Anzeigen<span class="arrow">»</span></a>'
-			});
-		});
-	});
-}
-
 function init_datatables() {
 	$(document).ready(function() {
 		$('#table_stats').dataTable({
@@ -274,7 +184,6 @@ function init_datatables() {
 				$('#table_stats_filter input').attr('type', 'text')
 						.attr('data-type', 'search');
 				$('#table_stats_filter input').textinput();
-				emoji_update();
 			}
 		});
 		$('#table_stats').show();

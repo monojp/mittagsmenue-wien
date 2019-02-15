@@ -102,7 +102,6 @@ abstract class FoodGetterVenue {
 				},
 				success: function(result) {
 					$("#' . $this->id . '_data").html(result);
-					emoji_update();
 				},
 				error: function() {
 					var errMsg = $(document.createElement("span"));
@@ -236,7 +235,7 @@ abstract class FoodGetterVenue {
 			$return .= "<div class='menu '>
 					<a class='menuData dataSource color_inherit' href='{$this->dataSource}' target='_blank' title='Datenquelle' style='color: inherit ! important;'>Angebot:</a>
 					<span> </span>
-					<span class='menuData convert-emoji'>{$this->data}</span>
+					<span class='menuData'>{$this->data}</span>
 				</div>";
 
 			if ($this->price || $this->menu) {
