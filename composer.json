@@ -1,0 +1,17 @@
+{
+  "name": "monojp/mittagsmenue-wien",
+  "description": "lunch menus for Vienna",
+  "type": "project",
+  "keywords": ["lunch", "vienna", "mittagsmenue"],
+  "homepage": "https://github.com/monojp/mittagsmenue-wien",
+  "license": "MIT",
+  "authors": [{
+    "name": "Martin Herndl",
+    "email": "martin@herndl.org",
+    "homepage": "https://herndl.org",
+    "role": "Developer"
+  }],
+  "require": {
+    "php": "^7.2"
+  }
+}
