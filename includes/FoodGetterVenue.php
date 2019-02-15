@@ -140,7 +140,7 @@ abstract class FoodGetterVenue {
 		}
 
 		// lock if semaphores are usable
-		if (USE_SEMAPHORES) {
+		if (function_exists('sem_get')) {
 			// create simple positive crc32 "hash" for class semaphore
 			$sem_key = crc32(get_class($this));
 			if ($sem_key < 0) {
@@ -162,7 +162,7 @@ abstract class FoodGetterVenue {
 		$data = $this->parseDataSource();
 
 		// release semaphore (although this should be done automatically on shutdown)
-		if (USE_SEMAPHORES) {
+		if (function_exists('sem_get')) {
 			sem_release($sem_id);
 		}
 
