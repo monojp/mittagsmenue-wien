@@ -92,15 +92,10 @@ function get_header_html() {
 			<meta name="description" content="' .  META_DESCRIPTION . '" />
 			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
-	// basic css and javascript
-	$throbber_css = USE_MINIMZED_JS_CSS_HTML ? '/css/throbber.min.css' : '/css/throbber.css';
-	$basic_css = USE_MINIMZED_JS_CSS_HTML ? '/css/basic.min.css' : '/css/basic.css';
-	$basic_js = USE_MINIMZED_JS_CSS_HTML ? '/js/basic.min.js' : '/js/basic.js';
-
 	// css
 	$response .='
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($basic_css) . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/basic.css') . '" />
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/throbber.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />';
 	// javascript
@@ -109,7 +104,7 @@ function get_header_html() {
 			<script src="' . cacheSafeUrl('/js/jquery-3.1.0.min.js') . '"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-migrate-3.0.0.js') . '"></script>
 			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
-			<script src="' . cacheSafeUrl($basic_js) . '"></script>
+			<script src="' . cacheSafeUrl('/js/basic.js') . '"></script>
 			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
 		';

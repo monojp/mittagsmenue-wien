@@ -691,9 +691,6 @@ function in_range($val, $min, $max) {
 
 // removes unecessary data (newlines, ..) from html
 function html_compress($html) {
-	// no minimized html, return
-	if (!USE_MINIMZED_JS_CSS_HTML)
-		return $html;
 	// newlines, tabs & carriage return
 	$response = str_replace([ "\n", "\t", "\r" ], ' ', $html);
 	// convert multiple spaces into one
