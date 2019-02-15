@@ -19,7 +19,6 @@ define('LOCATION_DEFAULT_DISTANCE', 5000);
 $fb_app_id = '<your fb app id>';
 $fb_app_secret = '<your fb app secret>';
 
-define('USE_MINIMZED_JS_CSS', true);
 define('USE_SEMAPHORES', true);
 define('CACHE_SPECIAL_DATA', true);
 define('PERSIST_MENU_DATA', true);
