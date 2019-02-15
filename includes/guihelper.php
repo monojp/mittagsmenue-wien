@@ -105,7 +105,7 @@ function get_header_html() {
 			<script src="' . cacheSafeUrl('/js/jquery-migrate-3.0.0.js') . '"></script>
 			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
 			<script src="' . cacheSafeUrl('/js/basic.js') . '"></script>
-			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
+			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
 		';
 
@@ -128,12 +128,6 @@ function get_footer_html() {
 
 	//$response = "</div>";
 	$response = '';
-
-	if ($_SERVER['REQUEST_URI'] === '/stats/') {
-		$outputs[] = "<a href='/' data-ajax='false'>Home</a>";
-	} else {
-		$outputs[] = "<a href='" . build_url('/stats/') . "' data-ajax='false'>Stats</a>";
-	}
 
 	if (CONTACT_HREF) {
 		$outputs[] = '<a href="' . htmlspecialchars(CONTACT_HREF) . '" target="_blank" data-rel="dialog">Kontakt</a>';

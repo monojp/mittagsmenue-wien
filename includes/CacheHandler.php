@@ -11,5 +11,4 @@ abstract class CacheHandler {
 	abstract public function updateCache($venue, $data, $price);
 	abstract public function deleteCache($venue);
 	abstract public function queryCache($venueKeyword, $dataKeyword);
-	abstract public function get_stats();
 }
