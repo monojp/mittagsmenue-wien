@@ -102,9 +102,7 @@ function get_header_html() {
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($basic_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl($throbber_css) . '" />
 		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/emojione.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/emojione/sprites/emojione.sprites.css') . '" />';
+		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />';
 	// javascript
 	if (!isset($_GET['minimal']))
 		$response .= '
@@ -114,7 +112,6 @@ function get_header_html() {
 			<script src="' . cacheSafeUrl($basic_js) . '"></script>
 			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async" onload="init_datatables()"></script>
 			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
-			<script src="' . cacheSafeUrl('/emojione/emojione.min.js') . '" async="async" onload="init_emoji()"></script>
 		';
 
 	// minimal site and votes allowed, refresh every 10s
@@ -177,14 +174,7 @@ function get_page_note() {
 			<div data-role="content">
 				<form id="noteForm" action="index.php">
 					<fieldset>
-						<label for="noteInput">
-							Notiz / <a href="http://emojione.com/" target="_blank">Emoji</a>
-						</label>
-						<small>Hinweis: <a href="http://emojione.com/" target="_blank">Emojis</a> werden durch Eingabe von ":" gesucht/vorgeschlagen</small>
 						<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" />
-						<br>
-						<span>Vorschau</span>
-						<div id="notePreview" style="margin: .5em 0"></div>
 						<br>
 						<button data-icon="check">Speichern</button>
 					</fieldset>

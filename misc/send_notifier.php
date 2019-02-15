@@ -58,7 +58,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 	// notify, votes exist and valid
 	if ($action == 'notify' && $votes && !empty($votes)) {
 		// build html
-		$html = vote_summary_html($votes, true, false, true);
+		$html = vote_summary_html($votes, true, false);
 		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 
@@ -73,7 +73,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 		// build html
 		$html = "<div style='margin: 5px'>Das Voting endet um <b>{$voting_over_time_print}</b>. Bitte auf <a href='" . SITE_URL . "'><b>" . SITE_URL . "</b></a> voten!</div>";
 		$html .= '<h3>Zwischenstand:</h3>';
-		$html .= vote_summary_html($votes, true, false, true);
+		$html .= vote_summary_html($votes, true, false);
 		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 
@@ -92,7 +92,7 @@ foreach ((array)UserHandler_MySql::getInstance()->get() as $ip => $user_config) 
 		}
 	// remind html output test
 	} elseif ($action == 'remind_html_test') {
-		$html = vote_summary_html($votes, true, false, true);
+		$html = vote_summary_html($votes, true, false);
 		$html = wrap_in_email_html($html);
 		$html = html_compress($html);
 		echo $html;
