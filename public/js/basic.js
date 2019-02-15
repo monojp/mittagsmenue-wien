@@ -172,40 +172,6 @@ function venue_hide(id) {
 	$('#' + id).hide();
 }
 
-function init_datatables() {
-	$(document).ready(function() {
-		$('#table_stats').dataTable({
-			'order': [[ 4, 'desc' ]],
-			'dom': '<lfpti>',
-			'lengthChange': false,
-			'searching': true,
-			'fnDrawCallback': function (oSettings) {
-				/* change input type of the search field because of jquerymobile */
-				$('#table_stats_filter input').attr('type', 'text')
-						.attr('data-type', 'search');
-				$('#table_stats_filter input').textinput();
-			}
-		});
-		$('#table_stats').show();
-		$('#table_ingredients').dataTable({
-			'order': [[ 2, 'desc' ]],
-			'dom': '<lfpti>',
-			'lengthChange': false,
-			'searching': false
-		});
-		$('#table_ingredients').show();
-		$('#table_compositions').dataTable({
-			'order': [[ 2, 'desc' ]],
-			'dom': '<lfpti>',
-			'lengthChange': false,
-			'searching': false
-		});
-		$('#table_compositions').show();
-
-		$('#loader_stats').hide();
-	});
-};
-
 // handle init
 $(document).ready(function() {
 	$('#loadingContainer').hide();
