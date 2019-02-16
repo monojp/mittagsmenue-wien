@@ -13,7 +13,7 @@ a, a:visited {
 }
 a:hover {
 	text-decoration: underline;
-	text-shadow: 0px 0px 10px lightgray;
+	text-shadow: 0 0 10px lightgray;
 }
 .smaller {
 	font-size: smaller;
@@ -59,7 +59,7 @@ a:hover {
 	margin-right: .3em;
 }
 .icon {
-	margin: 0px 5px;
+	margin: 0 5px;
 	vertical-align: middle;
 }
 .menu {
@@ -73,7 +73,7 @@ a:hover {
 	color: red;
 }
 .subheader_div {
-	margin: 5px 0px;
+	margin: 5px 0;
 }
 .redWarning {
 	color: red;
@@ -114,16 +114,6 @@ input {
 }
 .bold {
 	font-weight: bold;
-}
-
-#banner {
-	padding: .2em;
-}
-#banner img {
-	max-width: 100%;
-	display: block;
-	margin-left: auto;
-	margin-right: auto;
 }
 
 /* fix header div inputs */

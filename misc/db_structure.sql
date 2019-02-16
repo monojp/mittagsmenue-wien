@@ -65,15 +65,6 @@ CREATE TABLE `foodVote` (
 -- Table structure for table `foodVote`
 --
 
-DROP TABLE IF EXISTS `foodBanner`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `foodBanner` (
-  `venue` varchar(128) CHARACTER SET utf8mb4,
-  `weekday` tinyint(1) NOT NULL,
-  `url` varchar(128) CHARACTER SET utf8mb4 NOT NULL,
-  PRIMARY KEY (`weekday`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
