@@ -18,7 +18,6 @@ echo "
 		</h1>
 	</div>
 	<div data-role='main' class='ui-content'>
-		<div id='banner'>" . get_banner_html() . "</div>
 		<div data-role='tabs' id='tabs'>
 			<div data-role='navbar'>
 				<ul>

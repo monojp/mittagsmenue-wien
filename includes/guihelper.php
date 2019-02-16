@@ -2,23 +2,6 @@
 
 require_once(__DIR__ . '/includes.php');
 require_once(__DIR__ . '/vote.inc.php');
-require_once(__DIR__ . '/BannerHandler_MySql.php');
-
-function get_banner_html() {
-	// query for the banner of the day, return immediately if no banner configured
-	if (empty($banner = BannerHandler_MySql::getInstance()->get(date_offsetted('w')))) {
-		return '';
-	}
-
-	$img = "<img src='{$banner['url']}' />";
-	// link to vote up if voting enabled and venue is set
-	if (show_voting() && $banner['venue']) {
-		$venue_class = htmlspecialchars($banner['venue'], ENT_QUOTES);
-		return "<a href='javascript:void(0)' onclick='vote_up(\"{$venue_class}\")'>{$img}</a>";
-	} else {
-		return $img;
-	}
-}
 
 function get_venues_html() {
 	$response = '';
@@ -29,7 +12,7 @@ function get_venues_html() {
 	}
 
 	$venues = [
-		new SchlossquadratMargareta(),
+		/*new SchlossquadratMargareta(),
 		new SchlossquadratSilberwirt(),
 		new SchlossquadratCuadro(),
 		new AltesFassl(),
@@ -52,7 +35,7 @@ function get_venues_html() {
 		new Erbsenzaehlerei(),
 		new Bierometer2(),
 		//new Duspara(),
-		//new Stefan2(),
+		//new Stefan2(),*/
 	];
 
 	// sort venues after distance
@@ -114,19 +97,11 @@ function get_header_html() {
 		$response .= '<meta http-equiv="refresh" content="10" />';
 	}
 
-	// no js fallback to minimal site refresh
-	if (!isset($_GET['minimal'])) {
-		$url = build_url('?minimal');
-	}
-
 	$response .= '</head><body>';
 	$response .= '<div class="hidden" id="SEARCH_PROVIDER">' . SEARCH_PROVIDER . '</div>';
 	return $response;
 }
 function get_footer_html() {
-	global $dateOffset;
-
-	//$response = "</div>";
 	$response = '';
 
 	if (CONTACT_HREF) {
@@ -151,7 +126,6 @@ function get_footer_html() {
 }
 
 function get_page_note() {
-	global $timestamp;
 	$ip        = get_ip();
 	$vote_data = getAllVotes($ip, 'special');
 	$note      = isset($vote_data[$ip]['votes']['special']) ? $vote_data[$ip]['votes']['special'] : '';
@@ -202,18 +176,20 @@ function get_vote_setting_html() {
 	$ip = get_ip();
 	$user_config = UserHandler_MySql::getInstance()->get($ip);
 	if (!is_intern_ip($ip)) {
-		return;
+		return '';
 	}
 
-	$user_config = reset($user_config);
+	if ($user_config) {
+        $user_config = reset($user_config);
+    }
 
 	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email = isset($user_config['email']) ? $user_config['email'] : '';
-	$vote_reminder = isset($user_config['vote_reminder']) ? $user_config['vote_reminder'] : false;
+	$email = $user_config['email'] ?? '';
+	$vote_reminder = $user_config['vote_reminder'] ?? false;
 	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-	$voted_mail_only = isset($user_config['voted_mail_only']) ? $user_config['voted_mail_only'] : false;
+	$voted_mail_only = $user_config['voted_mail_only'] ?? false;
 	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-	$vote_always_show = isset($user_config['vote_always_show']) ? $user_config['vote_always_show'] : false;
+	$vote_always_show = $user_config['vote_always_show'] ?? false;
 	$vote_always_show = filter_var($vote_always_show, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
 
 	$response = '

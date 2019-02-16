@@ -1,5 +1,7 @@
 <?php
 
+require_once 'SchlossquadratCommon.php';
+
 class SchlossquadratSilberwirt extends SchlossquadratCommon {
 
 	function __construct() {
