@@ -1,7 +1,6 @@
 <?php
 
 require_once(__DIR__ . '/includes.php');
-require_once(__DIR__ . '/vote.inc.php');
 
 function get_venues_html() {
 	$response = '';
@@ -12,42 +11,34 @@ function get_venues_html() {
 	}
 
 	$venues = [
-		new SchlossquadratMargareta(),
-		new SchlossquadratSilberwirt(),
-		new SchlossquadratCuadro(),
-		new AltesFassl(),
-		//new HaasBeisl(),
-		new TasteOfIndia(),
-		new Ausklang(),
-		//new NamNam(),
-		new Waldviertlerhof(),
-		//new MensaFreihaus(),
-		//new MensaSchroedinger(),
-		new Woracziczky(),
-		//new CoteSud(),
-		//new FalkensteinerStueberl(),
-		//new Lambrecht(),
-		//new CafeAmacord(), // zu mittag nicht mehr offen
-		//new Gondola(),
-		//new RadioCafe(), // encoding-probleme
-		new Stoeger(),
-		//new MINIRESTAURANT(),
-		new Erbsenzaehlerei(),
-		new Bierometer2(),
-		//new Duspara(),
-		//new Stefan2(),
+		new App\Parser\Venue\SchlossquadratMargareta(),
+		new App\Parser\Venue\SchlossquadratSilberwirt(),
+		new App\Parser\Venue\SchlossquadratCuadro(),
+		new App\Parser\Venue\AltesFassl(),
+		new App\Parser\Venue\TasteOfIndia(),
+		new App\Parser\Venue\Waldviertlerhof(),
+		new App\Parser\Venue\Woracziczky(),
+		new App\Parser\Venue\Stoeger(),
+		new App\Parser\Venue\Erbsenzaehlerei(),
+		new App\Parser\Venue\Bierometer2(),
 	];
 
 	// sort venues after distance
 	usort($venues, function ($a, $b) {
-		$distance_a = distance(LOCATION_FALLBACK_LAT,
-			LOCATION_FALLBACK_LNG, $a->addressLat,
-			$a->addressLng);
-		$distance_b = distance(LOCATION_FALLBACK_LAT,
-			LOCATION_FALLBACK_LNG, $b->addressLat,
-			$b->addressLng);
+		$distance_a = \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\GeoService::class)->distance(
+		    getenv('LOCATION_FALLBACK_LAT'),
+            getenv('LOCATION_FALLBACK_LNG'),
+            $a->addressLat,
+			$a->addressLng
+        );
+		$distance_b = \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\GeoService::class)->distance(
+            getenv('LOCATION_FALLBACK_LAT'),
+            getenv('LOCATION_FALLBACK_LNG'),
+            $b->addressLat,
+			$b->addressLng
+        );
 
-		if ($distance_a == $distance_b) {
+		if ($distance_a === $distance_b) {
 			return 0;
 		}
 
@@ -62,56 +53,53 @@ function get_venues_html() {
 }
 
 function get_header_html() {
-	// start output buffering with custom html compress handler
-	ob_start('html_compress');
-
 	$response = '<!DOCTYPE html>
 		<html lang="de">
 		<head>
-			<title>' . META_KEYWORDS . '</title>
+			<title>' . getenv('SITE_TITLE') . '</title>
 			<meta charset="UTF-8" />
 			<meta name="robots" content="INDEX,FOLLOW" />
-			<meta name="keywords" content="' . META_KEYWORDS . '" />
-			<meta name="description" content="' .  META_DESCRIPTION . '" />
+			<meta name="keywords" content="' . getenv('META_KEYWORDS') . '" />
+			<meta name="description" content="' .  getenv('META_DESCRIPTION') . '" />
 			<meta name="viewport" content="width=device-width, initial-scale=1" />';
 
 	// css
 	$response .='
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/basic.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/throbber.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.css') . '" />
-		<link rel="stylesheet" type="text/css" href="' . cacheSafeUrl('/css/jquery.dataTables.min.css') . '" />';
+		<link rel="stylesheet" type="text/css" href="/css/basic.css" />
+		<link rel="stylesheet" type="text/css" href="/css/throbber.css" />
+		<link rel="stylesheet" type="text/css" href="/jquery_mobile/jquery.mobile-1.4.5.min.css" />
+		<link rel="stylesheet" type="text/css" href="/css/jquery.dataTables.min.css" />';
 	// javascript
 	if (!isset($_GET['minimal']))
 		$response .= '
-			<script src="' . cacheSafeUrl('/js/jquery-3.1.0.min.js') . '"></script>
-			<script src="' . cacheSafeUrl('/js/jquery-migrate-3.0.0.js') . '"></script>
-			<script src="' . cacheSafeUrl('/jquery_mobile/jquery.mobile-1.4.5.min.js') . '"></script>
-			<script src="' . cacheSafeUrl('/js/basic.js') . '"></script>
-			<script src="' . cacheSafeUrl('/js/jquery.dataTables.min.js') . '" async="async"></script>
-			<script src="' . cacheSafeUrl('/js/jquery-textcomplete/jquery.textcomplete.min.js') . '" async="async"></script>
+			<script src="/js/jquery-3.1.0.min.js"></script>
+			<script src="/js/jquery-migrate-3.0.0.js"></script>
+			<script src="/jquery_mobile/jquery.mobile-1.4.5.min.js"></script>
+			<script src="/js/basic.js"></script>
+			<script src="/js/jquery.dataTables.min.js" async="async"></script>
+			<script src="/js/jquery-textcomplete/jquery.textcomplete.min.js" async="async"></script>
 		';
 
 	// minimal site and votes allowed, refresh every 10s
-	if (isset($_GET['minimal']) && show_voting()) {
+	if (isset($_GET['minimal']) && \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->votingDisplayAllowed(get_ip())) {
 		$response .= '<meta http-equiv="refresh" content="10" />';
 	}
 
 	$response .= '</head><body>';
-	$response .= '<div class="hidden" id="SEARCH_PROVIDER">' . SEARCH_PROVIDER . '</div>';
+	$response .= '<div class="hidden" id="SEARCH_PROVIDER">' . getenv('SEARCH_PROVIDER') . '</div>';
 	return $response;
 }
 function get_footer_html() {
 	$response = '';
 
-	if (CONTACT_HREF) {
-		$outputs[] = '<a href="' . htmlspecialchars(CONTACT_HREF) . '" target="_blank" data-rel="dialog">Kontakt</a>';
+	if (getenv('CONTACT_HREF')) {
+		$outputs[] = '<a href="' . htmlspecialchars(getenv('CONTACT_HREF')) . '" target="_blank" data-rel="dialog">Kontakt</a>';
 	}
-	if (IMPRESSUM_HREF) {
-		$outputs[] = '<a href="' . htmlspecialchars(IMPRESSUM_HREF) . '" target="_blank" data-rel="dialog">Impressum</a>';
+	if (getenv('IMPRESSUM_HREF')) {
+		$outputs[] = '<a href="' . htmlspecialchars(getenv('IMPRESSUM_HREF')) . '" target="_blank" data-rel="dialog">Impressum</a>';
 	}
-	if (PRIVACY_INFO) {
-		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(PRIVACY_INFO) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
+	if (getenv('PRIVACY_INFO')) {
+		$outputs[] = '<a href="javascript:void(0)" title="' . htmlspecialchars(getenv('PRIVACY_INFO')) . '" data-rel="dialog">Datenschutz-Hinweis</a>';
 	}
 	if (!isset($_GET['minimal'])) {
 		$outputs[] = "<a href='" . build_url('?minimal') . "' title='Zeigt eine Version dieser Seite ohne JavaScript an' data-ajax='false'>Minimal</a>";
@@ -126,8 +114,9 @@ function get_footer_html() {
 }
 
 function get_page_note() {
+    global $timestamp;
 	$ip        = get_ip();
-	$vote_data = getAllVotes($ip, 'special');
+	$vote_data = \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->getAllVoteData($timestamp, $ip, 'special');
 	$note      = isset($vote_data[$ip]['votes']['special']) ? $vote_data[$ip]['votes']['special'] : '';
 	return '
 		<div id="setNoteDialog" class="hidden" data-role="page">
@@ -137,7 +126,7 @@ function get_page_note() {
 			<div data-role="content">
 				<form id="noteForm" action="index.php">
 					<fieldset>
-						<input type="text" name="note" id="noteInput" value="' . $note . '" maxlength="' . VOTE_NOTE_MAX_LENGTH . '" />
+						<input type="text" name="note" id="noteInput" value="' . $note . '" />
 						<br>
 						<button data-icon="check">Speichern</button>
 					</fieldset>
@@ -171,39 +160,30 @@ function get_alt_venue_html() {
 }
 
 function get_vote_setting_html() {
-	global $voting_over_time;
+	$voting_over_time = getenv('VOTING_OVER_TIME');
 
 	$ip = get_ip();
-	$user_config = UserHandler_MySql::getInstance()->get($ip);
-	if (!is_intern_ip($ip)) {
-		return '';
-	}
-
-	if ($user_config) {
-        $user_config = reset($user_config);
+    if (!\App\Legacy\ContainerHelper::getInstance()->get(\App\Service\IpService::class)->isInternIp($ip)) {
+        return '';
     }
 
-	$voting_over_time_print = date('H:i', $voting_over_time);
-	$email = $user_config['email'] ?? '';
-	$vote_reminder = $user_config['vote_reminder'] ?? false;
-	$vote_reminder = filter_var($vote_reminder, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-	$voted_mail_only = $user_config['voted_mail_only'] ?? false;
-	$voted_mail_only = filter_var($voted_mail_only, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
-	$vote_always_show = $user_config['vote_always_show'] ?? false;
-	$vote_always_show = filter_var($vote_always_show, FILTER_VALIDATE_BOOLEAN) ? 'checked="checked"' : '';
+    $foodUser = \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\UserService::class)->getUser($ip);
+	$vote_reminder = $foodUser->getVoteReminder() ? 'checked="checked"' : '';
+	$voted_mail_only = $foodUser->getVotedMailOnly() ? 'checked="checked"' : '';
+	$vote_always_show = $foodUser->getVoteAlwaysShow() ? 'checked="checked"' : '';
 
 	$response = '
         <fieldset>
             <label for="name">Benutzername</label>
             <p>
-                <input type="text" name="name" id="name" value="' . $user_config['name'] . '" style="width: 100%" />
+                <input type="text" name="name" id="name" value="' . $foodUser->getName() . '" style="width: 100%" />
             </p>
         </fieldset>
         <br>
         <fieldset>
             <label for="email">Email-Benachrichtigung an</label>
             <p>
-                <input type="email" name="email" id="email" value="' . $email . '" style="width: 100%" title="wird versendet um ' . $voting_over_time_print . '" />
+                <input type="email" name="email" id="email" value="' . $foodUser->getEmail() . '" style="width: 100%" title="wird versendet um ' . $voting_over_time . '" />
             </p>
             <label for="vote_reminder" title="Wurde noch nicht gevoted, so wird kurz vor Ende eine Erinnerungs-Email versendet">
                 <input type="checkbox" name="vote_reminder" id="vote_reminder" ' . $vote_reminder . ' /> Vote-Erinnerung per Email kurz vor Ende
@@ -218,38 +198,38 @@ function get_vote_setting_html() {
         <br>';
 	if (!isset($_GET['minimal'])) {
 		$response .= '<script>
-				$("#setVoteSettingsDialog input").on("change keyup", function() { vote_settings_save(); });
+				$("#setVoteSettingsDialog input").on("change", function() { vote_settings_save(); });
 			</script>';
 	}
 	return $response;
 }
 
 function get_button_vote_summary_toggle_html() {
-	if (!show_voting())
+	if (!\App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->votingDisplayAllowed(get_ip()))
 		return '';
 	return "<button id='button_vote_summary_toggle' data-icon='carat-r'>Voting Anzeigen</button>";
 }
 
 function get_vote_div_html() {
-	global $voting_over_time;
-	$voting_over_time_print = date('H:i', $voting_over_time);
+    global $timestamp;
+	$voting_over_time = getenv('VOTING_OVER_TIME');
 
 	$vote_loader = '';
 
-	if (!show_voting())
+	if (!\App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->votingDisplayAllowed(get_ip()))
 		return '';
 
 	// show minimal (no JS) site notice
 	if (isset($_GET['minimal'])) {
 		echo get_minimal_site_notice_html();
 		// also show the current voting status
-		$votes = getAllVotes();
+		$votes = \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->getAllVoteData($timestamp);
 		if (!empty($votes))
-			return vote_summary_html($votes, false);
+			return \App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->summaryHtml(get_ip(), $votes);
 	}
 
-	if (!vote_allowed())
-		$voting_info_text = "Das Voting hat um $voting_over_time_print geendet!";
+	if (!\App\Legacy\ContainerHelper::getInstance()->get(\App\Service\VoteService::class)->votingAllowed(get_ip()))
+		$voting_info_text = "Das Voting hat um $voting_over_time geendet!";
 	else {
 		$vote_loader = '
 		<div style="margin: 0px 5px">
@@ -257,13 +237,12 @@ function get_vote_div_html() {
 			<div class="throbber middle">Lade...</div>
 		</div>
 		';
-		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time_print!";
+		$voting_info_text = "Hinweis: Das Voting endet um $voting_over_time!";
 	}
 
 	return '
 		<div style="display: none" id="show_voting"></div>
 		<div id="voting_over_time" class="hidden">' . $voting_over_time . '</div>
-		<div id="voting_over_time_print" class="hidden">' . $voting_over_time_print . '</div>
 		<div style="clear: both"></div>
 		<div id="dialog_ajax_data"></div>
 		<div style="margin: 5px">' . get_special_vote_actions_html() . '</div>
@@ -283,7 +262,7 @@ function get_loading_container_html() {
 function get_minimal_site_notice_html() {
 	global $dateOffset;
 
-	$url = '?date=' . date_from_offset($dateOffset);
+	$url = '?date=' . \App\Legacy\ContainerHelper::getInstance()->get(\App\Parser\TimeService::class)->dateFromOffset($dateOffset);
 	if (isset($_GET['keyword']))
 		$url .= '&keyword=' . urlencode($_GET['keyword']);
 	if (isset($_GET['food']))
