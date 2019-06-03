@@ -153,6 +153,11 @@ $venues = [
 		'lng' => 16.35342,
 		'website' => 'https://www.7brunnen.com/',
 	],
+	'Hey!!' => [
+		'lat' => 48.189343,
+		'lng' => 16.356291,
+		'website' => 'https://i.imgur.com/H6S9oIz.png',
+	],
 ];
 
 function nearby_search($lat, $lng, $radius) {
